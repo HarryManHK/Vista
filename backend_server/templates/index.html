@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Image to Text Demo</title>
+</head>
+<body>
+    <h1>Image to Text Demo</h1>
+
+    <form id="uploadForm">
+        <input type="file" id="imageFile" name="image_file" accept="image/*" />
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <div id="resultArea"></div>
+
+    <script>
+      const uploadForm = document.getElementById("uploadForm");
+      const resultDiv = document.getElementById("resultArea");
+
+      uploadForm.addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const fileInput = document.getElementById("imageFile");
+        if (!fileInput.files[0]) {
+          alert("Please select an image file.");
+          return;
+        }
+
+        let formData = new FormData();
+        formData.append("image_file", fileInput.files[0]);
+
+        fetch("/api/image2text", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Display the JSON response
+          resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          resultDiv.innerHTML = `<p style="color:red;">Error: ${error}</p>`;
+        });
+      });
+    </script>
+</body>
+</html>
