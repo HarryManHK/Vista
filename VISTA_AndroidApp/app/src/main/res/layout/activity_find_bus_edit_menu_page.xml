@@ -1,0 +1,88 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:weightSum="5">
+
+    <TextView
+        android:id="@+id/txtFindBusEditBusRoute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/btnFindBusEditEditRoute"
+        android:layout_width="357dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Edit Route"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btnFindBusEditOutboundDirection"
+        android:layout_width="361dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Edit Outbound Direction"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btnFindBusEditStartPoint"
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Edit Start Porint"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btnFindBusEditDestination"
+        android:layout_width="355dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Edit Destination"
+        android:textSize="22sp" />
+
+    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+
+        <!-- Confirm Button -->
+        <Button
+            android:id="@+id/btnFindBusEditConfirm"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="Confirm"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/btnFindBusEditNext"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="Next"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

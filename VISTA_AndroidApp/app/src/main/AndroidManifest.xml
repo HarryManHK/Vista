@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Camera Feature -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/vista_logo"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.VISTA"
+        tools:targetApi="31">
+        <activity
+            android:name=".FindBusEditMenuFunction.EditOutboundDirectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FindBusEditMenuFunction.EditDestinationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FindBusEditMenuFunction.EditStartPointActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FindBusEditMenuFunction.EditRouteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BusArrivalAlertPage"
+            android:exported="false" />
+        <activity
+            android:name=".StartDetectBusStopPage"
+            android:exported="false" />
+        <activity
+            android:name=".ShowArriveTimePage"
+            android:exported="false" />
+        <activity
+            android:name=".FindBusEditMenuPage"
+            android:exported="false" />
+        <activity
+            android:name=".FindBusStopMenuPage"
+            android:exported="false" /> <!-- MainMenuPage as the Launcher Activity -->
+        <activity
+            android:name=".MainMenuPage"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- ImageToTextMenu without Intent Filter -->
+        <activity
+            android:name=".ImageToTextMenu"
+            android:exported="false" /> <!-- Other Activities -->
+        <activity
+            android:name=".SelectImageDetectPage"
+            android:exported="false" />
+        <activity
+            android:name=".RealTimeDetectPage"
+            android:exported="false" /> <!-- FileProvider Configuration -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+    </application>
+
+</manifest>

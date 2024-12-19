@@ -1,0 +1,90 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:weightSum="5">
+
+    <TextView
+        android:id="@+id/txtFindBusStopMenuPageBusRoute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:gravity="center"/>
+
+    <!-- Image to Text Button -->
+    <Button
+        android:id="@+id/btnFindBusStopMenuPageEditDestination"
+        android:layout_width="357dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Edit Destination"
+        android:textSize="22sp" />
+
+    <!-- Find Bus Stop Button -->
+    <Button
+        android:id="@+id/btnFindBusStopMenuPageShowArriveTIme"
+        android:layout_width="361dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Show Arrive TIme"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btnFindBusStopMenuPageStartDetectBusStop"
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Start Detect Bus Stop"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btnFindBusStopMenuPageBusArrivalAlert"
+        android:layout_width="355dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="Bus Arrival Alert"
+        android:textSize="22sp" />
+
+    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+
+        <!-- Confirm Button -->
+        <Button
+            android:id="@+id/btnFindBusStopMenuPageConfirm"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="Confirm"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/btnFindBusStopMenuPageNext"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="Next"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
