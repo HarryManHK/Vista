@@ -8,16 +8,19 @@
     android:padding="16dp"
     android:weightSum="5">
 
+    <!-- Route Information TextView -->
     <TextView
         android:id="@+id/txtFindBusEditBusRoute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
-        android:textSize="32sp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Route:42A\nTo:佐敦(西九龍站)\nStart Point: xxx站\nDestination:xxx站"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:gravity="center"/>
+        android:padding="8dp"
+        android:textColor="@color/white"
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/btnFindBusEditEditRoute"

@@ -283,4 +283,12 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
         }
         super.onDestroy();
     }
+
+
+    @Override
+    protected void onRestart(){
+        // Display current BusRoute data
+        super.onRestart();
+        displayBusRouteData();
+    }
 }

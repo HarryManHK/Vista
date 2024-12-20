@@ -1,10 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FindBusEditMenuFunction.EditRouteActivity">
+    android:orientation="vertical"
+    android:padding="16sp"
+    tools:context=".FindBusEditMenuFunction.EditRouteActivity"
+    android:background="@drawable/background">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:gravity="center"
+        android:text="Select Bus Route"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etBusRoute"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/white"
+        android:hint="Enter Bus Route"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="461dp"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+
+        <!-- Confirm Button -->
+        <Button
+            android:id="@+id/btnEditRouteActivityConfirm"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="Confirm"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/btnEditRouteActivityNext"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="Next"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>
