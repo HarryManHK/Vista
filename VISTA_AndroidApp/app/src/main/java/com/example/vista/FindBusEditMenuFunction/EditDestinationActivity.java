@@ -77,6 +77,7 @@ public class EditDestinationActivity extends AppCompatActivity {
                 // Get the selected bus stop
                 BusStop selectedBusStop = busStops.get(selectedPosition);
                 updateDatabase(selectedBusStop);
+                finish();
             } else {
                 Toast.makeText(EditDestinationActivity.this, "Please select a destination bus stop", Toast.LENGTH_SHORT).show();
             }
