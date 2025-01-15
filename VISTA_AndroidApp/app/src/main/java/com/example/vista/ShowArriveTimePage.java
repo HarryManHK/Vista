@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-// import java.util.TimeZone; // If needed to force a specific zone
+// import java.util.TimeZone; // If you want to force "Asia/Hong_Kong"
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,27 +32,27 @@ import okhttp3.Response;
 public class ShowArriveTimePage extends Activity {
 
     private static final String TAG = "ShowArriveTimePage";
-
-    // Refresh every 5 seconds
+    // Refresh interval: 5 seconds
     private static final long REFRESH_INTERVAL_MS = 5_000;
 
-    // UI
+    // UI references
     private TextView txtShowArriveTimePageCurrentBusStop;
     private ListView lvShowArriveTimePage;
     private Button btnShowArriveTimePageConfirm;
     private Button btnShowArriveTimePageNext;
 
-    // ListView data
+    // Data for ListView
     private ArrayList<String> etaList;
     private ArrayAdapter<String> etaAdapter;
 
-    // DB
+    // Database
     private DatabaseHelper dbHelper;
 
-    // Bus route info
-    private String routeNumber;  // e.g. "43A"
-    private int routeSeq;        // For start point seq (e.g. 1)
-    private String start_point;  //The start point (e.g., "x站").
+    // Fields for route data
+    private String routeNumber;      // e.g. "43A"
+    private int routeSeq;            // e.g. 1
+    private String start_point;      // e.g. "x站"
+    private String boundValFromDB;   // "I" or "O" (derived from DB "inbound"/"outbound")
 
     // Handler for auto-refresh
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -70,64 +70,81 @@ public class ShowArriveTimePage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_arrive_time_page);
 
-        // Initialize UI components
+        // Initialize UI
         txtShowArriveTimePageCurrentBusStop = findViewById(R.id.txtShowArriveTimePageCurrentBusStop);
         lvShowArriveTimePage = findViewById(R.id.lvShowArriveTimePage);
         btnShowArriveTimePageConfirm = findViewById(R.id.btnShowArriveTimePageConfirm);
         btnShowArriveTimePageNext = findViewById(R.id.btnShowArriveTimePageNext);
 
-        // Prepare ListView and its adapter
+        // Prepare ListView adapter
         etaList = new ArrayList<>();
         etaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, etaList);
         lvShowArriveTimePage.setAdapter(etaAdapter);
 
-        // Get the DB instance
+        // Get DB instance
         dbHelper = DatabaseHelper.getInstance(this);
 
-        // Retrieve routeNumber and start point seq from DB
+        // Retrieve route, seq, bound from DB
         fetchRouteInfoFromDB();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Start auto-refresh when Activity is visible
+        // Start auto-refresh when activity is visible
         handler.post(refreshRunnable);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Stop auto-refresh when Activity is not visible
+        // Stop auto-refresh
         handler.removeCallbacks(refreshRunnable);
     }
 
     /**
-     * Retrieve route number and the start point seq from the DB (COLUMN_START_POINT_SEQ).
+     * Reads the latest bus route from the DB, including bound ("inbound"/"outbound") and start_point_seq.
      */
     private void fetchRouteInfoFromDB() {
         Cursor cursor = null;
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                // 1) Route number
                 routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
-
-                // 2) Start point seq
                 String routeSeqString = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_START_POINT_SEQ));
-
-                // Start point stop name
+                String dbBound = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOUND));
                 start_point = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_START_POINT));
+
+                // Convert seq string to integer
                 try {
                     routeSeq = Integer.parseInt(routeSeqString);
                 } catch (NumberFormatException e) {
-                    routeSeq = 1; // fallback if parse fails
+                    routeSeq = 1; // fallback
+                }
+
+                // Convert DB "inbound"/"outbound" to "I"/"O" for comparison with KMB JSON
+                if (dbBound != null) {
+                    if (dbBound.equalsIgnoreCase("inbound")) {
+                        boundValFromDB = "I";
+                    } else if (dbBound.equalsIgnoreCase("outbound")) {
+                        boundValFromDB = "O";
+                    } else {
+                        // fallback if some unknown value
+                        boundValFromDB = "O";
+                    }
+                } else {
+                    boundValFromDB = "O"; // default
                 }
 
                 // Update UI label
+                // e.g., "Route: 43A, Current Stop: x站 (I)"
+                // so user can see it's inbound or outbound in short form
                 txtShowArriveTimePageCurrentBusStop.setText(
-                        "Route: " + routeNumber + ", Current Stop: " + start_point
+                        "Route: " + routeNumber
+                                + ", Current Stop: " + start_point
+                                + " (" + boundValFromDB + ")"
                 );
+
             } else {
                 Toast.makeText(this, "No route info in DB.", Toast.LENGTH_SHORT).show();
             }
@@ -141,10 +158,7 @@ public class ShowArriveTimePage extends Activity {
     }
 
     /**
-     * Fetch ETA data from KMB API using OkHttp, filtering by start point seq.
-     *
-     * @param routeNumber The bus route number (e.g. "43A").
-     * @param serviceType Usually "1" for KMB's standard service.
+     * Fetch ETA data from KMB API using OkHttp, filtering by routeSeq and bound ("I"/"O").
      */
     private void fetchETADataFromKMB(String routeNumber, int serviceType) {
         if (routeNumber == null || routeNumber.equals("---")) {
@@ -181,7 +195,6 @@ public class ShowArriveTimePage extends Activity {
                     return;
                 }
 
-                // Read the entire response body
                 String responseBody = response.body().string();
                 parseAndDisplayETA(responseBody);
             }
@@ -189,8 +202,8 @@ public class ShowArriveTimePage extends Activity {
     }
 
     /**
-     * Parse JSON response from the KMB API, filter by the 'seq' == start point seq,
-     * and display the first 3 ETAs in the ListView.
+     * Parse JSON from KMB, filter by "seq" == routeSeq and "dir" == boundValFromDB ("I"/"O"),
+     * display first 3 arrivals in the ListView.
      */
     private void parseAndDisplayETA(String jsonString) {
         try {
@@ -204,15 +217,18 @@ public class ShowArriveTimePage extends Activity {
             // Clear old items
             etaList.clear();
 
-            // We only want the first 3 results that match this routeSeq
             int count = 0;
             for (int i = 0; i < dataArray.length(); i++) {
                 if (count >= 3) break;
 
                 JSONObject item = dataArray.getJSONObject(i);
-                int seqVal = item.optInt("seq", -1); // 'seq' from KMB JSON
 
-                if (seqVal == routeSeq) {
+                // "dir" from KMB JSON is "I" or "O"
+                String dirFromJson = item.optString("dir", "");
+                int seqVal = item.optInt("seq", -1);
+
+                // Must match both seq and dir
+                if (seqVal == routeSeq && dirFromJson.equalsIgnoreCase(boundValFromDB)) {
                     String etaString = item.optString("eta", "N/A");
                     String etaDiffString = calculateTimeDifference(etaString);
 
@@ -226,10 +242,9 @@ public class ShowArriveTimePage extends Activity {
 
             runOnUiThread(() -> {
                 etaAdapter.notifyDataSetChanged();
-
                 if (etaList.isEmpty()) {
                     Toast.makeText(ShowArriveTimePage.this,
-                            "No matching ETA data for start seq=" + routeSeq,
+                            "No matching ETA data (seq=" + routeSeq + ", dir=" + boundValFromDB + ")",
                             Toast.LENGTH_SHORT).show();
                 }
             });
@@ -239,13 +254,13 @@ public class ShowArriveTimePage extends Activity {
     }
 
     /**
-     * Calculate how many minutes/seconds remain until the ETA from now.
+     * Calculate how many minutes/seconds remain from now until the ETA.
      */
     private String calculateTimeDifference(String etaString) {
         try {
-            // Example: 2025-01-13T18:25:00+08:00
+            // Sample format: 2025-01-13T18:25:00+08:00
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
-            // If needed, explicitly set timezone:
+            // If you want a specific timezone:
             // TimeZone tz = TimeZone.getTimeZone("Asia/Hong_Kong");
             // sdf.setTimeZone(tz);
 
@@ -258,7 +273,6 @@ public class ShowArriveTimePage extends Activity {
             long etaMillis = etaDate.getTime();
             long diff = etaMillis - now; // difference in ms
 
-            // If the bus is arriving or has passed
             if (diff <= 0) {
                 return "Arriving";
             }
