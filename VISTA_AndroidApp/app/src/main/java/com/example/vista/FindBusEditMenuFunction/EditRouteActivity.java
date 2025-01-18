@@ -3,12 +3,11 @@ package com.example.vista.FindBusEditMenuFunction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vista.DatabaseHelper;
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.R;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
  */
 public class EditRouteActivity extends AppCompatActivity {
     private EditText etBusRoute;
-    private DatabaseHelper dbHelper;
+    private BusDatabaseHelper dbHelper;
     private String TAG = "EditRouteActivity";
 
     @Override
@@ -40,7 +39,7 @@ public class EditRouteActivity extends AppCompatActivity {
 
         // Initialize EditText and DatabaseHelper
         etBusRoute = findViewById(R.id.etBusRoute);
-        dbHelper = DatabaseHelper.getInstance(this);
+        dbHelper = BusDatabaseHelper.getInstance(this);
 
         // Set up the "Confirm" button
         Button btnConfirm = findViewById(R.id.btnEditRouteActivityConfirm);

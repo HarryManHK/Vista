@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:gravity="center"
-        android:text="Select Bus Route"
+        android:text="@string/EditRouteActivity_title"
         android:textColor="@color/white"
         android:textSize="26sp"
         android:textStyle="bold" />
@@ -24,7 +24,7 @@
         android:layout_height="59dp"
         android:layout_marginBottom="10dp"
         android:background="@color/white"
-        android:hint="Enter Bus Route"
+        android:hint="@string/EditRouteActivity_input"
         android:textSize="20sp" />
 
     <TextView
@@ -51,7 +51,7 @@
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"
-            android:text="Confirm"
+            android:text="@string/btn_Confirm"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -61,7 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"
-            android:text="Next"
+            android:text="@string/btn_next"
             android:textSize="22sp"
             android:textStyle="bold" />
     </LinearLayout>

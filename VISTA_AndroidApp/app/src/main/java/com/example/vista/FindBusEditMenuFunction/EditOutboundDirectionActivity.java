@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.view.SoundEffectConstants;
 
-import com.example.vista.DatabaseHelper;
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.R;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +33,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
     private DownloadTask task = null;
     private ListView lvShowRouteOutbound;
     private String[] listItems;
-    private DatabaseHelper dbHelper;
+    private BusDatabaseHelper dbHelper;
     private String BusRoute;
     private String TAG = "EditOutboundDirectionActivity";
     private int selectedPosition = -1; // Track the selected item in the ListView
@@ -44,7 +44,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_outbound_direction);
 
         lvShowRouteOutbound = findViewById(R.id.lvShowRouteOutbound);
-        dbHelper = DatabaseHelper.getInstance(this); // Use Singleton instance
+        dbHelper = BusDatabaseHelper.getInstance(this); // Use Singleton instance
 
         // Load bus route data and call the API
         getBusRouteData();
@@ -208,7 +208,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
                 BusRoute = routeNumber; // Get bus route number
             } else {
                 Log.d(TAG, "Error loading bus route data.");

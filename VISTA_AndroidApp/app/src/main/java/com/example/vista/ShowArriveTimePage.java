@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,7 +48,7 @@ public class ShowArriveTimePage extends Activity {
     private ArrayAdapter<String> etaAdapter;
 
     // Database
-    private DatabaseHelper dbHelper;
+    private BusDatabaseHelper dbHelper;
 
     // Fields for route data
     private String routeNumber;      // e.g. "43A"
@@ -82,7 +84,7 @@ public class ShowArriveTimePage extends Activity {
         lvShowArriveTimePage.setAdapter(etaAdapter);
 
         // Get DB instance
-        dbHelper = DatabaseHelper.getInstance(this);
+        dbHelper = BusDatabaseHelper.getInstance(this);
 
         // Retrieve route, seq, bound from DB
         fetchRouteInfoFromDB();
@@ -110,10 +112,10 @@ public class ShowArriveTimePage extends Activity {
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
-                String routeSeqString = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_START_POINT_SEQ));
-                String dbBound = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOUND));
-                start_point = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_START_POINT));
+                routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
+                String routeSeqString = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_SEQ));
+                String dbBound = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
+                start_point = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT));
 
                 // Convert seq string to integer
                 try {

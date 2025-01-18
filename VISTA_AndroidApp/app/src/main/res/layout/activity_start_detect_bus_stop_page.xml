@@ -6,5 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".StartDetectBusStopPage">
+    <!-- Camera preview will appear here -->
+    <SurfaceView
+        android:id="@+id/cameraSurfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
 
+    <!-- Annotated image from server -->
+    <ImageView
+        android:id="@+id/detectedImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

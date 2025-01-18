@@ -16,6 +16,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.FindBusEditMenuFunction.*;
 
 import java.util.Locale;
@@ -37,7 +38,7 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
     private TextToSpeech textToSpeech;
 
     // Database Helper
-    private DatabaseHelper dbHelper;
+    private BusDatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
         setContentView(R.layout.activity_find_bus_edit_menu_page); // Ensure your layout file is named accordingly
 
         // Initialize DatabaseHelper
-        dbHelper = DatabaseHelper.getInstance(this);
+        dbHelper = BusDatabaseHelper.getInstance(this);
 
         // Initialize UI Components
         txtBusRoute = findViewById(R.id.txtFindBusEditBusRoute);
@@ -174,10 +175,10 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
-                String toStation = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TO));
-                String startPoint = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_START_POINT));
-                String destination = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION));
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
+                String toStation = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO));
+                String startPoint = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT));
+                String destination = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION));
 
                 String routeInfo = "Route:" + routeNumber + "\n" +
                         "To:" + toStation + "\n" +

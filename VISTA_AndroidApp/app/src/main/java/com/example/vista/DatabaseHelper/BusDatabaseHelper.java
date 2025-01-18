@@ -1,4 +1,4 @@
-package com.example.vista;
+package com.example.vista.DatabaseHelper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,7 +11,7 @@ import android.util.Log;
  * DatabaseHelper: Manages SQLite database creation and version management.
  * Implements the Singleton pattern to ensure a single instance throughout the app.
  */
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class BusDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
@@ -58,14 +58,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ");";
 
     // Singleton instance
-    private static DatabaseHelper instance;
+    private static BusDatabaseHelper instance;
 
     /**
      * Private constructor to prevent direct instantiation.
      *
      * @param context The application context.
      */
-    private DatabaseHelper(Context context) { // Changed to private for Singleton pattern
+    private BusDatabaseHelper(Context context) { // Changed to private for Singleton pattern
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         Log.d(TAG, "DatabaseHelper: Constructor called");
     }
@@ -76,9 +76,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param context The application context.
      * @return The singleton instance of DatabaseHelper.
      */
-    public static synchronized DatabaseHelper getInstance(Context context) {
+    public static synchronized BusDatabaseHelper getInstance(Context context) {
         if (instance == null) {
-            instance = new DatabaseHelper(context.getApplicationContext());
+            instance = new BusDatabaseHelper(context.getApplicationContext());
             Log.d(TAG, "getInstance: DatabaseHelper instance created");
         }
         return instance;

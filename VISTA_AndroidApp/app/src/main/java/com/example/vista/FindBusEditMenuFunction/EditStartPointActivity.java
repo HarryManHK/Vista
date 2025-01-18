@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.view.SoundEffectConstants;
 
-import com.example.vista.DatabaseHelper;
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.R;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,7 +39,7 @@ public class EditStartPointActivity extends AppCompatActivity {
     private ListView lvShowAllStop;
     private ArrayList<BusStop> busStops; // Custom class to hold bus stop details
     private ArrayAdapter<String> adapter;
-    private DatabaseHelper dbHelper;
+    private BusDatabaseHelper dbHelper;
     private String BusRoute;
     private String bound; // "inbound" or "outbound"
     private String TAG = "EditStartPointActivity";
@@ -59,7 +59,7 @@ public class EditStartPointActivity extends AppCompatActivity {
 
         // Initialize ListView and DatabaseHelper
         lvShowAllStop = findViewById(R.id.lvShowAllStop);
-        dbHelper = DatabaseHelper.getInstance(this);
+        dbHelper = BusDatabaseHelper.getInstance(this);
         busStops = new ArrayList<>();
 
         // Load bus route data
@@ -274,10 +274,10 @@ public class EditStartPointActivity extends AppCompatActivity {
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
                 BusRoute = routeNumber; // Get bus route number
 
-                String boundValue = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOUND));
+                String boundValue = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
                 if (boundValue != null) {
                     // Map bound value: assuming "O" = "outbound", "I" = "inbound"
                     if (boundValue.equalsIgnoreCase("O")) {
@@ -315,9 +315,9 @@ public class EditStartPointActivity extends AppCompatActivity {
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
-                String toStation = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TO));
-                String boundValue = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOUND));
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
+                String toStation = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO));
+                String boundValue = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
 
                 // Prepare all other columns, setting to existing or "---" if not being updated
                 String startPoint = selectedBusStop.getNameEn();
@@ -327,11 +327,11 @@ public class EditStartPointActivity extends AppCompatActivity {
                 String startPointLong = selectedBusStop.getLon();
 
                 // Fetch existing destination details
-                String destination = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION));
-                String destinationStopId = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION_STOP_ID));
-                String destinationSeq = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION_SEQ));
-                String destinationLat = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION_LAT));
-                String destinationLong = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION_LONG));
+                String destination = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION));
+                String destinationStopId = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_STOP_ID));
+                String destinationSeq = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_SEQ));
+                String destinationLat = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_LAT));
+                String destinationLong = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_LONG));
 
                 // Update the database with the new start point details
                 long result = dbHelper.insertOrUpdateBusRoute(

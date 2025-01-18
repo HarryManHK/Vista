@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">VISTA</string>
+    <string name="EditDestinationActivity_SelectDestinationBusStop">選擇目的地的巴士站</string>
+    <string name="btn_Confirm">確認</string>
+    <string name="btn_next">下一個</string>
+
+    <string name="MainMenuPageActivity_title">主頁面</string>
+    <string name="MainMenuPageActivity_ImageToText">圖片生成文字</string>
+    <string name="MainMenuPageActivity_Setting">設定</string>
+    <string name="MainMenuPageActivity_FindBusStop">找巴士站</string>
+
+    <string name="SettingActivity_LanguageSetting">語言設定</string>
+    <string name="SettingActivity_VoiceSetting">語音設定</string>
+    <string name="SettingActivity_Setting">設定</string>
+
+    <!-- Language options -->
+    <string name="language_english">English</string>
+    <string name="language_traditional_chinese_hk">繁體中文 (香港)</string>
+
+    <string name="imageToTextMenu_title">圖像轉文字選單</string>
+    <string name="imageToTextMenu_SelectImageDetect">選擇圖片檢測</string>
+    <string name="imageToTextMenu_RealTimeDetect">實時偵測</string>
+    <string name="imageToTextMenu_TakePhotoDetect">拍照檢測</string>
+
+    <string name="FindBusEditMen_EditRoute">修改路綫</string>
+    <string name="FindBusEditMen_EditOutboundDirection">修改開住的方向</string>
+    <string name="FindBusEditMen_EditStartPoint">修改起點</string>
+    <string name="FindBusEditMen_EditDestination">修改終點</string>
+
+    <string name="EditRouteActivity_title">修改巴士路線</string>
+    <string name="EditRouteActivity_input">輸入巴士路線</string>
+
+    <string name="EditOutboundDirectionActivity_title">選擇巴士出站方向</string>
+
+    <string name="EditStartPointActivity_title">選擇起點巴士站</string>
+
+    <string name="FindBusStopMenuPage_EditDestination">修改目的地</string>
+    <string name="FindBusStopMenuPage_ShowArriveTIme">顯示到站時間</string>
+    <string name="FindBusStopMenuPage_StartDetectBusStop">開始偵測巴士站</string>
+    <string name="FindBusStopMenuPage_BusArrivalAlert">巴士到站提醒</string>
+</resources>

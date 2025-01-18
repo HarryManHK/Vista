@@ -21,6 +21,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import android.util.Log; // For Log.d usage
 
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+
 public class FindBusStopMenuPage extends AppCompatActivity {
 
     private static final String TAG = "FindBusStopMenuPage_debug";  // For logging
@@ -42,7 +44,7 @@ public class FindBusStopMenuPage extends AppCompatActivity {
 
     private TextView txtBusRoute;  // TextView to display bus route
 
-    private DatabaseHelper dbHelper;  // Database helper instance
+    private BusDatabaseHelper dbHelper;  // Database helper instance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +100,7 @@ public class FindBusStopMenuPage extends AppCompatActivity {
 
 
         // Initialize DatabaseHelper as a singleton
-        dbHelper = DatabaseHelper.getInstance(this);
+        dbHelper = BusDatabaseHelper.getInstance(this);
 
         txtBusRoute = findViewById(R.id.txtFindBusStopMenuPageBusRoute);
         if (txtBusRoute == null) {
@@ -250,10 +252,10 @@ public class FindBusStopMenuPage extends AppCompatActivity {
         try {
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
-                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ROUTE_NUMBER));
-                String toStation = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TO));
-                String startPoint = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_START_POINT));
-                String destination = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESTINATION));
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
+                String toStation = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO));
+                String startPoint = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT));
+                String destination = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION));
 
                 String routeInfo = "Route: " + routeNumber + "\n" +
                         "To: " + toStation + "\n" +
@@ -299,5 +301,12 @@ public class FindBusStopMenuPage extends AppCompatActivity {
             Log.d(TAG, "onDestroy: TextToSpeech resources released");
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart(){
+        // Display current BusRoute data
+        super.onRestart();
+        loadAndDisplayLatestBusRoute();
     }
 }

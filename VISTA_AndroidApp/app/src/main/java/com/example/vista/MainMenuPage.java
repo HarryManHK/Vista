@@ -1,40 +1,88 @@
 package com.example.vista;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //provide audio Speech
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
-import android.speech.tts.TextToSpeech.Engine;
+
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
+
 public class MainMenuPage extends AppCompatActivity {
 
-    private Button btnImageToText, btnFindBusStop, btnConfirm, btnNext;
+    private TextView txtTitle;
+    private Button btnImageToText, btnFindBusStop, btnConfirm, btnNext,btnSetting;
     private Button[] buttons;  // Array to hold all buttons for cycling through them
     private int selectedButtonIndex = 0;  // Index to keep track of the selected button
 
     private TextToSpeech textToSpeech;  // TextToSpeech instance
 
+    private SettingDatabaseHelper dbHelper; // Database helper instance
+
+    // Initialize  language Setting
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        // Initialize Database Helper
+        dbHelper = SettingDatabaseHelper.getInstance(newBase);
+
+        // Retrieve language settings from the database
+        String[] languageSetting = dbHelper.getLanguageSetting();
+        String languageCode = "en"; // Default to English
+        String countryCode = "US";   // Default to US
+
+        if (languageSetting != null) {
+            languageCode = languageSetting[0];
+            countryCode = languageSetting[1];
+        }
+
+        // Apply the locale before super.onCreate()
+        Context context = LocaleHelper.setLocale(newBase, languageCode, countryCode);
+        super.attachBaseContext(context);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu_page);
 
+
+//        // Initialize Database Helper
+//        dbHelper = new SettingDatabaseHelper(this);
+//
+//        // Retrieve language settings from the database
+//        String[] languageSetting = dbHelper.getLanguageSetting();
+//        String languageCode = "en"; // Default to English
+//        String countryCode = "US";   // Default to US
+//
+//        if (languageSetting != null) {
+//            languageCode = languageSetting[0];
+//            countryCode = languageSetting[1];
+//        }
+//
+//        // Apply the locale using LocaleHelper before setting the content view
+//        LocaleHelper.setLocale(this, languageCode, countryCode);
+
+
+        setContentView(R.layout.activity_main_menu_page);
         // Initialize buttons
+        txtTitle = findViewById(R.id.textView2);
         btnImageToText = findViewById(R.id.btnMainMenuImgToTxt);
         btnFindBusStop = findViewById(R.id.button5);
+        btnSetting = findViewById(R.id.btnMainMenuSetting);
         btnConfirm = findViewById(R.id.btnMainMenuConfirm);
         btnNext = findViewById(R.id.btnMainMenuNext);
 
         // Add all buttons to an array for easy cycling
-        buttons = new Button[]{btnImageToText, btnFindBusStop};
+        buttons = new Button[]{btnImageToText, btnFindBusStop,btnSetting};
 
         // Initial setup: Make the first button yellow
         updateButtonColor();
@@ -77,6 +125,19 @@ public class MainMenuPage extends AppCompatActivity {
 
                 // Create an Intent to start the ImageToTextMenu activity
                 Intent intent = new Intent(MainMenuPage.this, FindBusStopMenuPage.class);
+                startActivity(intent);
+            }
+        });
+
+        // Set onClickListener for "Setting" button
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Announce button label
+                announceButtonLabel("You will go to Setting page.");
+
+                // Create an Intent to start the ImageToTextMenu activity
+                Intent intent = new Intent(MainMenuPage.this, SettingPage.class);
                 startActivity(intent);
             }
         });
@@ -143,6 +204,13 @@ public class MainMenuPage extends AppCompatActivity {
             Intent intent = new Intent(MainMenuPage.this, FindBusStopMenuPage.class);
             startActivity(intent);
 
+        }else if (selectedButton == btnSetting) {
+            // Perform action for Find Bus Stop button
+            Toast.makeText(MainMenuPage.this, "Setting clicked!", Toast.LENGTH_SHORT).show();
+            // Create an Intent to start the ImageToTextMenu activity
+            Intent intent = new Intent(MainMenuPage.this, SettingPage.class);
+            startActivity(intent);
+
         }
     }
 
@@ -161,5 +229,18 @@ public class MainMenuPage extends AppCompatActivity {
             textToSpeech.shutdown();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        recreate();
+
+        txtTitle.setText(getString(R.string.MainMenuPageActivity_title));
+        btnSetting.setText(getString(R.string.MainMenuPageActivity_Setting));
+        btnImageToText.setText(getString(R.string.MainMenuPageActivity_ImageToText));
+        btnFindBusStop.setText(getString(R.string.MainMenuPageActivity_FindBusStop));
+        btnConfirm.setText(getString(R.string.btn_Confirm));
+        btnNext.setText(getString(R.string.btn_next));
     }
 }
