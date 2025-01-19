@@ -41,4 +41,6 @@
     <string name="FindBusStopMenuPage_StartDetectBusStop">Start DetectBus Stop</string>
     <string name="FindBusStopMenuPage_BusArrivalAlert">Bus Arrival Alert</string>
 
+    <string name="showArriveTimePage_title">Show Arrive Time</string>
+
 </resources>

@@ -38,4 +38,6 @@
     <string name="FindBusStopMenuPage_ShowArriveTIme">顯示到站時間</string>
     <string name="FindBusStopMenuPage_StartDetectBusStop">開始偵測巴士站</string>
     <string name="FindBusStopMenuPage_BusArrivalAlert">巴士到站提醒</string>
+
+    <string name="showArriveTimePage_title">顯示到達時間</string>
 </resources>

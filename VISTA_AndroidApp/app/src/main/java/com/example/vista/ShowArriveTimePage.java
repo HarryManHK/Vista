@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,7 +55,12 @@ public class ShowArriveTimePage extends Activity {
     private String routeNumber;      // e.g. "43A"
     private int routeSeq;            // e.g. 1
     private String start_point;      // e.g. "x站"
+    private String start_point_ZH;   // e.g. "x站" Chinese
     private String boundValFromDB;   // "I" or "O" (derived from DB "inbound"/"outbound")
+
+    // Retrieve language setting (from database)
+    private String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
+    private String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
 
     // Handler for auto-refresh
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -116,6 +122,7 @@ public class ShowArriveTimePage extends Activity {
                 String routeSeqString = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_SEQ));
                 String dbBound = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
                 start_point = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT));
+                start_point_ZH = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_ZH));
 
                 // Convert seq string to integer
                 try {
@@ -141,12 +148,17 @@ public class ShowArriveTimePage extends Activity {
                 // Update UI label
                 // e.g., "Route: 43A, Current Stop: x站 (I)"
                 // so user can see it's inbound or outbound in short form
-                txtShowArriveTimePageCurrentBusStop.setText(
-                        "Route: " + routeNumber
-                                + ", Current Stop: " + start_point
-                                + " (" + boundValFromDB + ")"
-                );
-
+                if (languageCode.equals("en")){
+                    txtShowArriveTimePageCurrentBusStop.setText(
+                            "Route: " + routeNumber
+                                    + ", Current Stop: " + start_point
+                    );
+                }else if(languageCode.equals("zh")){
+                    txtShowArriveTimePageCurrentBusStop.setText(
+                            "路線: " + routeNumber
+                                    + ", 當前巴士站: " + start_point_ZH
+                    );
+                }
             } else {
                 Toast.makeText(this, "No route info in DB.", Toast.LENGTH_SHORT).show();
             }
@@ -262,13 +274,10 @@ public class ShowArriveTimePage extends Activity {
         try {
             // Sample format: 2025-01-13T18:25:00+08:00
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
-            // If you want a specific timezone:
-            // TimeZone tz = TimeZone.getTimeZone("Asia/Hong_Kong");
-            // sdf.setTimeZone(tz);
 
             Date etaDate = sdf.parse(etaString);
             if (etaDate == null) {
-                return "N/A";
+                return getServiceUnavailableMessage();
             }
 
             long now = System.currentTimeMillis();
@@ -276,7 +285,7 @@ public class ShowArriveTimePage extends Activity {
             long diff = etaMillis - now; // difference in ms
 
             if (diff <= 0) {
-                return "Arriving";
+                return getArrivalMessage();
             }
 
             long diffSeconds = diff / 1000;
@@ -284,14 +293,42 @@ public class ShowArriveTimePage extends Activity {
             long seconds = diffSeconds % 60;
 
             if (minutes > 0) {
-                return minutes + " min(s) " + seconds + " sec(s)";
+                return formatTime(minutes, seconds);
             } else {
-                return seconds + " sec(s)";
+                return formatSeconds(seconds);
             }
 
         } catch (ParseException e) {
             Log.e(TAG, "calculateTimeDifference: parse error for " + etaString, e);
             return "N/A";
         }
+    }
+
+    private String getServiceUnavailableMessage() {
+        if ("zh".equals(languageCode)) {
+            return "當前沒有服務";
+        }
+        return "N/A";  // Default to "N/A" in other cases (English or other language codes)
+    }
+
+    private String getArrivalMessage() {
+        if ("zh".equals(languageCode)) {
+            return "即將到達";
+        }
+        return "Arriving";  // Default to "Arriving" for English or other language codes
+    }
+
+    private String formatTime(long minutes, long seconds) {
+        if ("zh".equals(languageCode)) {
+            return minutes + " 分 " + seconds + " 秒";  // Chinese format
+        }
+        return minutes + " min(s) " + seconds + " sec(s)";  // English format
+    }
+
+    private String formatSeconds(long seconds) {
+        if ("zh".equals(languageCode)) {
+            return seconds + " 秒";  // Chinese format
+        }
+        return seconds + " sec(s)";  // English format
     }
 }
