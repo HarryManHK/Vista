@@ -17,6 +17,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.FindBusEditMenuFunction.*;
 
 import java.util.Locale;
@@ -173,17 +174,34 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
     private void displayBusRouteData() {
         Cursor cursor = null;
         try {
+
+            // Retrieve language setting (from database)
+            String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
+            String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+
             cursor = dbHelper.getLatestBusRoute();
             if (cursor != null && cursor.moveToFirst()) {
                 String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
                 String toStation = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO));
+                String toStation_ZH = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO_ZH));
                 String startPoint = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT));
+                String startPoint_ZH = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_ZH));
                 String destination = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION));
+                String destination_ZH = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_ZH));
 
-                String routeInfo = "Route:" + routeNumber + "\n" +
-                        "To:" + toStation + "\n" +
-                        "Start Point:" + startPoint + "\n" +
-                        "Destination:" + destination;
+                String routeInfo = "";
+
+                if(languageCode.equals("en")){
+                    routeInfo = "Route:" + routeNumber + "\n" +
+                            "To:" + toStation + "\n" +
+                            "Start Point:" + startPoint + "\n" +
+                            "Destination:" + destination;
+                } else if (languageCode.equals("zh")) {
+                    routeInfo = "路線:" + routeNumber + "\n" +
+                            "開住方向:" + toStation_ZH + "\n" +
+                            "起點:" + startPoint_ZH + "\n" +
+                            "終點:" + destination_ZH;
+                }
 
                 txtBusRoute.setText(routeInfo);
                 Log.d(TAG, "displayBusRouteData: Bus route data displayed");

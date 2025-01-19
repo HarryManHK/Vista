@@ -54,7 +54,7 @@
         android:layout_height="63dp"
         android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:text="@string/FindBusEditMen_EditStartPoint"
+        android:text="@string/FindBusEditMen_EditDestination"
         android:textSize="22sp" />
 
     <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->

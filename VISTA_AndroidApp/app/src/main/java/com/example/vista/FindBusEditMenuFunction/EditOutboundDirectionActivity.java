@@ -1,5 +1,6 @@
 package com.example.vista.FindBusEditMenuFunction;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import android.view.SoundEffectConstants;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,9 +36,13 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
     private ListView lvShowRouteOutbound;
     private String[] listItems;
     private BusDatabaseHelper dbHelper;
+    private SettingDatabaseHelper SettingDBHelper;
     private String BusRoute;
     private String TAG = "EditOutboundDirectionActivity";
     private int selectedPosition = -1; // Track the selected item in the ListView
+    private String[] origMultiLan;
+    private String[] destMultiLan;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +51,6 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
 
         lvShowRouteOutbound = findViewById(R.id.lvShowRouteOutbound);
         dbHelper = BusDatabaseHelper.getInstance(this); // Use Singleton instance
-
         // Load bus route data and call the API
         getBusRouteData();
 
@@ -57,10 +62,24 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         // Set up the "Confirm" button
         Button btnConfirm = findViewById(R.id.btnMainMenuConfirm);
         btnConfirm.setOnClickListener(v -> {
+
+
             if (selectedPosition != -1) {
                 // Update database with the selected route information
-                String selectedOutbound = listItems[selectedPosition];
-                updateDatabase(selectedOutbound);
+                String selectedOutbound = "";
+                String selectedOutbound_ZH = "";
+
+                if (selectedPosition == 0){
+                    selectedOutbound_ZH = destMultiLan[1];
+                    selectedOutbound = destMultiLan[0];
+                }else if(selectedPosition == 1){
+                    selectedOutbound_ZH = destMultiLan[1];
+                    selectedOutbound = destMultiLan[0];
+                }
+
+
+
+                updateDatabase(selectedOutbound, selectedOutbound_ZH);
             } else {
                 Toast.makeText(EditOutboundDirectionActivity.this, "Please select an outbound direction", Toast.LENGTH_SHORT).show();
             }
@@ -75,7 +94,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         // Start the DownloadTask after BusRoute is set
         if (BusRoute != null && !BusRoute.isEmpty()) {
             if (task == null || task.getStatus() == AsyncTask.Status.FINISHED) {
-                task = new DownloadTask();
+                task = new DownloadTask(this);
                 task.execute("https://data.etabus.gov.hk/v1/transport/kmb/route/" + BusRoute + "/outbound/1");
             }
         } else {
@@ -140,6 +159,12 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
      * AsyncTask to download bus route data from the API.
      */
     private class DownloadTask extends AsyncTask<String, Integer, String> {
+        private Context mContext;
+        // Constructor to pass context to the AsyncTask
+        public DownloadTask(Context context) {
+            this.mContext = context;
+        }
+
         @Override
         protected String doInBackground(String... values) {
             InputStream inputStream = null;
@@ -169,7 +194,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             if (result == null) {
-                Toast.makeText(EditOutboundDirectionActivity.this, "Failed to fetch data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Failed to fetch data", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -180,22 +205,34 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
                 // Extract the "data" JSONObject
                 JSONObject dataObject = jsonObject.getJSONObject("data");
 
-                // Extract the "dest_en" and "orig_en" values
-                String destEn = dataObject.getString("dest_en");
-                String origEn = dataObject.getString("orig_en");
+                // Retrieve language setting (from database)
+                String[] languageSetting = SettingDatabaseHelper.getInstance(mContext).getLanguageSetting();
+                String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+
+                // Determine which fields to show based on the language setting
+                String orig = languageCode.equals("zh") ? dataObject.getString("orig_tc") : dataObject.getString("orig_en");
+                String dest = languageCode.equals("zh") ? dataObject.getString("dest_tc") : dataObject.getString("dest_en");
+
+                destMultiLan = new String[2];
+                destMultiLan[0] = dataObject.getString("dest_en");
+                destMultiLan[1] = dataObject.getString("dest_tc");
+
+                origMultiLan = new String[2];
+                origMultiLan[0] = dataObject.getString("orig_en");
+                origMultiLan[1] = dataObject.getString("orig_tc");
 
                 // Set these values to listItems array
                 listItems = new String[2]; // Only need 2 items for now
-                listItems[0] =  destEn;  // "dest_en" to listItems[0] with label
-                listItems[1] =  origEn;  // "orig_en" to listItems[1] with label
+                listItems[0] = dest;  // "dest_en" to listItems[0] with label
+                listItems[1] = orig;  // "orig_en" to listItems[1] with label
 
                 // Set the adapter for the ListView
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(EditOutboundDirectionActivity.this,
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,
                         android.R.layout.simple_list_item_1, listItems);
                 lvShowRouteOutbound.setAdapter(adapter);
             } catch (Exception e) {
                 Log.e("EditOutboundDirection", "onPostExecute Error: " + e.toString());
-                Toast.makeText(EditOutboundDirectionActivity.this, "Error parsing data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Error parsing data", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -229,7 +266,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
      *
      * @param selectedOutbound The selected outbound direction.
      */
-    private void updateDatabase(String selectedOutbound) {
+    private void updateDatabase(String selectedOutbound,String selectedOutbound_ZH) {
         // Determine the bound based on the selected position
         String bound;
         if (selectedPosition == 1) {
@@ -242,11 +279,13 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
 
         // Placeholder values for the other columns
         String startPoint = "---"; // Replace with actual start point if available
+        String startPoint_ZH = "---"; // Replace with actual start point if available
         String startPointSeq = "---"; // Replace with actual sequence if available
         String startPointStopId = "---"; // Replace with actual stop ID if available
         String startPointLat = "---"; // Replace with actual latitude if available
         String startPointLong = "---"; // Replace with actual longitude if available
         String destination = "---"; // Replace with actual destination if available
+        String destination_ZH = "---"; // Replace with actual destination if available
         String destinationStopId = "---"; // Replace with actual stop ID if available
         String destinationSeq = "---"; // Replace with actual sequence if available
         String destinationLat = "---"; // Replace with actual latitude if available
@@ -257,13 +296,16 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
                 dbHelper.getWritableDatabase(),
                 BusRoute,
                 selectedOutbound,    // to_station
+                selectedOutbound_ZH, // to_station_ZH
                 bound,               // bound
                 startPoint,          // start_point
+                startPoint_ZH,          // start_point
                 startPointSeq,       // start_point_seq
                 startPointStopId,    // start_point_stop_id
                 startPointLat,       // start_point_lat
                 startPointLong,      // start_point_long
                 destination,         // destination
+                destination_ZH,         // destination
                 destinationStopId,   // destination_stop_id
                 destinationSeq,      // destination_seq
                 destinationLat,      // destination_lat

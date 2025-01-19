@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select Start Point Bus Stop"
+        android:text="@string/EditStartPointActivity_title"
         android:textSize="26sp"
         android:textStyle="bold"
         android:gravity="center"

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import android.view.SoundEffectConstants;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +45,9 @@ public class EditDestinationActivity extends AppCompatActivity {
     private String bound; // "inbound" or "outbound"
     private String TAG = "EditDestinationActivity";
     private int selectedPosition = -1; // Track the selected item in the ListView
+    // Retrieve language setting (from database)
+    private String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
+    private String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,11 +233,12 @@ public class EditDestinationActivity extends AppCompatActivity {
                     JSONObject stopData = stopJsonObj.getJSONObject("data");
 
                     String nameEn = stopData.getString("name_en");
+                    String nameZH = stopData.getString("name_tc");
                     String lat = stopData.getString("lat");
                     String lon = stopData.getString("long"); // Note: "long" is a reserved word, better use "lon"
 
                     // Create a BusStop object
-                    BusStop busStop = new BusStop(stopId, nameEn, seq, lat, lon);
+                    BusStop busStop = new BusStop(stopId, nameEn, nameZH, seq, lat, lon);
                     stopsList.add(busStop);
                 }
             } catch (Exception e) {
@@ -255,7 +260,11 @@ public class EditDestinationActivity extends AppCompatActivity {
             // Prepare the list of stop names for the ListView
             ArrayList<String> stopNames = new ArrayList<>();
             for (BusStop stop : busStops) {
-                stopNames.add(stop.getNameEn());
+                if(languageCode.equals("en")){
+                    stopNames.add(stop.getNameEn());
+                }else if(languageCode.equals("zh")){
+                    stopNames.add(stop.getNameZH());
+                }
             }
 
             // Set the adapter for the ListView
@@ -318,10 +327,12 @@ public class EditDestinationActivity extends AppCompatActivity {
             if (cursor != null && cursor.moveToFirst()) {
                 String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
                 String toStation = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO));
+                String toStation_ZH = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_TO_ZH));
                 String boundValue = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
 
                 // Prepare all other columns, setting to existing or "---" if not being updated
                 String destination = selectedBusStop.getNameEn();
+                String destination_ZH = selectedBusStop.getNameZH();
                 String destinationSeq = String.valueOf(selectedBusStop.getSeq());
                 String destinationStopId = selectedBusStop.getStopId();
                 String destinationLat = selectedBusStop.getLat();
@@ -329,6 +340,7 @@ public class EditDestinationActivity extends AppCompatActivity {
 
                 // Fetch existing start point details
                 String startPoint = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT));
+                String startPoint_ZH = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_ZH));
                 String startPointSeq = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_SEQ));
                 String startPointStopId = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_STOP_ID));
                 String startPointLat = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_LAT));
@@ -339,13 +351,16 @@ public class EditDestinationActivity extends AppCompatActivity {
                         dbHelper.getWritableDatabase(),
                         routeNumber,
                         toStation,
+                        toStation_ZH,
                         boundValue,
                         startPoint,
+                        startPoint_ZH,
                         startPointSeq,
                         startPointStopId,
                         startPointLat,
                         startPointLong,
                         destination,
+                        destination_ZH,
                         destinationStopId,
                         destinationSeq,
                         destinationLat,
@@ -379,13 +394,15 @@ public class EditDestinationActivity extends AppCompatActivity {
     private class BusStop {
         private String stopId;
         private String nameEn;
+        private String nameZH;
         private int seq;
         private String lat;
         private String lon;
 
-        public BusStop(String stopId, String nameEn, int seq, String lat, String lon) {
+        public BusStop(String stopId, String nameEn, String nameZH, int seq, String lat, String lon) {
             this.stopId = stopId;
             this.nameEn = nameEn;
+            this.nameZH = nameZH;
             this.seq = seq;
             this.lat = lat;
             this.lon = lon;
@@ -397,6 +414,10 @@ public class EditDestinationActivity extends AppCompatActivity {
 
         public String getNameEn() {
             return nameEn;
+        }
+
+        public String getNameZH() {
+            return nameZH;
         }
 
         public int getSeq() {

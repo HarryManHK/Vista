@@ -17,7 +17,7 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
 
     // Database Name and Version
     private static final String DATABASE_NAME = "BusRouteDB.db";
-    private static final int DATABASE_VERSION = 2; // Incremented version to handle schema changes
+    private static final int DATABASE_VERSION = 3; // Incremented version to handle schema changes
 
     // Table Name
     public static final String TABLE_BUS_ROUTE = "BusRoute";
@@ -26,13 +26,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_ROUTE_NUMBER = "route_number";
     public static final String COLUMN_TO = "to_station";
+    public static final String COLUMN_TO_ZH = "to_station_ZH";
     public static final String COLUMN_BOUND = "bound";
     public static final String COLUMN_START_POINT = "start_point";
+    public static final String COLUMN_START_POINT_ZH = "start_point_ZH";
     public static final String COLUMN_START_POINT_SEQ = "start_point_seq";
     public static final String COLUMN_START_POINT_STOP_ID = "start_point_stop_id";
     public static final String COLUMN_START_POINT_LAT = "start_point_lat";
     public static final String COLUMN_START_POINT_LONG = "start_point_long";
     public static final String COLUMN_DESTINATION = "destination";
+    public static final String COLUMN_DESTINATION_ZH = "destination_ZH";
     public static final String COLUMN_DESTINATION_STOP_ID = "destination_stop_id";
     public static final String COLUMN_DESTINATION_SEQ = "destination_seq";
     public static final String COLUMN_DESTINATION_LAT = "destination_lat";
@@ -44,13 +47,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_ROUTE_NUMBER + " TEXT, " +
                     COLUMN_TO + " TEXT, " +
+                    COLUMN_TO_ZH + " TEXT, " +
                     COLUMN_BOUND + " TEXT, " +
                     COLUMN_START_POINT + " TEXT, " +
+                    COLUMN_START_POINT_ZH + " TEXT, " +
                     COLUMN_START_POINT_SEQ + " TEXT, " +
                     COLUMN_START_POINT_STOP_ID + " TEXT, " +
                     COLUMN_START_POINT_LAT + " TEXT, " +
                     COLUMN_START_POINT_LONG + " TEXT, " +
                     COLUMN_DESTINATION + " TEXT, " +
+                    COLUMN_DESTINATION_ZH + " TEXT, " +
                     COLUMN_DESTINATION_STOP_ID + " TEXT, " +
                     COLUMN_DESTINATION_SEQ + " TEXT, " +
                     COLUMN_DESTINATION_LAT + " TEXT, " +
@@ -94,13 +100,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
             insertOrUpdateBusRoute(db,
                     "---", // routeNumber
                     "---", // toStation
+                    "---", // toStation_ZH
                     "---", // bound
                     "---", // startPoint
+                    "---", // startPoint_ZH
                     "---", // startPointSeq
                     "---", // startPointStopId
                     "---", // startPointLat
                     "---", // startPointLong
                     "---", // destination
+                    "---", // destination_ZH
                     "---", // destinationStopId
                     "---", // destinationSeq
                     "---", // destinationLat
@@ -127,6 +136,11 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_DESTINATION_LAT + " TEXT;");
                 db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_DESTINATION_LONG + " TEXT;");
                 Log.d(TAG, "onUpgrade: Added new columns to BusRoute table");
+            } else if (oldVersion < 3) {
+                db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_DESTINATION_ZH + " TEXT;");
+                db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_START_POINT_ZH + " TEXT;");
+                db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_TO_ZH + " TEXT;");
+                Log.d(TAG, "onUpgrade: Added new columns to BusRoute table");
             }
             // Future upgrades can be handled here
         } catch (Exception e) {
@@ -141,13 +155,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
      * @param db                        The SQLiteDatabase instance to use.
      * @param routeNumber               The route number (e.g., "43A").
      * @param toStation                 The destination station (e.g., "佐敦(西九龍站)").
+     * @param toStation_ZH              The destination station Chinese(e.g., "佐敦(西九龍站)").
      * @param bound                     The bound direction (e.g., "Outbound").
      * @param startPoint                The start point (e.g., "2站").
+     * @param startPoint_ZH             The start point Chinese (e.g., "2站").
      * @param startPointSeq             The sequence number for the start point.
      * @param startPointStopId          The stop ID for the start point.
      * @param startPointLat             The latitude for the start point.
      * @param startPointLong            The longitude for the start point.
      * @param destination               The destination point (e.g., "2站").
+     * @param destination_ZH            The destination point Chinese (e.g., "2站").
      * @param destinationStopId         The stop ID for the destination.
      * @param destinationSeq            The sequence number for the destination.
      * @param destinationLat            The latitude for the destination.
@@ -157,13 +174,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
     public long insertOrUpdateBusRoute(SQLiteDatabase db,
                                        String routeNumber,
                                        String toStation,
+                                       String toStation_ZH,
                                        String bound,
                                        String startPoint,
+                                       String startPoint_ZH,
                                        String startPointSeq,
                                        String startPointStopId,
                                        String startPointLat,
                                        String startPointLong,
                                        String destination,
+                                       String destination_ZH,
                                        String destinationStopId,
                                        String destinationSeq,
                                        String destinationLat,
@@ -171,13 +191,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_ROUTE_NUMBER, routeNumber);
         values.put(COLUMN_TO, toStation);
+        values.put(COLUMN_TO_ZH, toStation_ZH);
         values.put(COLUMN_BOUND, bound);
         values.put(COLUMN_START_POINT, startPoint);
+        values.put(COLUMN_START_POINT_ZH, startPoint_ZH);
         values.put(COLUMN_START_POINT_SEQ, startPointSeq);
         values.put(COLUMN_START_POINT_STOP_ID, startPointStopId);
         values.put(COLUMN_START_POINT_LAT, startPointLat);
         values.put(COLUMN_START_POINT_LONG, startPointLong);
         values.put(COLUMN_DESTINATION, destination);
+        values.put(COLUMN_DESTINATION_ZH, destination_ZH);
         values.put(COLUMN_DESTINATION_STOP_ID, destinationStopId);
         values.put(COLUMN_DESTINATION_SEQ, destinationSeq);
         values.put(COLUMN_DESTINATION_LAT, destinationLat);
@@ -224,13 +247,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
      *
      * @param routeNumber           The route number (e.g., "43A").
      * @param toStation             The destination station (e.g., "佐敦(西九龍站)").
+     * @param toStation_ZH          The destination station Chinese (e.g., "佐敦(西九龍站)").
      * @param bound                 The bound direction (e.g., "Outbound").
      * @param startPoint            The start point (e.g., "2站").
+     * @param startPoint_ZH         The start point Chinese(e.g., "2站").
      * @param startPointSeq         The sequence number for the start point.
      * @param startPointStopId      The stop ID for the start point.
      * @param startPointLat         The latitude for the start point.
      * @param startPointLong        The longitude for the start point.
      * @param destination           The destination point (e.g., "2站").
+     * @param destination_ZH        The destination point Chinese (e.g., "2站").
      * @param destinationStopId     The stop ID for the destination.
      * @param destinationSeq        The sequence number for the destination.
      * @param destinationLat        The latitude for the destination.
@@ -239,13 +265,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
      */
     public long insertBusRoute(String routeNumber,
                                String toStation,
+                               String toStation_ZH,
                                String bound,
                                String startPoint,
+                               String startPoint_ZH,
                                String startPointSeq,
                                String startPointStopId,
                                String startPointLat,
                                String startPointLong,
                                String destination,
+                               String destination_ZH,
                                String destinationStopId,
                                String destinationSeq,
                                String destinationLat,
@@ -257,13 +286,16 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
             newRowId = insertOrUpdateBusRoute(db,
                     routeNumber,
                     toStation,
+                    toStation_ZH,
                     bound,
                     startPoint,
+                    startPoint_ZH,
                     startPointSeq,
                     startPointStopId,
                     startPointLat,
                     startPointLong,
                     destination,
+                    destination_ZH,
                     destinationStopId,
                     destinationSeq,
                     destinationLat,

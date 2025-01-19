@@ -1,8 +1,10 @@
 package com.example.vista.FindBusEditMenuFunction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -44,7 +46,7 @@ public class EditRouteActivity extends AppCompatActivity {
         // Set up the "Confirm" button
         Button btnConfirm = findViewById(R.id.btnEditRouteActivityConfirm);
         btnConfirm.setOnClickListener(v -> {
-            String routeNumber = etBusRoute.getText().toString().trim();
+            String routeNumber = etBusRoute.getText().toString().trim().toUpperCase();
             if (routeNumber.isEmpty()) {
                 Toast.makeText(EditRouteActivity.this, "Please enter a bus route", Toast.LENGTH_SHORT).show();
                 return;
@@ -54,13 +56,16 @@ public class EditRouteActivity extends AppCompatActivity {
             long result = dbHelper.insertBusRoute(
                     routeNumber,    // route_number
                     "---",          // to_station
+                    "---",          // to_station_ZH
                     "---",          // bound
                     "---",          // start_point
+                    "---",          // start_point_ZH
                     "---",          // start_point_seq
                     "---",          // start_point_stop_id
                     "---",          // start_point_lat
                     "---",          // start_point_long
                     "---",          // destination
+                    "---",          // destination_ZH
                     "---",          // destination_stop_id
                     "---",          // destination_seq
                     "---",          // destination_lat
@@ -81,10 +86,19 @@ public class EditRouteActivity extends AppCompatActivity {
         // Set up the "Next" button
         Button btnNext = findViewById(R.id.btnEditRouteActivityNext);
         btnNext.setOnClickListener(v -> {
-            // Navigate to EditOutboundDirectionActivity
-            Intent intent = new Intent(EditRouteActivity.this, EditOutboundDirectionActivity.class);
-            startActivity(intent);
-            finish(); // Optional: finish current activity to prevent back navigation
+//            // Navigate to EditOutboundDirectionActivity
+//            Intent intent = new Intent(EditRouteActivity.this, EditOutboundDirectionActivity.class);
+//            startActivity(intent);
+//            finish(); // Optional: finish current activity to prevent back navigation
+
+            // Request focus for the EditText
+            etBusRoute.requestFocus();
+
+            // Show the keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(etBusRoute, InputMethodManager.SHOW_IMPLICIT);
+            }
         });
     }
 }
