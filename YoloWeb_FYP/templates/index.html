@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>巴士站實時檢測</title>
+    <style>
+        #videoElement, #canvas {
+            width: 1280px;
+            height: 720px;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+        }
+    </style>
+</head>
+<body>
+    <h1>巴士站實時檢測</h1>
+    <div id="container">
+        <video autoplay="true" id="videoElement"></video>
+        <canvas id="canvas" width="1280" height="720"></canvas>
+    </div>
+
+    <!-- 引入 SocketIO 客户端库 -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const socket = io('https://d.harryman.cc');
+
+        // 访问摄像头
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        })
+            .then((stream) => {
+                video.srcObject = stream;
+                video.play();
+
+                // 等待视频元数据加载完毕后，设置 Canvas 尺寸
+                video.addEventListener('loadedmetadata', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    processVideo();
+                });
+            })
+            .catch((err) => {
+                console.error("無法存取攝影機：", err);
+                alert("無法打開攝影機");
+            });
+
+        function processVideo() {
+            setInterval(() => {
+                // 将视频帧绘制到 canvas 上
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // 获取 canvas 中的图像数据
+                const imageData = canvas.toDataURL('image/jpeg', 0.5);
+                // 发送图像数据到服务器
+                socket.emit('image', imageData.split(',')[1]);
+            }, 200); // 每 100ms 发送一次，帧率约为 10fps
+        }
+
+        // 接收服务器发送的检测结果
+        socket.on('detections', (data) => {
+            const detections = data.detections;
+            // 清除 canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            // 重新绘制视频帧
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // 绘制检测框和标签
+            detections.forEach((det) => {
+                context.beginPath();
+                context.rect(det.xmin, det.ymin, det.xmax - det.xmin, det.ymax - det.ymin);
+                context.lineWidth = 2;
+                context.strokeStyle = 'red';
+                context.stroke();
+                context.fillStyle = 'red';
+                context.fillText(`${det.name} ${(det.confidence * 100).toFixed(1)}%`, det.xmin, det.ymin > 10 ? det.ymin - 5 : 10);
+            });
+        });
+    </script>
+</body>
+</html>
