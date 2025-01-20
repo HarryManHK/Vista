@@ -50,4 +50,7 @@ dependencies {
     implementation("io.socket:socket.io-client:2.1.0") {
         exclude(group = "org.json", module = "json") // if needed
     }
+
+    // Map
+    implementation ("org.osmdroid:osmdroid-android:6.1.0")
 }

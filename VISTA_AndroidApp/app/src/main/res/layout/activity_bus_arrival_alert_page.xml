@@ -1,10 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BusArrivalAlertPage">
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:weightSum="5">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Add OpenStreetMap View -->
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3" />
+
+    <!-- Bottom buttons -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btnFindBusEditConfirm"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="@string/btn_Confirm"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnFindBusEditNext"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="@string/btn_next"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
