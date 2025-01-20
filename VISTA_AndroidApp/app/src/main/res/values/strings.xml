@@ -43,4 +43,11 @@
 
     <string name="showArriveTimePage_title">Show Arrive Time</string>
 
+    <string name="VoiceSettingPage_title">Voice Setting</string>
+
+    <string name="VoiceSettingPage_VoiceLanguageSetting">Voice Language Setting</string>
+    <string name="VoiceSettingPage_VoiceSpeedSetting">Voice Speed Setting</string>
+    <string name="VoiceSettingPage_VoiceGenderSetting">Voice Gender Setting</string>
+
+
 </resources>

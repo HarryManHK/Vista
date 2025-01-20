@@ -40,4 +40,12 @@
     <string name="FindBusStopMenuPage_BusArrivalAlert">巴士到站提醒</string>
 
     <string name="showArriveTimePage_title">顯示到達時間</string>
+
+    <string name="VoiceSettingPage_title">語音設定</string>
+
+    <string name="VoiceSettingPage_VoiceLanguageSetting">語音語言設定</string>
+    <string name="VoiceSettingPage_VoiceSpeedSetting">語音速度設定</string>
+    <string name="VoiceSettingPage_VoiceGenderSetting">配音性別設定</string>
+
+
 </resources>

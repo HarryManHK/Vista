@@ -1,9 +1,7 @@
 package com.example.vista;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,10 +12,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class SettingPage extends AppCompatActivity {
+public class VoiceSettingPage extends AppCompatActivity {
 
     private TextView textViewSetting;
-    private Button btnLanSetting, btnVoiceSetting;
+    private Button btnLanSetting, btnVoiceSpeedSetting,btnGender;
     private Button btnConfirm, btnNext;
 
     // Array of setting buttons for cycling
@@ -28,7 +26,7 @@ public class SettingPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_setting_page);
+        setContentView(R.layout.activity_voice_setting_page);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -38,12 +36,13 @@ public class SettingPage extends AppCompatActivity {
         // Initialize UI elements
         textViewSetting = findViewById(R.id.textView2);
         btnLanSetting = findViewById(R.id.btnLanSetting);
-        btnVoiceSetting = findViewById(R.id.btnVoiceSetting);
+        btnVoiceSpeedSetting = findViewById(R.id.btnVoiceSpeedSetting);
+        btnGender = findViewById(R.id.btnGender);
         btnConfirm = findViewById(R.id.btnEditRouteActivityConfirm);
         btnNext = findViewById(R.id.btnEditRouteActivityNext);
 
         // Initialize setting buttons array
-        settingButtons = new Button[]{btnLanSetting, btnVoiceSetting};
+        settingButtons = new Button[]{btnLanSetting, btnVoiceSpeedSetting,btnGender};
 
         // Highlight the initial selection
         highlightSelection();
@@ -56,10 +55,17 @@ public class SettingPage extends AppCompatActivity {
             }
         });
 
-        btnVoiceSetting.setOnClickListener(new View.OnClickListener() {
+        btnVoiceSpeedSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navigateToVoiceSetting();
+                navigateToSpeedSetting();
+            }
+        });
+
+        btnGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navigateToGenderSetting();
             }
         });
 
@@ -80,13 +86,18 @@ public class SettingPage extends AppCompatActivity {
 
     // Navigate to LanguageSettingPage
     private void navigateToLanguageSetting() {
-        Intent intent = new Intent(SettingPage.this, LanguageSettingPage.class);
+        Intent intent = new Intent(VoiceSettingPage.this, VoiceLanguageSetting.class);
         startActivity(intent);
     }
 
     // Navigate to VoiceSettingPage
-    private void navigateToVoiceSetting() {
-        Intent intent = new Intent(SettingPage.this, VoiceSettingPage.class);
+    private void navigateToSpeedSetting() {
+        Intent intent = new Intent(VoiceSettingPage.this, VoiceSpeedSetting.class);
+        startActivity(intent);
+    }
+
+    private void navigateToGenderSetting() {
+        Intent intent = new Intent(VoiceSettingPage.this, VoiceGenderSetting.class);
         startActivity(intent);
     }
 
@@ -109,7 +120,10 @@ public class SettingPage extends AppCompatActivity {
                 navigateToLanguageSetting();
                 break;
             case 1:
-                navigateToVoiceSetting();
+                navigateToSpeedSetting();
+                break;
+            case 2:
+                navigateToGenderSetting();
                 break;
             default:
                 // Handle unexpected cases
@@ -134,11 +148,7 @@ public class SettingPage extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         recreate();
-
-        textViewSetting.setText(getString(R.string.SettingActivity_Setting));
-        btnLanSetting.setText(getString(R.string.SettingActivity_LanguageSetting));
-        btnVoiceSetting.setText(getString(R.string.SettingActivity_VoiceSetting));
-        btnConfirm.setText(getString(R.string.btn_Confirm));
-        btnNext.setText(getString(R.string.btn_next));
     }
 }
+
+

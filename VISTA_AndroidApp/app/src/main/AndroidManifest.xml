@@ -26,6 +26,18 @@
         android:theme="@style/Theme.VISTA"
         tools:targetApi="31">
         <activity
+            android:name=".VoiceGenderSetting"
+            android:exported="false" />
+        <activity
+            android:name=".VoiceSpeedSetting"
+            android:exported="false" />
+        <activity
+            android:name=".VoiceLanguageSetting"
+            android:exported="false" />
+        <activity
+            android:name=".VoiceSettingPage"
+            android:exported="false" />
+        <activity
             android:name=".LanguageSettingPage"
             android:exported="false" />
         <activity
