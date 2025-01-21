@@ -19,10 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.FindBusEditMenuFunction.*;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 import java.util.Locale;
 
-public class FindBusEditMenuPage extends AppCompatActivity implements OnInitListener {
+public class FindBusEditMenuPage extends AppCompatActivity {
 
     private static final String TAG = "FindBusEditMenuPage_debug";
 
@@ -33,10 +34,15 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
 
     // Array of edit buttons for cycling
     private Button[] editButtons;
+
+    //set Find Bus Edit Menu Page Function Name
+    //zh name
+    private String[] zhButtonLabel = {"修改路綫","修改開住的方向","修改起點","修改終點"}; //Array to hold the action label chinese name
+    //english name
+    private String[] enButtonLabel = {"Edit Route", "Edit Outbound Direction", "Edit Start Point", "Edit Destination"}; //Array to hold the action label english name
     private int selectedButtonIndex = 0; // Tracks the currently selected edit button
 
-    // TextToSpeech instance (optional)
-    private TextToSpeech textToSpeech;
+    private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
 
     // Database Helper
     private BusDatabaseHelper dbHelper;
@@ -65,7 +71,7 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
         displayBusRouteData();
 
         // Initialize TextToSpeech (optional)
-        textToSpeech = new TextToSpeech(this, this);
+        customTextToSpeech = new CustomTextToSpeech(FindBusEditMenuPage.this);
 
         // Highlight the first edit button initially
         highlightSelectedButton();
@@ -78,7 +84,7 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
                     // When an edit button is clicked directly, set it as selected
                     selectedButtonIndex = getButtonIndex(v);
                     highlightSelectedButton();
-                    announceSelectedButton();
+                    announceButtonLabel(new String[]{enButtonLabel[selectedButtonIndex], zhButtonLabel[selectedButtonIndex]});
                 }
             });
         }
@@ -95,7 +101,7 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
                 highlightSelectedButton();
 
                 // Announce the newly selected button
-                announceSelectedButton();
+                announceButtonLabel(new String[]{enButtonLabel[selectedButtonIndex], zhButtonLabel[selectedButtonIndex]});
             }
         });
 
@@ -141,7 +147,7 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
 
                 // Announce the action (optional)
                 String announceText = "Navigating to " + selectedButton.getText().toString() + " page.";
-                speak(announceText);
+                announceButtonLabel(new String[]{"Navigating to " + enButtonLabel[selectedButtonIndex] + " page.", "你選擇了" + zhButtonLabel[selectedButtonIndex] + "功能"});
 
                 // Navigate to the corresponding activity via Intent
                 Intent intent;
@@ -232,24 +238,9 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
         }
     }
 
-    /**
-     * Announces the currently selected button using TextToSpeech (optional).
-     */
-    private void announceSelectedButton() {
-        String buttonText = editButtons[selectedButtonIndex].getText().toString();
-        String announceText = "Selected: " + buttonText;
-        speak(announceText);
-    }
-
-    /**
-     * Speaks the provided text using TextToSpeech (optional).
-     *
-     * @param text The text to be spoken.
-     */
-    private void speak(String text) {
-        if (textToSpeech != null) {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-        }
+    private void announceButtonLabel(String[] label) {
+        // Announce the label based on the selected language
+        customTextToSpeech.speak(label);
     }
 
     /**
@@ -272,33 +263,16 @@ public class FindBusEditMenuPage extends AppCompatActivity implements OnInitList
      *
      * @param status The initialization status.
      */
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            // Set language to US English
-            int result = textToSpeech.setLanguage(Locale.US);
-            if (result == TextToSpeech.LANG_MISSING_DATA ||
-                    result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e(TAG, "onInit: TTS Language not supported.");
-            } else {
-                Log.d(TAG, "onInit: TTS Initialized successfully.");
-                // Optionally, announce the first selected button
-                announceSelectedButton();
-            }
-        } else {
-            Log.e(TAG, "onInit: TTS Initialization failed.");
-        }
-    }
 
     /**
      * Release TextToSpeech resources when the activity is destroyed (optional).
      */
     @Override
     protected void onDestroy() {
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-            Log.d(TAG, "onDestroy: TextToSpeech resources released.");
+        // Release the TextToSpeech resources when the activity is destroyed
+        if (customTextToSpeech != null) {
+            customTextToSpeech.shutdown();
+            Log.d(TAG, "onDestroy: TextToSpeech resources released");
         }
         super.onDestroy();
     }
