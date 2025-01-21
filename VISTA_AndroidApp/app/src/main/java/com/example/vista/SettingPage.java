@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+
 public class SettingPage extends AppCompatActivity {
 
     private TextView textViewSetting;
@@ -23,6 +25,9 @@ public class SettingPage extends AppCompatActivity {
     // Array of setting buttons for cycling
     private Button[] settingButtons;
     private int currentSelection = 0; // Start with the first setting
+    private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
+
+    String[] buttonLabel = new String[2]; // button label for text to speech
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +53,14 @@ public class SettingPage extends AppCompatActivity {
         // Highlight the initial selection
         highlightSelection();
 
+        // Initialize CustomTextToSpeech
+        customTextToSpeech = new CustomTextToSpeech(SettingPage.this);
+
+
         // Set up button click listeners
         btnLanSetting.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                navigateToLanguageSetting();
-            }
+            public void onClick(View view) { navigateToLanguageSetting(); }
         });
 
         btnVoiceSetting.setOnClickListener(new View.OnClickListener() {
@@ -80,12 +87,20 @@ public class SettingPage extends AppCompatActivity {
 
     // Navigate to LanguageSettingPage
     private void navigateToLanguageSetting() {
+        // Announce button label
+        String[] buttonLabel = {"You will go to Language Setting page.", "你將進入語言設置頁面。"};
+        announceButtonLabel(buttonLabel);
+
         Intent intent = new Intent(SettingPage.this, LanguageSettingPage.class);
         startActivity(intent);
     }
 
     // Navigate to VoiceSettingPage
     private void navigateToVoiceSetting() {
+        // Announce button label
+        String[] buttonLabel = {"You will go to Voice Setting page.", "你將進入語音設置頁面。"};
+        announceButtonLabel(buttonLabel);
+
         Intent intent = new Intent(SettingPage.this, VoiceSettingPage.class);
         startActivity(intent);
     }
@@ -98,6 +113,8 @@ public class SettingPage extends AppCompatActivity {
         // Move to next selection
         currentSelection = (currentSelection + 1) % settingButtons.length;
 
+        String[] buttonLabel = {settingButtons[currentSelection].getText().toString(), settingButtons[currentSelection].getText().toString()};
+        announceButtonLabel(buttonLabel);
         // Highlight the new selection
         highlightSelection();
     }
@@ -115,6 +132,11 @@ public class SettingPage extends AppCompatActivity {
                 // Handle unexpected cases
                 break;
         }
+    }
+
+    private void announceButtonLabel(String[] label) {
+        // Announce the label based on the selected language
+        customTextToSpeech.speak(label);
     }
 
     // Highlight the currently selected setting
