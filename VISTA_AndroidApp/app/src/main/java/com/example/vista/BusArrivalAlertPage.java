@@ -1,13 +1,19 @@
 package com.example.vista;
 
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,7 +24,19 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.overlay.Marker;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import android.location.Location;
+import android.Manifest;
+
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+
+import java.io.IOException;
+import java.util.List;
 
 public class BusArrivalAlertPage extends AppCompatActivity {
 
@@ -31,6 +49,10 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     private String DESTINATION_LONG;
     private BusDatabaseHelper BusDBHelper;
     private String TAG = "BusArrivalAlertPage_Debug";
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private TextView currentLocationTextView;
+    private LocationRequest locationRequest;
+    private static final int LOCATION_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +88,21 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         // Fetch data from the database and add markers to the map
         getDBLocation();
 
+        // Initialize location provider
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Initialize the TextView to show the current location
+        currentLocationTextView = findViewById(R.id.CurrentLocation);
+
+        // Create a LocationRequest for continuous updates
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000); // Set update interval (in milliseconds)
+        locationRequest.setFastestInterval(5000); // Set fastest update interval (in milliseconds)
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // High accuracy
+
+        // Get current location and update UI
+        getCurrentLocation();
+
         // Apply window insets for system bars handling
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -83,6 +120,60 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             // Handle Next Button click
             handleNextButtonClick();
         });
+    }
+
+    private void getCurrentLocation() {
+        // Check if location permissions are granted (you can check at runtime if necessary)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Start receiving location updates
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        } else {
+            // Handle permission request if not granted
+            Toast.makeText(this, "Location permission is not granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private com.google.android.gms.location.LocationCallback locationCallback = new com.google.android.gms.location.LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult != null && locationResult.getLocations().size() > 0) {
+                // Get the most recent location
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+
+                    // Update the TextView with the current location
+                    double distance = calculateDistance(latitude, longitude, Double.valueOf(DESTINATION_LAT), Double.valueOf(DESTINATION_LONG));
+                    currentLocationTextView.setText("Current Location: \n" + latitude + ", \n" + longitude + "\n" + distance + "KM");
+                }
+            }
+        }
+    };
+
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        // Convert latitude and longitude from degrees to radians
+        double lat1Rad = Math.toRadians(lat1);
+        double lon1Rad = Math.toRadians(lon1);
+        double lat2Rad = Math.toRadians(lat2);
+        double lon2Rad = Math.toRadians(lon2);
+
+        // Haversine formula
+        double deltaLat = lat2Rad - lat1Rad;
+        double deltaLon = lon2Rad - lon1Rad;
+
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+                + Math.cos(lat1Rad) * Math.cos(lat2Rad)
+                * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double R = 6371.0;
+
+        // Distance in kilometers
+        double distance = R * c;
+
+        return distance; // distance in kilometers
     }
 
     private void getDBLocation() {
@@ -124,35 +215,37 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             startMarker.setPosition(startPoint);
             startMarker.setTitle("Start Point");
             mapView.getOverlays().add(startMarker);
-
             // Destination point
             GeoPoint destinationPoint = new GeoPoint(Double.valueOf(DESTINATION_LAT), Double.valueOf(DESTINATION_LONG));
             Marker destinationMarker = new Marker(mapView);
             destinationMarker.setPosition(destinationPoint);
             destinationMarker.setTitle("Destination");
             mapView.getOverlays().add(destinationMarker);
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Error adding markers: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Error adding markers to map: " + e.toString());
+            Toast.makeText(this, "Error adding markers", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Confirm Button click handler
     private void handleConfirmButtonClick() {
-        // Add logic for the confirm button here (e.g., save data or navigate to another page)
-        Toast.makeText(this, "Confirm button clicked", Toast.LENGTH_SHORT).show();
+        // Handle logic for confirm button click
+        // (e.g., start bus arrival alert logic)
     }
 
-    // Next Button click handler
     private void handleNextButtonClick() {
-        // Add logic for the next button here (e.g., move to the next page or step)
-        Toast.makeText(this, "Next button clicked", Toast.LENGTH_SHORT).show();
+        // Handle logic for next button click
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mapView != null) {
-            mapView.onDetach(); // To avoid memory leaks
-        }
+    protected void onPause() {
+        super.onPause();
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback); // Stop location updates to save battery
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Start location updates when the activity is resumed
+        getCurrentLocation();
     }
 }

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
+    android:background="@drawable/background"
     android:weightSum="5">
 
     <!-- Add OpenStreetMap View -->
@@ -12,6 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3" />
+
+    <TextView
+        android:id="@+id/CurrentLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Current Location:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
 
     <!-- Bottom buttons -->
     <LinearLayout
