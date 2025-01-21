@@ -115,6 +115,7 @@ public class MainMenuPage extends AppCompatActivity {
                 // Change the selected button index (cycle through buttons)
                 selectedButtonIndex = (selectedButtonIndex + 1) % buttons.length;
 
+
                 // Update the button color
                 updateButtonColor();
 
