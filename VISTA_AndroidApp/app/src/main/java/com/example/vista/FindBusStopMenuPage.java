@@ -127,10 +127,6 @@
             customTextToSpeech = new CustomTextToSpeech(FindBusStopMenuPage.this);
         }
 
-        private void setButtonLabel(){
-
-        }
-
         /**
          * Set onClickListeners for main action buttons.
          */
