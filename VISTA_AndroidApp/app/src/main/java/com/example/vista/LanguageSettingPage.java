@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 public class LanguageSettingPage extends AppCompatActivity {
 
@@ -26,6 +27,8 @@ public class LanguageSettingPage extends AppCompatActivity {
 
     private String[] languages;
     private String[] languageCodes; // To map selections to locale codes
+
+    private CustomTextToSpeech customTextToSpeech; //text to speech
 
     private SettingDatabaseHelper dbHelper; // Database helper instance
 
@@ -64,6 +67,9 @@ public class LanguageSettingPage extends AppCompatActivity {
         lvLanguageSetting = findViewById(R.id.lvLanguageSetting);
         btnConfirm = findViewById(R.id.btnEditRouteActivityConfirm);
         btnNext = findViewById(R.id.btnEditRouteActivityNext);
+
+        // Initialize CustomTextToSpeech
+        customTextToSpeech = new CustomTextToSpeech(LanguageSettingPage.this);
 
         // Define language options and corresponding locale codes
         languages = new String[]{
