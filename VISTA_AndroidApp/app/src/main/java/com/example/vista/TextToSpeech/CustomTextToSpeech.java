@@ -16,11 +16,13 @@ public class CustomTextToSpeech {
     private TextToSpeech textToSpeech;
     private String currentLanguage = "en"; // Default to English
     private Context context;
+    private final String TAG = "CustomTTS_debug";
 
     // Constructor
     public CustomTextToSpeech(Context context) {
         this.context = context;
         initializeTextToSpeech();
+        setSpeechRate();
     }
 
     // Initialize TextToSpeech object
@@ -72,10 +74,36 @@ public class CustomTextToSpeech {
 
             @Override
             public void onError(String utteranceId) {
-                Log.e("TTS", "Error with text to speech");
+                Log.e(TAG, "Error with text to speech");
             }
         });
     }
+
+    /**
+     * Sets the speech rate for the TextToSpeech engine.
+     *
+     * @param rate The speech rate. 1.0 is the normal rate. Lower values slow down the speech,
+     *             and higher values speed it up.
+     */
+    private void setSpeechRate() {
+        float rate = 1.0f;
+
+        // Get language settings from the database
+        SettingDatabaseHelper dbHelper = SettingDatabaseHelper.getInstance(context);
+        float VoiceSpeed = dbHelper.getVoiceSpeed();
+
+        rate = VoiceSpeed;
+
+        // The valid range is typically 0.1 to 2.0
+        if (rate < 0.1f) {
+            rate = 0.1f;
+        } else if (rate > 2.0f) {
+            rate = 2.0f;
+        }
+        textToSpeech.setSpeechRate(rate);
+        Log.d(TAG, "Speech rate set to: " + rate);
+    }
+
 
     // Function to speak text based on the language
     public void speak(String[] text) {
