@@ -23,6 +23,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+
 import java.io.File;
 
 public class ImageToTextMenu extends AppCompatActivity implements View.OnClickListener {
@@ -36,6 +38,8 @@ public class ImageToTextMenu extends AppCompatActivity implements View.OnClickLi
     private Button btnRealTimeDetectPage;
     private Button btnSelectImageDetect;
     private Button btnTakePhotoDetect;
+
+    private CustomTextToSpeech customTextToSpeech; //text to speech module
 
     private Uri cameraFileUri;
 
@@ -60,6 +64,9 @@ public class ImageToTextMenu extends AppCompatActivity implements View.OnClickLi
         btnTakePhotoDetect    = findViewById(R.id.btnTakePhotoDetect);
         btnSelectImageDetect  = findViewById(R.id.btnSelectImageDetect);
 
+        // Initialize CustomTextToSpeech
+        customTextToSpeech = new CustomTextToSpeech(ImageToTextMenu.this);
+
         // Set click listeners
         btnRealTimeDetectPage.setOnClickListener(this);
         btnTakePhotoDetect.setOnClickListener(this);
@@ -75,11 +82,20 @@ public class ImageToTextMenu extends AppCompatActivity implements View.OnClickLi
         if (id == R.id.btnGoRealTimeDetectPage) {
             Toast.makeText(this, "Start Real Time Detection", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onClick: btnGoRealTimeDetectPage pressed");
+
+            // Announce button label
+            String[] buttonLabel = {"You will go to Real Time Detect page.", "你將進入實時偵測頁面。"};
+            announceButtonLabel(buttonLabel);
+
             // TODO: navigate to RealTimeDetectPage if needed
 
         } else if (id == R.id.btnSelectImageDetect) {
             Toast.makeText(this, "Start Select Image Detection", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onClick: btnSelectImageDetect pressed");
+
+            // Announce button label
+            String[] buttonLabel = {"You will go to Select Image Detect page.", "你將進入選擇圖片檢測頁面。"};
+            announceButtonLabel(buttonLabel);
 
             // Open gallery
             Intent chooseIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -90,6 +106,12 @@ public class ImageToTextMenu extends AppCompatActivity implements View.OnClickLi
         } else if (id == R.id.btnTakePhotoDetect) {
             Toast.makeText(this, "Start Take Photo Detection", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onClick: btnTakePhotoDetect pressed");
+
+            // Announce button label
+            String[] buttonLabel = {"You will go to Take Photo Detect page.", "你將進入拍照檢測頁面。"};
+            announceButtonLabel(buttonLabel);
+
+            //main function
             launchCamera();
         }
     }
@@ -117,6 +139,11 @@ public class ImageToTextMenu extends AppCompatActivity implements View.OnClickLi
 
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri);
         startActivityForResult(cameraIntent, CODE_CAMERA);
+    }
+
+    private void announceButtonLabel(String[] label) {
+        // Announce the label based on the selected language
+        customTextToSpeech.speak(label);
     }
 
     @Override
@@ -176,6 +203,15 @@ public class ImageToTextMenu extends AppCompatActivity implements View.OnClickLi
         } else {
             Log.d(TAG, "requestPermissionsIfNeeded: permissions already granted");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Release the TextToSpeech resources when the activity is destroyed
+        if (customTextToSpeech != null) {
+            customTextToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 
     @Override

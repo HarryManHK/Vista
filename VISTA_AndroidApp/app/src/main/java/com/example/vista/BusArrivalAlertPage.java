@@ -1,5 +1,7 @@
 package com.example.vista;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Address;
