@@ -16,8 +16,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
+
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 
 public class LanguageSettingPage extends AppCompatActivity {
 
@@ -28,10 +29,9 @@ public class LanguageSettingPage extends AppCompatActivity {
     private String[] languages;
     private String[] languageCodes; // To map selections to locale codes
 
-    private CustomTextToSpeech customTextToSpeech; //text to speech
-
     private SettingDatabaseHelper dbHelper; // Database helper instance
 
+    private CustomTextToSpeech customTextToSpeech;
     @Override
     protected void attachBaseContext(Context newBase) {
         // Initialize Database Helper
@@ -62,6 +62,8 @@ public class LanguageSettingPage extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        customTextToSpeech = new CustomTextToSpeech(this);
 
         // Initialize UI elements
         lvLanguageSetting = findViewById(R.id.lvLanguageSetting);

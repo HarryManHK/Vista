@@ -26,6 +26,7 @@ public class VoiceSettingPage extends AppCompatActivity {
 
     private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +37,8 @@ public class VoiceSettingPage extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        customTextToSpeech = new CustomTextToSpeech(this);
 
         // Initialize UI elements
         textViewSetting = findViewById(R.id.textView2);
@@ -90,9 +93,11 @@ public class VoiceSettingPage extends AppCompatActivity {
 
     // Navigate to LanguageSettingPage
     private void navigateToLanguageSetting() {
+
         // Announce button label
         String[] buttonLabel = {"You will go to Voice Language Setting page.", "你將進入語音語言設定頁面。"};
         announceButtonLabel(buttonLabel);
+
 
         Intent intent = new Intent(VoiceSettingPage.this, VoiceLanguageSetting.class);
         startActivity(intent);
@@ -100,6 +105,7 @@ public class VoiceSettingPage extends AppCompatActivity {
 
     // Navigate to VoiceSettingPage
     private void navigateToSpeedSetting() {
+
         // Announce button label
         String[] buttonLabel = {"You will go to Voice Speed Setting page.", "你將進入語音速度設定頁面。"};
         announceButtonLabel(buttonLabel);
@@ -109,17 +115,13 @@ public class VoiceSettingPage extends AppCompatActivity {
     }
 
     private void navigateToGenderSetting() {
+
         // Announce button label
         String[] buttonLabel = {"You will go to Voice Gender Setting page.", "你將進入配音性別設定頁面。"};
         announceButtonLabel(buttonLabel);
 
         Intent intent = new Intent(VoiceSettingPage.this, VoiceGenderSetting.class);
         startActivity(intent);
-    }
-
-    private void announceButtonLabel(String[] label) {
-        // Announce the label based on the selected language
-        customTextToSpeech.speak(label);
     }
 
     // Cycle to the next setting option
@@ -132,6 +134,11 @@ public class VoiceSettingPage extends AppCompatActivity {
 
         // Highlight the new selection
         highlightSelection();
+    }
+
+    private void announceButtonLabel(String[] label) {
+        // Announce the label based on the selected language
+        customTextToSpeech.speak(label);
     }
 
     // Confirm the current selection and navigate accordingly
@@ -164,6 +171,8 @@ public class VoiceSettingPage extends AppCompatActivity {
             }
         }
     }
+
+
 
     @Override
     protected void onRestart() {
