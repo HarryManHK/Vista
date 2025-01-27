@@ -33,9 +33,9 @@ public class CustomTextToSpeech {
                 if (status == TextToSpeech.SUCCESS) {
                     // Get language settings from the database
                     SettingDatabaseHelper dbHelper = SettingDatabaseHelper.getInstance(context);
-                    String[] languageSetting = dbHelper.getLanguageSetting();
+                    String languageSetting = dbHelper.getColumnVoiceLanguage();
                     if (languageSetting != null) {
-                        currentLanguage = languageSetting[0];  // Set language from the settings
+                        currentLanguage = languageSetting;  // Set language from the settings
                     }
 
                     // Set the locale based on the language

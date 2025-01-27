@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StartDetectBusStopPage">
+    tools:context=".StartDetectBusStopPage"
+    android:background="@drawable/background">
     <!-- Camera preview will appear here -->
     <SurfaceView
         android:id="@+id/cameraSurfaceView"

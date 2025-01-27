@@ -9,21 +9,21 @@
     android:layout_height="match_parent"
     android:padding="16sp"
     android:background="@drawable/background">
+
     <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/VoiceSettingPage_VoiceSpeedSetting"
-    android:textSize="30sp"
-    android:textStyle="bold"
-    android:gravity="center"
-    android:textColor="@color/white"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/VoiceSettingPage_VoiceSpeedSetting"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/white"/>
 
     <ListView
         android:id="@+id/lvLanguageSpeedSetting"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
-
 
     <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout
@@ -35,8 +35,9 @@
         android:weightSum="2">
 
         <!-- Confirm Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLanguageSpeedConfirm"
+            style="@style/SemiTransparentRoundedButton"
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"
@@ -45,8 +46,9 @@
             android:textStyle="bold" />
 
         <!-- Next Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLanguageSpeedNext"
+            style="@style/SemiTransparentRoundedButton"
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"

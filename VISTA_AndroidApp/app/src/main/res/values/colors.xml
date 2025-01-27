@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/colors.xml -->
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorSelectedItem">#FFDDDDDD</color> <!-- Light gray for selected item -->
+    <color name="semi_transparent_white">#80FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="selected_background">#FFFF00</color> <!-- 黃色 -->
+    <color name="button_pressed">#60FFFFFF</color> <!-- 更透明的背景 -->
 </resources>

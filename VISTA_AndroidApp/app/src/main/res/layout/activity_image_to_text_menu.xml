@@ -8,40 +8,41 @@
     android:background="@drawable/background"
     tools:context=".ImageToTextMenu">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSelectImageDetect"
-        android:layout_width="193dp"
-        android:layout_height="48dp"
+        style="@style/SemiTransparentRoundedButton"
+        android:layout_width="359dp"
+        android:layout_height="64dp"
         android:text="@string/imageToTextMenu_SelectImageDetect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.657" />
+        app:layout_constraintVertical_bias="0.683" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoRealTimeDetectPage"
-        android:layout_width="193dp"
-        android:layout_height="48dp"
+        style="@style/SemiTransparentRoundedButton"
+        android:layout_width="337dp"
+        android:layout_height="64dp"
         android:text="@string/imageToTextMenu_RealTimeDetect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.85" />
+        app:layout_constraintVertical_bias="0.912" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnTakePhotoDetect"
-        android:layout_width="193dp"
-        android:layout_height="48dp"
+        style="@style/SemiTransparentRoundedButton"
+        android:layout_width="347dp"
+        android:layout_height="64dp"
         android:text="@string/imageToTextMenu_TakePhotoDetect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.758" />
+        app:layout_constraintVertical_bias="0.802" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -62,6 +63,7 @@
         android:text="@string/imageToTextMenu_title"
         android:textSize="22sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

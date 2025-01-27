@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- 半透明背景顏色 -->
+    <solid android:color="#20FFFFFF" /> <!-- 80 表示約 50% 透明度 -->
+
+    <!-- 白色邊框 -->
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFFF" />
+
+    <!-- 圓角半徑 -->
+    <corners android:radius="24dp" /> <!-- 增加圓角半徑至 24dp，使按鈕更圓潤 -->
+
+</shape>

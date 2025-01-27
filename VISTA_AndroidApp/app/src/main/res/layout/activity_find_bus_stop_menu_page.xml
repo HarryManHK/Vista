@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,8 +22,9 @@
         android:gravity="center"/>
 
     <!-- Image to Text Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFindBusStopMenuPageEditDestination"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="357dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -31,8 +33,9 @@
         android:textSize="22sp" />
 
     <!-- Find Bus Stop Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFindBusStopMenuPageShowArriveTIme"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="361dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -40,8 +43,9 @@
         android:text="@string/FindBusStopMenuPage_ShowArriveTIme"
         android:textSize="22sp" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFindBusStopMenuPageStartDetectBusStop"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="354dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -49,8 +53,9 @@
         android:text="@string/FindBusStopMenuPage_StartDetectBusStop"
         android:textSize="22sp" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFindBusStopMenuPageBusArrivalAlert"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="355dp"
         android:layout_height="63dp"
         android:layout_marginTop="16dp"
@@ -68,8 +73,9 @@
         android:weightSum="2">
 
         <!-- Confirm Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFindBusStopMenuPageConfirm"
+            style="@style/SemiTransparentRoundedButton"
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"
@@ -78,8 +84,9 @@
             android:textStyle="bold" />
 
         <!-- Next Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFindBusStopMenuPageNext"
+            style="@style/SemiTransparentRoundedButton"
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"
@@ -87,5 +94,4 @@
             android:textSize="22sp"
             android:textStyle="bold" />
     </LinearLayout>
-
 </LinearLayout>

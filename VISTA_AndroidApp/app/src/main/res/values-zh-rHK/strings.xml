@@ -7,7 +7,7 @@
     <string name="MainMenuPageActivity_title">主頁面</string>
     <string name="MainMenuPageActivity_ImageToText">圖片生成文字</string>
     <string name="MainMenuPageActivity_Setting">設定</string>
-    <string name="MainMenuPageActivity_FindBusStop">找巴士站</string>
+    <string name="MainMenuPageActivity_FindBusStop">搭巴士</string>
 
     <string name="SettingActivity_LanguageSetting">語言設定</string>
     <string name="SettingActivity_VoiceSetting">語音設定</string>
@@ -22,15 +22,15 @@
     <string name="imageToTextMenu_RealTimeDetect">實時偵測</string>
     <string name="imageToTextMenu_TakePhotoDetect">拍照檢測</string>
 
-    <string name="FindBusEditMen_EditRoute">修改路綫</string>
-    <string name="FindBusEditMen_EditOutboundDirection">修改開住的方向</string>
-    <string name="FindBusEditMen_EditStartPoint">修改起點</string>
-    <string name="FindBusEditMen_EditDestination">修改終點</string>
+    <string name="FindBusEditMen_EditRoute">設定路綫</string>
+    <string name="FindBusEditMen_EditOutboundDirection">設定開住的方向</string>
+    <string name="FindBusEditMen_EditStartPoint">設定起點</string>
+    <string name="FindBusEditMen_EditDestination">設定終點</string>
 
     <string name="EditRouteActivity_title">修改巴士路線</string>
     <string name="EditRouteActivity_input">輸入巴士路線</string>
 
-    <string name="EditOutboundDirectionActivity_title">選擇巴士出站方向</string>
+    <string name="EditOutboundDirectionActivity_title">選擇開往方向</string>
 
     <string name="EditStartPointActivity_title">選擇起點巴士站</string>
 

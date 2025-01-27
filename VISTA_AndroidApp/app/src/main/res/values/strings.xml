@@ -8,7 +8,7 @@
     <string name="MainMenuPageActivity_title">Main Menu</string>
     <string name="MainMenuPageActivity_ImageToText">Image To Text</string>
     <string name="MainMenuPageActivity_Setting">Setting</string>
-    <string name="MainMenuPageActivity_FindBusStop">Find Bus Stop</string>
+    <string name="MainMenuPageActivity_FindBusStop">Bus Function</string>
 
     <string name="SettingActivity_Setting">Setting</string>
     <string name="SettingActivity_LanguageSetting">Language Setting</string>
@@ -23,10 +23,10 @@
     <string name="imageToTextMenu_RealTimeDetect">Real Time Detect</string>
     <string name="imageToTextMenu_TakePhotoDetect">Take Photo Detect</string>
 
-    <string name="FindBusEditMen_EditRoute">Edit Route</string>
-    <string name="FindBusEditMen_EditOutboundDirection">Edit Outbound Direction</string>
-    <string name="FindBusEditMen_EditStartPoint">Edit Start Point</string>
-    <string name="FindBusEditMen_EditDestination">Edit Destination</string>
+    <string name="FindBusEditMen_EditRoute">Setting Route</string>
+    <string name="FindBusEditMen_EditOutboundDirection">Setting Direction</string>
+    <string name="FindBusEditMen_EditStartPoint">Setting Start Point</string>
+    <string name="FindBusEditMen_EditDestination">Setting Destination</string>
 
     <string name="EditRouteActivity_title">Edit Bus Route</string>
     <string name="EditRouteActivity_input">Enter Bus Route</string>

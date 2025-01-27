@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,11 +18,13 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/VoiceSettingPage_title"
+        android:textColor="@color/white"
         android:textSize="50sp"
         android:textStyle="bold" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLanSetting"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="357dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -29,9 +32,9 @@
         android:text="@string/VoiceSettingPage_VoiceLanguageSetting"
         android:textSize="22sp" />
 
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnVoiceSpeedSetting"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="361dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -39,9 +42,9 @@
         android:text="@string/VoiceSettingPage_VoiceSpeedSetting"
         android:textSize="22sp" />
 
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGender"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="357dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -49,8 +52,10 @@
         android:text="@string/VoiceSettingPage_VoiceGenderSetting"
         android:textSize="22sp" />
 
-    <Button
+    <!-- Empty button preserved as requested -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button5"
+        style="@style/SemiTransparentRoundedButton"
         android:layout_width="361dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -66,9 +71,9 @@
         android:layout_marginTop="16dp"
         android:weightSum="2">
 
-        <!-- Confirm Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditRouteActivityConfirm"
+            style="@style/SemiTransparentRoundedButton"
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"
@@ -76,9 +81,9 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Next Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditRouteActivityNext"
+            style="@style/SemiTransparentRoundedButton"
             android:layout_width="0dp"
             android:layout_height="83dp"
             android:layout_weight="1"

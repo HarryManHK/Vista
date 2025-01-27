@@ -54,4 +54,9 @@ dependencies {
 
     // Map
     implementation ("org.osmdroid:osmdroid-android:6.1.0")
+
+    //UI library
+    implementation("com.google.android.material:material:1.9.0")
+
+    implementation ("androidx.cardview:cardview:1.0.0")
 }

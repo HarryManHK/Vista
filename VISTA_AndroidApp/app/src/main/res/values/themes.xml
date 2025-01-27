@@ -1,9 +1,10 @@
+<!-- res/values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.VISTA" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Theme.VISTA" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- 主顏色設置，根據需要調整 -->
+        <item name="colorPrimary">@color/semi_transparent_white</item>
+        <item name="colorPrimaryVariant">@color/semi_transparent_white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- 其他主題屬性 -->
     </style>
-
-    <style name="Theme.VISTA" parent="Base.Theme.VISTA" />
 </resources>

@@ -271,6 +271,46 @@ public class SettingDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Retrieve Voice Language Setting
+     *
+     * @return The current voice language as a String. Returns "en" as default if not found.
+     */
+    public String getColumnVoiceLanguage() {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        String voiceLanguage = "en"; // 預設語言
+
+        try {
+            db = this.getReadableDatabase();
+
+            cursor = db.query(
+                    TABLE_VOICE_SETTING,                      // 表名
+                    new String[]{COLUMN_VOICE_LANGUAGE},       // 要查詢的列
+                    COLUMN_VOICE_ID + " = ?",                  // WHERE 子句
+                    new String[]{"1"},                         // WHERE 子句的參數
+                    null,                                      // GROUP BY
+                    null,                                      // HAVING
+                    null                                       // ORDER BY
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                voiceLanguage = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_VOICE_LANGUAGE));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving voice language", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            if (db != null) {
+                db.close();
+            }
+        }
+
+        return voiceLanguage;
+    }
+
+    /**
      * Set Voice Gender
      *
      * @param gender The desired voice gender (e.g., "male", "female")

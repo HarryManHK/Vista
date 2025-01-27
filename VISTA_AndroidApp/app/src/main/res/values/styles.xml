@@ -1,0 +1,10 @@
+<resources>
+    <style name="SemiTransparentRoundedButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="background">@drawable/button_selector</item> <!-- 使用 selector drawable -->
+        <item name="cornerRadius">24dp</item>
+        <item name="strokeColor">#FFFFFF</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="backgroundTint">#20FFFFFF</item> <!-- 移除默認的背景 tint -->
+    </style>
+</resources>
