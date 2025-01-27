@@ -17,15 +17,9 @@ import com.example.vista.TextToSpeech.CustomTextToSpeech;
 public class VoiceSettingPage extends AppCompatActivity {
 
     private TextView textViewSetting;
-    private Button btnLanSetting, btnVoiceSpeedSetting,btnGender;
-    private Button btnConfirm, btnNext;
-
-    // Array of setting buttons for cycling
-    private Button[] settingButtons;
-    private int currentSelection = 0; // Start with the first setting
+    private Button btnLanSetting, btnVoiceSpeedSetting, btnGender;
 
     private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +39,6 @@ public class VoiceSettingPage extends AppCompatActivity {
         btnLanSetting = findViewById(R.id.btnLanSetting);
         btnVoiceSpeedSetting = findViewById(R.id.btnVoiceSpeedSetting);
         btnGender = findViewById(R.id.btnGender);
-        btnConfirm = findViewById(R.id.btnEditRouteActivityConfirm);
-        btnNext = findViewById(R.id.btnEditRouteActivityNext);
-
-        // Initialize setting buttons array
-        settingButtons = new Button[]{btnLanSetting, btnVoiceSpeedSetting,btnGender};
-
-        // Highlight the initial selection
-        highlightSelection();
 
         // Set up button click listeners
         btnLanSetting.setOnClickListener(new View.OnClickListener() {
@@ -75,20 +61,6 @@ public class VoiceSettingPage extends AppCompatActivity {
                 navigateToGenderSetting();
             }
         });
-
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cycleToNextSetting();
-            }
-        });
-
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                confirmSelection();
-            }
-        });
     }
 
     // Navigate to LanguageSettingPage
@@ -103,7 +75,7 @@ public class VoiceSettingPage extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // Navigate to VoiceSettingPage
+    // Navigate to VoiceSpeedSettingPage
     private void navigateToSpeedSetting() {
 
         // Announce button label
@@ -124,55 +96,10 @@ public class VoiceSettingPage extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // Cycle to the next setting option
-    private void cycleToNextSetting() {
-        // Remove highlight from current selection
-        settingButtons[currentSelection].setBackgroundColor(getResources().getColor(android.R.color.transparent));
-
-        // Move to next selection
-        currentSelection = (currentSelection + 1) % settingButtons.length;
-
-        // Highlight the new selection
-        highlightSelection();
-    }
-
     private void announceButtonLabel(String[] label) {
         // Announce the label based on the selected language
         customTextToSpeech.speak(label);
     }
-
-    // Confirm the current selection and navigate accordingly
-    private void confirmSelection() {
-        switch (currentSelection) {
-            case 0:
-                navigateToLanguageSetting();
-                break;
-            case 1:
-                navigateToSpeedSetting();
-                break;
-            case 2:
-                navigateToGenderSetting();
-                break;
-            default:
-                // Handle unexpected cases
-                break;
-        }
-    }
-
-    // Highlight the currently selected setting
-    private void highlightSelection() {
-        for (int i = 0; i < settingButtons.length; i++) {
-            if (i == currentSelection) {
-                // Highlight selected button (e.g., change background color)
-                settingButtons[i].setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
-            } else {
-                // Reset background color for other buttons
-                settingButtons[i].setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-            }
-        }
-    }
-
-
 
     @Override
     protected void onRestart() {
@@ -180,5 +107,3 @@ public class VoiceSettingPage extends AppCompatActivity {
         recreate();
     }
 }
-
-

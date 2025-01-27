@@ -86,7 +86,7 @@ public class ShowArriveTimePage extends Activity {
 
         // Prepare ListView adapter
         etaList = new ArrayList<>();
-        etaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, etaList);
+        etaAdapter = new ArrayAdapter<>(this, R.layout.list_item_white_text, etaList);
         lvShowArriveTimePage.setAdapter(etaAdapter);
 
         // Get DB instance

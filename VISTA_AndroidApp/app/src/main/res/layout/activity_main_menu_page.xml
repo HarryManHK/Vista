@@ -1,4 +1,3 @@
-<!-- res/layout/activity_main_menu_page.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
@@ -7,13 +6,12 @@
     android:background="@drawable/background"
     android:gravity="center"
     android:orientation="vertical"
-
     android:weightSum="5">
 
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="175dp"
-        android:layout_height="179dp"
+        android:layout_height="73dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:src="@drawable/vista_logo" />
@@ -21,7 +19,7 @@
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="4dp"
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:gravity="center"
@@ -30,80 +28,60 @@
         android:textSize="32sp"
         android:textStyle="bold" />
 
-    <!-- 使用 MaterialButton 並引用自定義樣式 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnMainMenuImgToTxt"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="357dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/MainMenuPageActivity_ImageToText"
-        android:textSize="22sp" />
-
-    <!-- Find Bus Stop Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button5"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="361dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/MainMenuPageActivity_FindBusStop"
-        android:textSize="22sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnMainMenuSetting"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="354dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/MainMenuPageActivity_Setting"
-        android:textSize="22sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnMainMenuImgToTxt3"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="355dp"
-        android:layout_height="63dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:contentDescription=""
-        android:text=""
-        android:textSize="22sp" />
-
-    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
+    <!-- Buttons Container (to group buttons with equal height) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="2">
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:weightSum="4">
 
-        <!-- Confirm Button -->
+        <!-- Image to Text Button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMainMenuConfirm"
+            android:id="@+id/btnMainMenuImgToTxt"
             style="@style/SemiTransparentRoundedButton"
-            android:layout_width="0dp"
-            android:layout_height="83dp"
+            android:layout_width="357dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:layout_marginRight="10dp"
-            android:text="@string/btn_Confirm"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:text="@string/MainMenuPageActivity_ImageToText"
+            android:textSize="22sp" />
 
-        <!-- Next Button -->
+        <!-- Find Bus Stop Button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMainMenuNext"
+            android:id="@+id/button5"
             style="@style/SemiTransparentRoundedButton"
-            android:layout_width="0dp"
-            android:layout_height="83dp"
+            android:layout_width="361dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:text="@string/btn_next"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:text="@string/MainMenuPageActivity_FindBusStop"
+            android:textSize="22sp" />
+
+        <!-- Setting Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainMenuSetting"
+            style="@style/SemiTransparentRoundedButton"
+            android:layout_width="354dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:text="@string/MainMenuPageActivity_Setting"
+            android:textSize="22sp" />
+
+        <!-- Empty Button (Placeholder) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainMenuImgToTxt3"
+            style="@style/SemiTransparentRoundedButton"
+            android:layout_width="355dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:contentDescription=""
+            android:text=""
+            android:textSize="22sp" />
     </LinearLayout>
 
 </LinearLayout>

@@ -19,13 +19,15 @@
         android:gravity="center"
         android:textColor="@color/white"/>
 
+    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <ListView
         android:id="@+id/lvVoiceLanguageSetting"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:background="@drawable/list_item_border"
+        android:divider="@drawable/custom_divider"/>
 
-    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

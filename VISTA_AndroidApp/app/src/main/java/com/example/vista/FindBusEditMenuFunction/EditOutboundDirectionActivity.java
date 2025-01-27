@@ -228,7 +228,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
 
                 // Set the adapter for the ListView
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,
-                        android.R.layout.simple_list_item_1, listItems);
+                        R.layout.list_item_white_text, listItems);
                 lvShowRouteOutbound.setAdapter(adapter);
             } catch (Exception e) {
                 Log.e("EditOutboundDirection", "onPostExecute Error: " + e.toString());

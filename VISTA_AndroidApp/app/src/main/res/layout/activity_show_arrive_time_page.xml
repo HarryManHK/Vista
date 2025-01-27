@@ -32,7 +32,9 @@
         android:id="@+id/lvShowArriveTimePage"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:background="@drawable/list_item_border"
+        android:divider="@drawable/custom_divider"/>
 
     <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout

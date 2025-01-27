@@ -1,4 +1,3 @@
-// MainMenuPage.java
 package com.example.vista;
 
 import android.content.Context;
@@ -17,10 +16,7 @@ import com.google.android.material.button.MaterialButton;
 public class MainMenuPage extends AppCompatActivity {
 
     private TextView txtTitle;
-    private MaterialButton btnImageToText, btnFindBusStop, btnConfirm, btnNext, btnSetting;
-    private MaterialButton[] buttons;  // Array to hold all buttons for cycling through them
-    private int selectedButtonIndex = 0;  // Index to keep track of the selected button
-
+    private MaterialButton btnImageToText, btnFindBusStop, btnSetting;
     private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
     private SettingDatabaseHelper dbHelper; // Database helper instance
 
@@ -55,14 +51,6 @@ public class MainMenuPage extends AppCompatActivity {
         btnImageToText = findViewById(R.id.btnMainMenuImgToTxt);
         btnFindBusStop = findViewById(R.id.button5);
         btnSetting = findViewById(R.id.btnMainMenuSetting);
-        btnConfirm = findViewById(R.id.btnMainMenuConfirm);
-        btnNext = findViewById(R.id.btnMainMenuNext);
-
-        // Add all buttons to an array for easy cycling
-        buttons = new MaterialButton[]{btnImageToText, btnFindBusStop, btnSetting};
-
-        // Initial setup: Make the first button selected
-        updateButtonColor();
 
         // Initialize CustomTextToSpeech
         customTextToSpeech = new CustomTextToSpeech(MainMenuPage.this);
@@ -71,7 +59,6 @@ public class MainMenuPage extends AppCompatActivity {
         btnImageToText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 // Announce button label
                 String[] buttonLabel = {"You will go to Image To Text page.", "你將進入圖片轉文字頁面。"};
                 announceButtonLabel(buttonLabel);
@@ -86,7 +73,6 @@ public class MainMenuPage extends AppCompatActivity {
         btnFindBusStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 // Announce button label
                 String[] buttonLabel = {"You will go to Find Bus Stop page.", "你將進入查找巴士站頁面。"};
                 announceButtonLabel(buttonLabel);
@@ -101,7 +87,6 @@ public class MainMenuPage extends AppCompatActivity {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 // Announce button label
                 String[] buttonLabel = {"You will go to Setting page.", "你將進入設置頁面。"};
                 announceButtonLabel(buttonLabel);
@@ -111,91 +96,6 @@ public class MainMenuPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        // Set onClickListener for "Next" button
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Change the selected button index (cycle through buttons)
-                selectedButtonIndex = (selectedButtonIndex + 1) % buttons.length;
-
-                // Update the button color (selected state)
-                updateButtonColor();
-
-                // Announce the new selected button label
-                String[] buttonLabel = {
-                        buttons[selectedButtonIndex].getText().toString(),
-                        buttons[selectedButtonIndex].getText().toString()
-                };
-                announceButtonLabel(buttonLabel);
-            }
-        });
-
-        // Set onClickListener for "Confirm" button
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Get the currently selected button and simulate a click
-                MaterialButton selectedButton = buttons[selectedButtonIndex];
-
-                // Announce the page that the user will go to
-                String[] buttonLabel = new String[2];
-                if (selectedButton == btnImageToText) {
-                    buttonLabel[0] = "You will go to Image To Text page.";
-                    buttonLabel[1] = "你將進入圖片轉文字頁面。";
-                } else if (selectedButton == btnFindBusStop) {
-                    buttonLabel[0] = "You will go to Find Bus Stop page.";
-                    buttonLabel[1] = "你將進入查找巴士站頁面。";
-                } else if (selectedButton == btnSetting) {
-                    buttonLabel[0] = "You will go to Setting page.";
-                    buttonLabel[1] = "你將進入設置頁面。";
-                }
-
-                announceButtonLabel(buttonLabel);
-
-                // Simulate the button click action
-                simulateButtonClick(selectedButton);
-            }
-        });
-    }
-
-    // Function to change the color of the buttons using selected state
-    private void updateButtonColor() {
-        for (int i = 0; i < buttons.length; i++) {
-            MaterialButton button = buttons[i];
-            if (i == selectedButtonIndex) {
-                button.setSelected(true);
-            } else {
-                button.setSelected(false);
-            }
-        }
-    }
-
-    // Function to simulate button click
-    private void simulateButtonClick(MaterialButton selectedButton) {
-        // For demonstration, we'll use a Toast to simulate the click action.
-        // You can replace this with the actual logic you want to trigger.
-        if (selectedButton == btnImageToText) {
-            // Navigate to the ImageToTextMenu activity or perform any action
-            Toast.makeText(MainMenuPage.this, "Image To Text clicked!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MainMenuPage.this, ImageToTextMenu.class);
-            startActivity(intent);
-        } else if (selectedButton == btnFindBusStop) {
-            // Perform action for Find Bus Stop button
-            Toast.makeText(MainMenuPage.this, "Find Bus Stop clicked!", Toast.LENGTH_SHORT).show();
-            // Create an Intent to start the FindBusStopMenuPage activity
-            Intent intent = new Intent(MainMenuPage.this, FindBusStopMenuPage.class);
-            startActivity(intent);
-
-        } else if (selectedButton == btnSetting) {
-            // Perform action for Setting button
-            Toast.makeText(MainMenuPage.this, "Setting clicked!", Toast.LENGTH_SHORT).show();
-            // Create an Intent to start the SettingPage activity
-            Intent intent = new Intent(MainMenuPage.this, SettingPage.class);
-            startActivity(intent);
-        }
     }
 
     // Function to announce the button label using TextToSpeech
@@ -222,7 +122,5 @@ public class MainMenuPage extends AppCompatActivity {
         btnSetting.setText(getString(R.string.MainMenuPageActivity_Setting));
         btnImageToText.setText(getString(R.string.MainMenuPageActivity_ImageToText));
         btnFindBusStop.setText(getString(R.string.MainMenuPageActivity_FindBusStop));
-        btnConfirm.setText(getString(R.string.btn_Confirm));
-        btnNext.setText(getString(R.string.btn_next));
     }
 }

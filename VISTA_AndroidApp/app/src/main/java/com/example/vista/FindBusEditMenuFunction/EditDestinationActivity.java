@@ -269,7 +269,7 @@ public class EditDestinationActivity extends AppCompatActivity {
 
             // Set the adapter for the ListView
             adapter = new ArrayAdapter<>(EditDestinationActivity.this,
-                    android.R.layout.simple_list_item_1, stopNames);
+                    R.layout.list_item_white_text, stopNames);
             lvShowAllStop.setAdapter(adapter);
 
             Log.d(TAG, "DownloadTask: Bus stops loaded successfully");

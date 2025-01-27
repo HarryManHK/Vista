@@ -42,7 +42,7 @@ public class VoiceLanguageSetting extends AppCompatActivity {
         // Populate the ListView using an ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_list_item_1,
+                R.layout.list_item_white_text,
                 languages
         );
         lvVoiceLanguageSetting.setAdapter(adapter);

@@ -87,7 +87,7 @@ public class LanguageSettingPage extends AppCompatActivity {
         // Set up the adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_list_item_single_choice,
+                R.layout.list_item_white_text,
                 languages
         );
 
