@@ -37,6 +37,16 @@ import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 
 public class BusArrivalAlertPage extends AppCompatActivity {
 
@@ -53,6 +63,7 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     private TextView currentLocationTextView;
     private LocationRequest locationRequest;
     private static final int LOCATION_REQUEST_CODE = 100;
+    private MyLocationNewOverlay mLocationOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +121,27 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             return insets;
         });
 
+        // Show My Location New Overlay --> onLocationResult()
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
+        mLocationOverlay.enableMyLocation();
+        mLocationOverlay.setOptionsMenuEnabled(true);
+        mLocationOverlay.setDrawAccuracyEnabled(true);
+
+// Custom GPS icon with proper bitmap conversion
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_gps_fixed);
+        if (drawable instanceof BitmapDrawable) {
+            mLocationOverlay.setPersonIcon(((BitmapDrawable) drawable).getBitmap());
+        } else {
+            Bitmap bitmap = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            mLocationOverlay.setPersonIcon(bitmap);
+        }
+
+        mapView.getOverlays().add(mLocationOverlay);
+
+
         // Set up button listeners
         btnFindBusEditConfirm.setOnClickListener(view -> {
             // Handle Confirm Button click
@@ -136,16 +168,32 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     private com.google.android.gms.location.LocationCallback locationCallback = new com.google.android.gms.location.LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            if (locationResult != null && locationResult.getLocations().size() > 0) {
-                // Get the most recent location
+            if (locationResult != null && !locationResult.getLocations().isEmpty()) {
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
 
-                    // Update the TextView with the current location
-                    double distance = calculateDistance(latitude, longitude, Double.valueOf(DESTINATION_LAT), Double.valueOf(DESTINATION_LONG));
-                    currentLocationTextView.setText("Current Location: \n" + latitude + ", \n" + longitude + "\n" + distance + "KM");
+                    // Convert to a new Location for OSMDroid
+                    Location osmdroidLocation = new Location("fused"); // provider name is arbitrary
+                    osmdroidLocation.setLatitude(latitude);
+                    osmdroidLocation.setLongitude(longitude);
+
+                    // Update MyLocationNewOverlay
+                    // Passing "null" is usually fine unless you have a custom IMyLocationProvider
+                    mLocationOverlay.onLocationChanged(osmdroidLocation, null);
+
+                    // Optionally move the map center
+                    mapView.getController().animateTo(new GeoPoint(latitude, longitude));
+                    mapView.invalidate();
+
+                    // Example: show distance to destination
+                    double distance = calculateDistance(latitude, longitude,
+                            Double.parseDouble(DESTINATION_LAT), Double.parseDouble(DESTINATION_LONG));
+                    String locationText = String.format(Locale.getDefault(),
+                            "Current Location:\n%.6f, %.6f\nStraight-line Distance to end point:\n%.2f km",
+                            latitude, longitude, distance);
+                    currentLocationTextView.setText(locationText);
                 }
             }
         }
@@ -237,15 +285,19 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback); // Stop location updates to save battery
+    protected void onResume() {
+        super.onResume();
+        // Enable location overlay
+        mLocationOverlay.enableMyLocation();
+        mLocationOverlay.enableFollowLocation();  // Optional: follow user's movement
+        mapView.getController().setZoom(18);  // Set appropriate zoom level
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        // Start location updates when the activity is resumed
-        getCurrentLocation();
+    protected void onPause() {
+        super.onPause();
+        // Disable location overlay to save battery
+        mLocationOverlay.disableMyLocation();
+        mLocationOverlay.disableFollowLocation();
     }
 }
