@@ -1,16 +1,19 @@
 package com.example.vista.FindBusEditMenuFunction;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.view.SoundEffectConstants;
 
+import com.example.vista.BusStopListViewAdapter;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
@@ -29,6 +32,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EditDestinationActivity: Allows users to select a destination bus stop for a bus route.
@@ -90,11 +94,7 @@ public class EditDestinationActivity extends AppCompatActivity {
         // Set up the "Next" button
         Button btnNext = findViewById(R.id.btnEditDestinationActivityNext);
         btnNext.setOnClickListener(v -> {
-            // Navigate to the next activity, e.g., SummaryActivity or any other desired activity
-            // Intent intent = new Intent(EditDestinationActivity.this, SummaryActivity.class);
-            // startActivity(intent);
-            // finish(); // Optional: finish current activity
-            Toast.makeText(this, "Next button clicked. Implement navigation as needed.", Toast.LENGTH_SHORT).show();
+            selectNextItem();
         });
 
         // Start the DownloadTask to fetch bus stops
@@ -116,51 +116,45 @@ public class EditDestinationActivity extends AppCompatActivity {
      * @param view     The view of the item clicked.
      */
     private void selectItem(int position, View view) {
-        // Reset the background of the previously selected item
-        if (selectedPosition != -1) {
-            View prevView = lvShowAllStop.getChildAt(selectedPosition);
-            if (prevView != null) {
-                prevView.setBackgroundColor(getResources().getColor(android.R.color.transparent)); // reset to transparent
-            }
-        }
-
-        // Set the background of the currently selected item
-        view.setBackgroundColor(getResources().getColor(android.R.color.darker_gray)); // selected color
-        selectedPosition = position; // Update selected position
-
-        // Play click sound
+        selectedPosition = position;
+        ((BusStopListViewAdapter) adapter).setSelectedPosition(position);
         view.playSoundEffect(SoundEffectConstants.CLICK);
     }
+
 
     /**
      * Selects the next item in the ListView. Cycles back to the first item if at the end.
      */
     private void selectNextItem() {
-        if (busStops == null || busStops.size() == 0) {
+        if (busStops == null || busStops.isEmpty()) {
             Toast.makeText(this, "No items to select", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int nextPosition;
-        if (selectedPosition == -1) {
-            nextPosition = 0; // Select first item if none selected
-        } else {
-            nextPosition = (selectedPosition + 1) % busStops.size(); // Cycle to next item
-        }
+        // Calculate next position
+        int nextPosition = (selectedPosition == -1)
+                ? 0
+                : (selectedPosition + 1) % busStops.size();
 
-        // Get the view for the next position
-        View nextView = lvShowAllStop.getChildAt(nextPosition);
-        if (nextView != null) {
-            selectItem(nextPosition, nextView);
-            lvShowAllStop.setSelection(nextPosition); // Scroll to the selected item if needed
-        } else {
-            // If the view is not visible, set the selection and let the user click to see it
-            lvShowAllStop.setSelection(nextPosition);
-            selectedPosition = nextPosition;
-            // Optionally, you can notify the user to manually select
-            Toast.makeText(this, "Please select the highlighted item", Toast.LENGTH_SHORT).show();
+        // Update selection
+        ((BusStopListViewAdapter) adapter).setSelectedPosition(nextPosition);
+        selectedPosition = nextPosition;
+
+        // Scroll to position
+        lvShowAllStop.smoothScrollToPosition(nextPosition);
+
+        // Play sound if visible
+        int firstVisible = lvShowAllStop.getFirstVisiblePosition();
+        int lastVisible = lvShowAllStop.getLastVisiblePosition();
+
+        if (nextPosition >= firstVisible && nextPosition <= lastVisible) {
+            View visibleItem = lvShowAllStop.getChildAt(nextPosition - firstVisible);
+            if (visibleItem != null) {
+                visibleItem.playSoundEffect(SoundEffectConstants.CLICK);
+            }
         }
     }
+
 
     /**
      * AsyncTask to download bus stops data from the API.
@@ -268,7 +262,7 @@ public class EditDestinationActivity extends AppCompatActivity {
             }
 
             // Set the adapter for the ListView
-            adapter = new ArrayAdapter<>(EditDestinationActivity.this,
+            adapter = new BusStopListViewAdapter(EditDestinationActivity.this,
                     R.layout.list_item_white_text, stopNames);
             lvShowAllStop.setAdapter(adapter);
 

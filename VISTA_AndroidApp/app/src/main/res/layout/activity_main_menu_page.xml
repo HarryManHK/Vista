@@ -37,17 +37,6 @@
         android:gravity="center"
         android:weightSum="4">
 
-        <!-- Image to Text Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMainMenuImgToTxt"
-            style="@style/SemiTransparentRoundedButton"
-            android:layout_width="357dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            android:text="@string/MainMenuPageActivity_ImageToText"
-            android:textSize="22sp" />
-
         <!-- Find Bus Stop Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button5"
@@ -57,6 +46,17 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:text="@string/MainMenuPageActivity_FindBusStop"
+            android:textSize="22sp" />
+
+        <!-- Image to Text Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainMenuImgToTxt"
+            style="@style/SemiTransparentRoundedButton"
+            android:layout_width="357dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:text="@string/MainMenuPageActivity_ImageToText"
             android:textSize="22sp" />
 
         <!-- Setting Button -->

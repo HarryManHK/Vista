@@ -49,5 +49,7 @@
     <string name="VoiceSettingPage_VoiceSpeedSetting">Voice Speed Setting</string>
     <string name="VoiceSettingPage_VoiceGenderSetting">Voice Gender Setting</string>
 
+    <string name="EditRoute_openKeyboard">Open Keyboard</string>
+
 
 </resources>
