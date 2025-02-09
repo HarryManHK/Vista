@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 聊天訊息列表 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"/>
+
+    <!-- 用戶輸入框 -->
+    <EditText
+        android:id="@+id/messageInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Type a message"
+        android:padding="8dp"/>
+
+    <!-- 送出訊息按鈕 -->
+
+    <!-- 加載中的進度條 -->
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:padding="8dp"
+        android:text="Send" />
+</LinearLayout>

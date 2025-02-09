@@ -72,7 +72,7 @@
 
         <!-- Empty Button (Placeholder) -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMainMenuImgToTxt3"
+            android:id="@+id/btnMainMenuChatbot"
             style="@style/SemiTransparentRoundedButton"
             android:layout_width="355dp"
             android:layout_height="0dp"
@@ -80,7 +80,7 @@
             android:layout_marginBottom="16dp"
             android:layout_weight="1"
             android:contentDescription=""
-            android:text=""
+            android:text="Chat Bot"
             android:textSize="22sp" />
     </LinearLayout>
 

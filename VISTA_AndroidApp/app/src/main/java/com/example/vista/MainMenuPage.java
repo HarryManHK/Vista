@@ -13,10 +13,11 @@ import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
 import com.google.android.material.button.MaterialButton;
 
+import com.example.vista.ChatBot.*;
 public class MainMenuPage extends AppCompatActivity {
 
     private TextView txtTitle;
-    private MaterialButton btnImageToText, btnFindBusStop, btnSetting;
+    private MaterialButton btnImageToText, btnFindBusStop, btnSetting,btnChatbot;
     private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
     private SettingDatabaseHelper dbHelper; // Database helper instance
 
@@ -51,6 +52,7 @@ public class MainMenuPage extends AppCompatActivity {
         btnImageToText = findViewById(R.id.btnMainMenuImgToTxt);
         btnFindBusStop = findViewById(R.id.button5);
         btnSetting = findViewById(R.id.btnMainMenuSetting);
+        btnChatbot = findViewById(R.id.btnMainMenuChatbot);
 
         // Initialize CustomTextToSpeech
         customTextToSpeech = new CustomTextToSpeech(MainMenuPage.this);
@@ -93,6 +95,20 @@ public class MainMenuPage extends AppCompatActivity {
 
                 // Create an Intent to start the SettingPage activity
                 Intent intent = new Intent(MainMenuPage.this, SettingPage.class);
+                startActivity(intent);
+            }
+        });
+
+        //Chatbot page
+        btnChatbot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Announce button label
+                String[] buttonLabel = {"You will go to ChatBot page.", "你將進入ChatBot頁面。"};
+                announceButtonLabel(buttonLabel);
+
+                // Create an Intent to start the SettingPage activity
+                Intent intent = new Intent(MainMenuPage.this, ChatBotPage.class);
                 startActivity(intent);
             }
         });
