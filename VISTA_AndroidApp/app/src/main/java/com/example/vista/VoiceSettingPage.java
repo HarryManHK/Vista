@@ -12,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 public class VoiceSettingPage extends AppCompatActivity {
@@ -20,6 +21,11 @@ public class VoiceSettingPage extends AppCompatActivity {
     private Button btnLanSetting, btnVoiceSpeedSetting, btnGender;
 
     private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
+
+    // Retrieve language setting (from database)
+    private String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
+    private String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +105,23 @@ public class VoiceSettingPage extends AppCompatActivity {
     private void announceButtonLabel(String[] label) {
         // Announce the label based on the selected language
         customTextToSpeech.speak(label);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (languageCode.equals("en")){
+            textViewSetting.setText("Voice Setting");
+            btnLanSetting.setText("Voice Language Setting");
+            btnVoiceSpeedSetting.setText("Voice Speed Setting");
+            btnGender.setText("Voice Gender Setting");
+        }else if(languageCode.equals("zh")){
+            textViewSetting.setText("語音設定");
+            btnLanSetting.setText("語音語言設定");
+            btnVoiceSpeedSetting.setText("語音速度設定");
+            btnGender.setText("配音性別設定");
+        }
     }
 
     @Override

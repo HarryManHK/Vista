@@ -12,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 public class SettingPage extends AppCompatActivity {
@@ -19,6 +20,10 @@ public class SettingPage extends AppCompatActivity {
     private TextView textViewSetting;
     private Button btnLanSetting, btnVoiceSetting;
     private CustomTextToSpeech customTextToSpeech;
+
+    // Retrieve language setting (from database)
+    private String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
+    private String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
 
     String[] buttonLabel = new String[2];
 
@@ -72,11 +77,33 @@ public class SettingPage extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (languageCode.equals("en")){
+            textViewSetting.setText("Setting");
+            btnLanSetting.setText("Language Setting");
+            btnVoiceSetting.setText("Voice Setting");
+        }else if(languageCode.equals("zh")){
+            textViewSetting.setText("設定");
+            btnLanSetting.setText("語言設定");
+            btnVoiceSetting.setText("語音設定");
+        }
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
         recreate();
-        textViewSetting.setText(getString(R.string.SettingActivity_Setting));
-        btnLanSetting.setText(getString(R.string.SettingActivity_LanguageSetting));
-        btnVoiceSetting.setText(getString(R.string.SettingActivity_VoiceSetting));
+
+        if (languageCode.equals("en")){
+            textViewSetting.setText("Setting");
+            btnLanSetting.setText("Language Setting");
+            btnVoiceSetting.setText("Voice Setting");
+        }else if(languageCode.equals("zh")){
+            textViewSetting.setText("設定");
+            btnLanSetting.setText("語言設定");
+            btnVoiceSetting.setText("語音設定");
+        }
     }
 }
