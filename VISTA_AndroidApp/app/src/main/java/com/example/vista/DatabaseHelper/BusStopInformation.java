@@ -75,8 +75,8 @@ public class BusStopInformation extends SQLiteOpenHelper {
             // If you add columns or make structural changes, handle them here.
             // For now, we’ll just ensure the table exists.
             if (oldVersion < 3) {
-                // Example: Add missing columns in older versions, etc.
-                // db.execSQL("ALTER TABLE " + TABLE_BUS_STOP + " ADD COLUMN ...");
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUS_STOP);
+                onCreate(db);
             }
             Log.d(TAG, "onUpgrade: Upgraded table from version " + oldVersion + " to " + newVersion);
         } catch (Exception e) {
