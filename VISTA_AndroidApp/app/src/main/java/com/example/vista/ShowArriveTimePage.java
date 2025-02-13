@@ -34,15 +34,16 @@ import okhttp3.Response;
 
 public class ShowArriveTimePage extends Activity {
 
-    private static final String TAG = "ShowArriveTimePage";
+    private static final String TAG = "ShowArriveTimePage_debug";
     // Refresh interval: 5 seconds
     private static final long REFRESH_INTERVAL_MS = 5_000;
 
     // UI references
     private TextView txtShowArriveTimePageCurrentBusStop;
+    private TextView txtshowArriveTimePage_title;
     private ListView lvShowArriveTimePage;
-    private Button btnShowArriveTimePageConfirm;
-    private Button btnShowArriveTimePageNext;
+//    private Button btnShowArriveTimePageConfirm;
+//    private Button btnShowArriveTimePageNext;
 
     // Data for ListView
     private ArrayList<String> etaList;
@@ -81,8 +82,9 @@ public class ShowArriveTimePage extends Activity {
         // Initialize UI
         txtShowArriveTimePageCurrentBusStop = findViewById(R.id.txtShowArriveTimePageCurrentBusStop);
         lvShowArriveTimePage = findViewById(R.id.lvShowArriveTimePage);
-        btnShowArriveTimePageConfirm = findViewById(R.id.btnShowArriveTimePageConfirm);
-        btnShowArriveTimePageNext = findViewById(R.id.btnShowArriveTimePageNext);
+        txtshowArriveTimePage_title = findViewById(R.id.txtshowArriveTimePage_title);
+//        btnShowArriveTimePageConfirm = findViewById(R.id.btnShowArriveTimePageConfirm);
+//        btnShowArriveTimePageNext = findViewById(R.id.btnShowArriveTimePageNext);
 
         // Prepare ListView adapter
         etaList = new ArrayList<>();
@@ -94,6 +96,13 @@ public class ShowArriveTimePage extends Activity {
 
         // Retrieve route, seq, bound from DB
         fetchRouteInfoFromDB();
+
+        // Unknows Bug show the language to Chinese, so I manual switch.
+        if (languageCode.equals("en")){
+            txtshowArriveTimePage_title.setText("Show Arrive Time");
+        }else if(languageCode.equals("zh")){
+            txtshowArriveTimePage_title.setText("顯示到站時間");
+        }
     }
 
     @Override
