@@ -38,7 +38,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
     private BusDatabaseHelper dbHelper;
     private SettingDatabaseHelper SettingDBHelper;
     private String BusRoute;
-    private String TAG = "EditOutboundDirectionActivity";
+    private String TAG = "EditOutboundDirectionActivity_debug";
     private int selectedPosition = -1; // Track the selected item in the ListView
     private String[] origMultiLan;
     private String[] destMultiLan;
@@ -73,11 +73,11 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
                     selectedOutbound_ZH = destMultiLan[1];
                     selectedOutbound = destMultiLan[0];
                 }else if(selectedPosition == 1){
-                    selectedOutbound_ZH = destMultiLan[1];
-                    selectedOutbound = destMultiLan[0];
+                    selectedOutbound_ZH = origMultiLan[1];
+                    selectedOutbound = origMultiLan[0];
                 }
 
-
+                Log.d(TAG,selectedPosition+", "+selectedOutbound_ZH +", "+selectedOutbound);
 
                 updateDatabase(selectedOutbound, selectedOutbound_ZH);
             } else {
