@@ -7,18 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".StartDetectBusStopPage"
     android:background="@drawable/background">
-    <!-- Camera preview will appear here -->
+
+    <!-- 攝像頭預覽 -->
     <SurfaceView
         android:id="@+id/cameraSurfaceView"
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="300dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Annotated image from server -->
+    <!-- 顯示檢測後的圖像 -->
     <ImageView
         android:id="@+id/detectedImageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="300dp"
         android:scaleType="fitCenter"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
