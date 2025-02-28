@@ -3,8 +3,10 @@ package com.example.vista;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -88,6 +90,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                 try {
                     Log.d(TAG, "Surface created, starting camera preview");
                     camera.setPreviewDisplay(holder);
+                    camera.setDisplayOrientation(90); // Rotate preview by 90 degrees
                     camera.startPreview();
                 } catch (Exception e) {
                     Log.e(TAG, "Error setting camera preview: " + e.getMessage());
@@ -178,11 +181,28 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private void sendImageToServer(byte[] data, int width, int height, int format) {
         try {
             Log.d(TAG, "Sending image to server");
+
+            // Convert YUV data to JPEG
             YuvImage yuvImage = new YuvImage(data, format, width, height, null);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, width, height), 80, byteArrayOutputStream);
             byte[] jpegData = byteArrayOutputStream.toByteArray();
-            String encodedImage = Base64.encodeToString(jpegData, Base64.DEFAULT);
+
+            // Decode JPEG to Bitmap
+            Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
+
+            // Rotate Bitmap by 90 degrees
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+            // Convert rotated Bitmap back to JPEG
+            ByteArrayOutputStream rotatedStream = new ByteArrayOutputStream();
+            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, rotatedStream);
+            byte[] rotatedJpegData = rotatedStream.toByteArray();
+
+            // Encode to Base64 and send
+            String encodedImage = Base64.encodeToString(rotatedJpegData, Base64.DEFAULT);
             if (socket.connected()) {
                 socket.emit("image", encodedImage);
                 Log.d(TAG, "Image sent");
@@ -200,7 +220,8 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             Log.e(TAG, "Preview size not set");
             return;
         }
-        Bitmap bitmap = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
+        // Swap width and height since the image is rotated 90 degrees
+        Bitmap bitmap = Bitmap.createBitmap(previewHeight, previewWidth, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         paint.setColor(Color.RED);
@@ -234,6 +255,11 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         if (socket != null) {
             Log.d(TAG, "Disconnecting Socket.IO");
             socket.disconnect();
+        }
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
         }
     }
 }
