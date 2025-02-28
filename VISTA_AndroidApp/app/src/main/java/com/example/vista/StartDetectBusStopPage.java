@@ -102,11 +102,29 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                 if (camera != null) {
                     Log.d(TAG, "Surface changed, setting preview callback");
                     android.hardware.Camera.Parameters parameters = camera.getParameters();
+                    List<android.hardware.Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+
+                    // Set preview size to 1080x1920 if supported
+                    for (android.hardware.Camera.Size size : supportedPreviewSizes) {
+                        if (size.width == 1080 && size.height == 1920) {
+                            parameters.setPreviewSize(size.width, size.height);
+                            break;
+                        }
+                    }
+
+                    camera.setParameters(parameters);
+
                     android.hardware.Camera.Size previewSize = parameters.getPreviewSize();
                     previewWidth = previewSize.width;
                     previewHeight = previewSize.height;
                     previewFormat = parameters.getPreviewFormat(); // Typically NV21
                     Log.d(TAG, "Preview size: " + previewWidth + "x" + previewHeight + ", format: " + previewFormat);
+
+                    // Set focus mode to continuous
+                    if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                        parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                        camera.setParameters(parameters);
+                    }
 
                     camera.setPreviewCallback((data, camera) -> {
                         if (System.currentTimeMillis() - lastSentTime > 500) {
@@ -185,7 +203,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             // Convert YUV data to JPEG
             YuvImage yuvImage = new YuvImage(data, format, width, height, null);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            yuvImage.compressToJpeg(new Rect(0, 0, width, height), 80, byteArrayOutputStream);
+            yuvImage.compressToJpeg(new Rect(0, 0, width, height), 90, byteArrayOutputStream);
             byte[] jpegData = byteArrayOutputStream.toByteArray();
 
             // Decode JPEG to Bitmap
@@ -198,7 +216,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
 
             // Convert rotated Bitmap back to JPEG
             ByteArrayOutputStream rotatedStream = new ByteArrayOutputStream();
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, rotatedStream);
+            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, rotatedStream); // Increased compression quality
             byte[] rotatedJpegData = rotatedStream.toByteArray();
 
             // Encode to Base64 and send
@@ -224,15 +242,36 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         Bitmap bitmap = Bitmap.createBitmap(previewHeight, previewWidth, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5);
-        paint.setTextSize(20);
+
+        // Set paint properties for the rectangle (box)
+        paint.setColor(Color.RED); // Set rectangle color to red
+        paint.setStyle(Paint.Style.STROKE); // Make the rectangle outline only
+        paint.setStrokeWidth(5); // Set border thickness
+
+        // Set paint properties for the label text
+        paint.setColor(Color.WHITE); // Set text color to white for better contrast
+        paint.setTextSize(40); // Increase text size for better readability
+
         for (Detection detection : detections) {
-            canvas.drawRect((float) detection.xmin, (float) detection.ymin, (float) detection.xmax, (float) detection.ymax, paint);
-            canvas.drawText(detection.name + " " + String.format("%.2f", detection.confidence),
-                    (float) detection.xmin, (float) detection.ymin - 10, paint);
+            // Draw bounding box (rectangle) around detected object
+            canvas.drawRect(
+                    (float) detection.xmin,
+                    (float) detection.ymin,
+                    (float) detection.xmax,
+                    (float) detection.ymax,
+                    paint
+            );
+
+            // Draw label with confidence score on top of the bounding box
+            String label = detection.name + " " + String.format("%.2f", detection.confidence);
+            float textWidth = paint.measureText(label);
+            float xPos = (float) ((detection.xmin + (detection.xmax - detection.xmin - textWidth) / 2));
+            float yPos = (float) detection.ymin - 10;
+
+            canvas.drawText(label, xPos, yPos, paint); // Draw the label
         }
+
+        // Display the resulting image with bounding boxes and labels
         detectedImageView.setImageBitmap(bitmap);
         Log.d(TAG, "UI updated");
     }
