@@ -1,0 +1,5 @@
+fastapi==0.75.0
+uvicorn==0.17.0
+funasr==1.0.0  # If funasr is not available in PyPI, you might need to use a custom repository or install it from source.
+pydantic==1.9.0
+torch==1.10.0  # Ensure this matches the CUDA version you're using, e.g., `torch==1.10.0+cu111` for CUDA 11.1
