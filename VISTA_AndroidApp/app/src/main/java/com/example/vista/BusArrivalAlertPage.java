@@ -26,11 +26,10 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.tasks.Task;
+
 import android.Manifest;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
-import com.example.vista.DatabaseHelper.BusStopInfomation; // Corrected import
 
 import java.util.Locale;
 
@@ -58,8 +57,6 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     private String routeBound;
 
     private BusDatabaseHelper busDBHelper;
-    private BusStopInfomation busStopInfoHelper;
-
     private FusedLocationProviderClient fusedLocationProviderClient;
     private TextView currentLocationTextView;
     private LocationRequest locationRequest;
@@ -79,7 +76,6 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         currentLocationTextView = findViewById(R.id.CurrentLocation);
 
         busDBHelper = BusDatabaseHelper.getInstance(this);
-        busStopInfoHelper = BusStopInfomation.getInstance(this);
 
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setBuiltInZoomControls(true);
@@ -186,8 +182,6 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                 String apiBound = routeBound.equals("O") ? "outbound" :
                         routeBound.equals("I") ? "inbound" : routeBound;
 
-                // Fetch all stops if not already in database
-                busStopInfoHelper.fetchAndStoreBusStops(routeNumber, apiBound);
 
                 addMarkersToMap();
             } else {
@@ -220,50 +214,6 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             }
         }
 
-        // Add ALL intermediate stops
-        if (routeNumber != null && routeBound != null) {
-            Cursor stopCursor = null;
-            try {
-                // Convert bound format to match what's stored in BusStopInfomation
-                String dbBound = routeBound.equals("O") ? "outbound" :
-                        routeBound.equals("I") ? "inbound" : routeBound;
-
-                stopCursor = busStopInfoHelper.getStopsForRoute(routeNumber, dbBound);
-
-                if (stopCursor != null && stopCursor.moveToFirst()) {
-                    do {
-                        String stopNameEn = stopCursor.getString(
-                                stopCursor.getColumnIndexOrThrow(BusStopInfomation.COLUMN_START_POINT));
-                        String stopNameZh = stopCursor.getString(
-                                stopCursor.getColumnIndexOrThrow(BusStopInfomation.COLUMN_START_POINT_ZH));
-                        String lat = stopCursor.getString(
-                                stopCursor.getColumnIndexOrThrow(BusStopInfomation.COLUMN_START_POINT_LAT));
-                        String lng = stopCursor.getString(
-                                stopCursor.getColumnIndexOrThrow(BusStopInfomation.COLUMN_START_POINT_LONG));
-
-                        try {
-                            GeoPoint stopPoint = new GeoPoint(
-                                    Double.parseDouble(lat),
-                                    Double.parseDouble(lng));
-                            Marker stopMarker = new Marker(mapView);
-                            stopMarker.setPosition(stopPoint);
-                            stopMarker.setTitle(stopNameEn + " / " + stopNameZh);
-                            mapView.getOverlays().add(stopMarker);
-                        } catch (NumberFormatException nfe) {
-                            Log.e(TAG, "Invalid lat/long for stop " + stopNameEn + ": " + nfe);
-                        }
-                    } while (stopCursor.moveToNext());
-                } else {
-                    Log.d(TAG, "No stops found; fetching might be in progress");
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error adding intermediate stop markers: " + e);
-            } finally {
-                if (stopCursor != null) {
-                    stopCursor.close();
-                }
-            }
-        }
 
         // Add DESTINATION marker
         if (DESTINATION_LAT != null && DESTINATION_LONG != null) {
