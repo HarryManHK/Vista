@@ -3,7 +3,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
     android:weightSum="5">
@@ -24,7 +24,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/MainMenuPageActivity_title"
-        android:textColor="@color/white"
+        android:textColor="#3BA7C9"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -33,55 +33,77 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:weightSum="4">
 
         <!-- Find Bus Stop Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button5"
-            style="@style/SemiTransparentRoundedButton"
             android:layout_width="361dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:text="@string/MainMenuPageActivity_FindBusStop"
-            android:textSize="22sp" />
+            android:background="@drawable/btn_photo_gradient"
+        android:text="@string/MainMenuPageActivity_FindBusStop"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
         <!-- Image to Text Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMainMenuImgToTxt"
-            style="@style/SemiTransparentRoundedButton"
             android:layout_width="357dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:text="@string/MainMenuPageActivity_ImageToText"
-            android:textSize="22sp" />
+            android:background="@drawable/btn_photo_gradient"
+        android:text="@string/MainMenuPageActivity_ImageToText"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
 
         <!-- Setting Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMainMenuSetting"
-            style="@style/SemiTransparentRoundedButton"
             android:layout_width="354dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:text="@string/MainMenuPageActivity_Setting"
-            android:textSize="22sp" />
+            android:background="@drawable/btn_photo_gradient"
+        android:text="@string/MainMenuPageActivity_Setting"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
 
         <!-- Empty Button (Placeholder) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMainMenuChatbot"
-            style="@style/SemiTransparentRoundedButton"
             android:layout_width="355dp"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:layout_weight="1"
-            android:contentDescription=""
-            android:text="Chat Bot"
-            android:textSize="22sp" />
+            android:background="@drawable/btn_photo_gradient"
+        android:text="Chat Bot"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
     </LinearLayout>
-
 </LinearLayout>

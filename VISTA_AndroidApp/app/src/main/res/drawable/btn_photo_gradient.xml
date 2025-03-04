@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- 漸層設定：angle="45" 表示由左上到右下 -->
+    <gradient
+        android:startColor="#2B3E5C"
+        android:endColor="#3BA7C9"
+        android:angle="45"
+    />
+
+    <!-- 圓角設定 -->
+    <corners android:radius="24dp" />
+
+    <!-- 邊框 (若不需要可以刪除) -->
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFFF" />
+
+</shape>

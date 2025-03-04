@@ -2,9 +2,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
     android:padding="10dp"
-    android:background="@drawable/background"
     android:weightSum="5">
 
     <!-- OpenStreetMap View -->
@@ -19,17 +19,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Current Location:"
+        android:textColor="@color/white"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"/>
+        android:textStyle="bold" />
 
     <!-- Bottom buttons -->
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
         android:layout_marginTop="16dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
         android:weightSum="2">
 
         <com.google.android.material.button.MaterialButton
