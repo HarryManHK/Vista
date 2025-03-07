@@ -82,6 +82,7 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
 
+        //hard code start point
         GeoPoint startPoint = new GeoPoint(22.3964, 114.1095);
         mapView.getController().setCenter(startPoint);
         mapView.getController().setZoom(12);
@@ -253,17 +254,44 @@ public class BusArrivalAlertPage extends AppCompatActivity {
 
     private void addMarkersToMap() {
         // Add START marker
+        Marker startMarker = new Marker(mapView);
         if (START_POINT_LAT != null && START_POINT_LONG != null) {
             try {
                 GeoPoint startPoint = new GeoPoint(
                         Double.parseDouble(START_POINT_LAT),
                         Double.parseDouble(START_POINT_LONG));
-                Marker startMarker = new Marker(mapView);
                 startMarker.setPosition(startPoint);
                 startMarker.setTitle("Start Point");
+
+                Drawable startDrawable = ContextCompat.getDrawable(this, R.drawable.start_point);
+                if (startDrawable != null) {
+                    startMarker.setIcon(startDrawable);
+                }
+
                 mapView.getOverlays().add(startMarker);
             } catch (Exception e) {
                 Log.e(TAG, "Error adding START marker: " + e);
+            }
+        }
+
+        // Add DESTINATION marker
+        Marker destinationMarker = new Marker(mapView);
+        if (DESTINATION_LAT != null && DESTINATION_LONG != null) {
+            try {
+                GeoPoint destinationPoint = new GeoPoint(
+                        Double.parseDouble(DESTINATION_LAT),
+                        Double.parseDouble(DESTINATION_LONG));
+                destinationMarker.setPosition(destinationPoint);
+                destinationMarker.setTitle("Destination");
+
+                Drawable destinationDrawable = ContextCompat.getDrawable(this, R.drawable.end_point);
+                if (destinationDrawable != null) {
+                    destinationMarker.setIcon(destinationDrawable);
+                }
+
+                mapView.getOverlays().add(destinationMarker);
+            } catch (Exception e) {
+                Log.e(TAG, "Error adding DESTINATION marker: " + e);
             }
         }
 
@@ -281,16 +309,23 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                     int seq = cursor.getInt(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_SEQ));
                     String stopId = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
 
+                    if(lat == Double.parseDouble(START_POINT_LAT) && lng == Double.parseDouble(START_POINT_LONG)){
+                        startMarker.setTitle(stopNameEn + " (" + stopNameZh + ")");
+                        continue;
+                    }else if(lat == Double.parseDouble(DESTINATION_LAT) && lng == Double.parseDouble(DESTINATION_LONG)){
+                        destinationMarker.setTitle(stopNameEn + " (" + stopNameZh + ")");
+                        continue;
+                    }
+
                     GeoPoint busStopPoint = new GeoPoint(lat, lng);
                     Marker busStopMarker = new Marker(mapView);
                     busStopMarker.setPosition(busStopPoint);
                     busStopMarker.setTitle(stopNameEn + " (" + stopNameZh + ")");
-                    busStopMarker.setSnippet("Seq: " + seq + ", Stop ID: " + stopId); // Additional info shown when marker is clicked
 
-                    // Optional: Customize bus stop marker icon
-                    Marker destinationMarker = new Marker(mapView);
-                    destinationMarker.setPosition(busStopPoint);
-                    destinationMarker.setTitle(stopNameZh);
+                    Drawable busStopDrawable = ContextCompat.getDrawable(this, R.drawable.bus_stop);
+                    if (busStopDrawable != null) {
+                        busStopMarker.setIcon(busStopDrawable);
+                    }
 
                     mapView.getOverlays().add(busStopMarker);
                 } while (cursor.moveToNext());
@@ -302,21 +337,6 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         } finally {
             if (cursor != null) {
                 cursor.close();
-            }
-        }
-
-        // Add DESTINATION marker
-        if (DESTINATION_LAT != null && DESTINATION_LONG != null) {
-            try {
-                GeoPoint destinationPoint = new GeoPoint(
-                        Double.parseDouble(DESTINATION_LAT),
-                        Double.parseDouble(DESTINATION_LONG));
-                Marker destinationMarker = new Marker(mapView);
-                destinationMarker.setPosition(destinationPoint);
-                destinationMarker.setTitle("Destination");
-                mapView.getOverlays().add(destinationMarker);
-            } catch (Exception e) {
-                Log.e(TAG, "Error adding DESTINATION marker: " + e);
             }
         }
 
