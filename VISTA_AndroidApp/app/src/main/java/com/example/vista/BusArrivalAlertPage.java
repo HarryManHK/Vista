@@ -267,6 +267,43 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             }
         }
 
+        //add all the location marker in table BusStopInformationHelper
+        BusStopInfomationHelper helper = new BusStopInfomationHelper(this);
+        Cursor cursor = null;
+        try {
+            cursor = helper.getAllStopsRaw(); // Get all bus stops
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LAT));
+                    double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LONG));
+                    String stopNameEn = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME));
+                    String stopNameZh = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME_ZH));
+                    int seq = cursor.getInt(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_SEQ));
+                    String stopId = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
+
+                    GeoPoint busStopPoint = new GeoPoint(lat, lng);
+                    Marker busStopMarker = new Marker(mapView);
+                    busStopMarker.setPosition(busStopPoint);
+                    busStopMarker.setTitle(stopNameEn + " (" + stopNameZh + ")");
+                    busStopMarker.setSnippet("Seq: " + seq + ", Stop ID: " + stopId); // Additional info shown when marker is clicked
+
+                    // Optional: Customize bus stop marker icon
+                    Marker destinationMarker = new Marker(mapView);
+                    destinationMarker.setPosition(busStopPoint);
+                    destinationMarker.setTitle(stopNameZh);
+
+                    mapView.getOverlays().add(busStopMarker);
+                } while (cursor.moveToNext());
+            } else {
+                Log.d(TAG, "No bus stops found to add to map.");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error adding bus stop markers: " + e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
 
         // Add DESTINATION marker
         if (DESTINATION_LAT != null && DESTINATION_LONG != null) {
