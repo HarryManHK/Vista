@@ -1,6 +1,11 @@
 package com.example.vista;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,10 +32,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.widget.Toast;
+
 public class StartDetectBusStopPage extends AppCompatActivity {
+
+    private NfcAdapter nfcAdapter;
+    private JSONArray stopListData; // 存放 JSON 中 "data" 陣列
 
     private static final String TAG = "StartDetectBusStopPage_debug";
     private static final int CAMERA_PERMISSION_CODE = 100;
@@ -78,6 +92,121 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             setupCamera();
             setupSocketIO();
         }
+
+
+        // 從 assets 載入 JSON 並解析出 stop list 資料
+        loadJsonData();
+
+        // 初始化 NFC
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter == null) {
+            Toast.makeText(this, "本設備不支援 NFC", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    // 從 assets 載入 JSON 並解析 "data" 陣列
+    private void loadJsonData() {
+        String jsonStr = "";
+        try {
+            InputStream is = getAssets().open("data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            jsonStr = new String(buffer, "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonStr);
+            stopListData = jsonObject.getJSONArray("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 啟用 NFC 前景攔截
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(nfcAdapter != null) {
+            Intent intent = new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    this, 0, intent, PendingIntent.FLAG_MUTABLE
+            );
+            IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+            IntentFilter[] intentFiltersArray = new IntentFilter[]{tagDetected};
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFiltersArray, null);
+        }
+    }
+
+    // 關閉前景攔截
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    // 當偵測到 NFC 標籤時觸發
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            // 模擬讀取 NFC 卡中的資料，請根據實際需求實作讀取邏輯
+            String cardData = readDataFromTag(tag);
+            // 比對讀取到的卡片資料與 JSON 中的 stop 資料
+            if(!checkStopData(cardData)) {
+                Toast.makeText(this, "數據不匹配", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // 模擬讀取 NFC 卡資料 (請根據實際卡片格式進行解析)
+    private String readDataFromTag(Tag tag) {
+        // 這裡僅回傳示範數據，實際應根據 NFC Tag 格式進行解析
+        return "18492910339410B1";  // 請替換為實際讀取邏輯
+    }
+
+    // 檢查讀取到的 cardData 是否與 JSON 中的 stop 相符
+    private boolean checkStopData(String cardData) {
+        if(cardData == null || stopListData == null) {
+            return false;
+        }
+        for (int i = 0; i < stopListData.length(); i++) {
+            try {
+                JSONObject stopObj = stopListData.getJSONObject(i);
+                String stopId = stopObj.getString("stop");
+                if(cardData.equalsIgnoreCase(stopId)) {
+                    // 若比對成功，顯示站點資訊
+                    String nameTC = stopObj.getString("name_tc");
+                    String nameEN = stopObj.getString("name_en");
+                    showStopInfo(nameTC, nameEN);
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    // 使用 AlertDialog 彈出站點資訊
+    private void showStopInfo(String nameTC, String nameEN) {
+        new AlertDialog.Builder(this)
+                .setTitle("站點資訊")
+                .setMessage("繁體名稱: " + nameTC + "\nEnglish: " + nameEN)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     private void setupCamera() {
