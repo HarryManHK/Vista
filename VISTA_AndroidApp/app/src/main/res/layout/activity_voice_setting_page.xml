@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/white"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
@@ -18,7 +18,8 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/VoiceSettingPage_title"
-        android:textColor="@color/white"
+        android:textColor="#3BA7C9
+"
         android:textSize="50sp"
         android:textStyle="bold" />
 
@@ -30,7 +31,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/VoiceSettingPage_VoiceLanguageSetting"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnVoiceSpeedSetting"
@@ -40,7 +47,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/VoiceSettingPage_VoiceSpeedSetting"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGender"
@@ -50,7 +63,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/VoiceSettingPage_VoiceGenderSetting"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
     <!-- Empty button preserved as requested -->
     <com.google.android.material.button.MaterialButton
@@ -61,6 +80,12 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text=""
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
 </LinearLayout>

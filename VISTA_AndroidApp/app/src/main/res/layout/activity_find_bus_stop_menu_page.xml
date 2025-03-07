@@ -3,7 +3,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/white"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
@@ -16,7 +16,7 @@
         android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
+        android:textColor="#3BA7C9"
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:gravity="center"/>
@@ -30,7 +30,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/FindBusStopMenuPage_EditDestination"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
     <!-- Find Bus Stop Button -->
     <com.google.android.material.button.MaterialButton
@@ -41,7 +47,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/FindBusStopMenuPage_ShowArriveTIme"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFindBusStopMenuPageStartDetectBusStop"
@@ -51,7 +63,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/FindBusStopMenuPage_StartDetectBusStop"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFindBusStopMenuPageBusArrivalAlert"
@@ -61,7 +79,13 @@
         android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:text="@string/FindBusStopMenuPage_BusArrivalAlert"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"/>
 
 
 </LinearLayout>

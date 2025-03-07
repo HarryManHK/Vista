@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".StartDetectBusStopPage"
-    android:background="@drawable/background">
+    android:background="@color/white">
 
     <!-- 攝像頭預覽 -->
     <SurfaceView
