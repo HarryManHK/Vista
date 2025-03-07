@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +20,7 @@ import com.google.android.material.button.MaterialButton;
 import com.example.vista.ChatBot.*;
 
 public class MainMenuPage extends AppCompatActivity {
-    private static final String TAG = "VoiceControlPage";
+
     private static final int PERMISSION_REQUEST_CODE = 101;
 
     private TextView txtTitle;
@@ -122,7 +121,6 @@ public class MainMenuPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
     // Method to check and request necessary permissions.
@@ -192,25 +190,4 @@ public class MainMenuPage extends AppCompatActivity {
         btnImageToText.setText(getString(R.string.MainMenuPageActivity_ImageToText));
         btnFindBusStop.setText(getString(R.string.MainMenuPageActivity_FindBusStop));
     }
-
-    private boolean checkPermissions() {
-        int recordPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        int internetPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
-
-        // Android 10 以上的版本，不需要寫入 app 專屬目錄的外部存儲權限
-        int storagePermission;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            storagePermission = PackageManager.PERMISSION_GRANTED;
-        } else {
-            storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-
-        Log.d(TAG, "Permissions check: RECORD_AUDIO=" + recordPermission +
-                ", INTERNET=" + internetPermission + ", WRITE_EXTERNAL_STORAGE=" + storagePermission);
-
-        return recordPermission == PackageManager.PERMISSION_GRANTED &&
-                internetPermission == PackageManager.PERMISSION_GRANTED &&
-                storagePermission == PackageManager.PERMISSION_GRANTED;
-    }
-
 }
