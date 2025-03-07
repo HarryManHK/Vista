@@ -35,7 +35,7 @@
         android:layout_weight="3"
         android:gravity="center"
         android:orientation="vertical"
-        android:weightSum="4">
+        android:weightSum="5">
 
         <!-- Find Bus Stop Button -->
         <com.google.android.material.button.MaterialButton
@@ -45,14 +45,14 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/btn_photo_gradient"
-        android:text="@string/MainMenuPageActivity_FindBusStop"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
+            android:text="@string/MainMenuPageActivity_FindBusStop"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp" />
 
         <!-- Image to Text Button -->
         <com.google.android.material.button.MaterialButton
@@ -62,14 +62,14 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/btn_photo_gradient"
-        android:text="@string/MainMenuPageActivity_ImageToText"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
+            android:text="@string/MainMenuPageActivity_ImageToText"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
             app:backgroundTint="@null"
             app:backgroundTintMode="src_over"
             app:cornerRadius="0dp"
             app:strokeColor="@null"
-            app:strokeWidth="0dp"/>
+            app:strokeWidth="0dp" />
 
         <!-- Setting Button -->
         <com.google.android.material.button.MaterialButton
@@ -79,14 +79,14 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@drawable/btn_photo_gradient"
-        android:text="@string/MainMenuPageActivity_Setting"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
+            android:text="@string/MainMenuPageActivity_Setting"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
             app:backgroundTint="@null"
             app:backgroundTintMode="src_over"
             app:cornerRadius="0dp"
             app:strokeColor="@null"
-            app:strokeWidth="0dp"/>
+            app:strokeWidth="0dp" />
 
         <!-- Empty Button (Placeholder) -->
         <com.google.android.material.button.MaterialButton
@@ -97,13 +97,29 @@
             android:layout_marginBottom="16dp"
             android:layout_weight="1"
             android:background="@drawable/btn_photo_gradient"
-        android:text="Chat Bot"
-        android:textColor="@android:color/white"
-        android:textSize="22sp"
+            android:text="Chat Bot"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
             app:backgroundTint="@null"
             app:backgroundTintMode="src_over"
             app:cornerRadius="0dp"
             app:strokeColor="@null"
-            app:strokeWidth="0dp"/>
+            app:strokeWidth="0dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVoiceControl"
+            android:layout_width="355dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_photo_gradient"
+            android:text="Voice Control"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp" />
+
     </LinearLayout>
 </LinearLayout>

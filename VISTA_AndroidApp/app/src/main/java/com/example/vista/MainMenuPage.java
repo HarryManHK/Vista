@@ -17,7 +17,7 @@ import com.example.vista.ChatBot.*;
 public class MainMenuPage extends AppCompatActivity {
 
     private TextView txtTitle;
-    private MaterialButton btnImageToText, btnFindBusStop, btnSetting,btnChatbot;
+    private MaterialButton btnImageToText, btnFindBusStop, btnSetting,btnChatbot,btnVoiceControl;
     private CustomTextToSpeech customTextToSpeech;  // TextToSpeech instance using the custom class
     private SettingDatabaseHelper dbHelper; // Database helper instance
 
@@ -53,6 +53,7 @@ public class MainMenuPage extends AppCompatActivity {
         btnFindBusStop = findViewById(R.id.button5);
         btnSetting = findViewById(R.id.btnMainMenuSetting);
         btnChatbot = findViewById(R.id.btnMainMenuChatbot);
+        btnVoiceControl = findViewById(R.id.btnVoiceControl);
 
         // Initialize CustomTextToSpeech
         customTextToSpeech = new CustomTextToSpeech(MainMenuPage.this);
@@ -109,6 +110,19 @@ public class MainMenuPage extends AppCompatActivity {
 
                 // Create an Intent to start the SettingPage activity
                 Intent intent = new Intent(MainMenuPage.this, ChatBotPage.class);
+                startActivity(intent);
+            }
+        });
+
+        btnVoiceControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Announce button label
+                String[] buttonLabel = {"You will go to Voice control page.", "你將進入語音控制頁面。"};
+                announceButtonLabel(buttonLabel);
+
+                // Create an Intent to start the SettingPage activity
+                Intent intent = new Intent(MainMenuPage.this, VoiceControlPage.class);
                 startActivity(intent);
             }
         });

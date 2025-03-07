@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <!-- Display area for the recognized text -->
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="345dp"
+        android:layout_height="422dp"
+        android:background="#40FFFFFF"
+        android:textColor="@color/white"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnVoiceControl_start"
+        style="@style/SemiTransparentRoundedButton"
+        android:layout_width="168dp"
+        android:layout_height="100dp"
+        android:text="Start"
+        android:textSize="22sp" />
+</LinearLayout>
