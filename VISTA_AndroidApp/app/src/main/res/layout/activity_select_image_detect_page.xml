@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/white"
     tools:context=".SelectImageDetectPage">
 
     <!-- Image View for Displaying Image -->
@@ -44,7 +44,7 @@
             android:padding="8dp"
             android:scrollHorizontally="false"
             android:text="Result:"
-            android:textColor="@android:color/white"
+            android:textColor="#3BA7C9"
             android:textSize="20sp" />
     </android.widget.ScrollView>
 

@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:padding="16sp"
     tools:context=".FindBusEditMenuFunction.EditStartPointActivity"
-    android:background="@drawable/background">
+    android:background="@color/white">
 
     <TextView
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
         android:textSize="26sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:textColor="@color/white"/>
+        android:textColor="#3BA7C9"/>
 
     <ListView
         android:id="@+id/lvShowAllStop"
@@ -25,7 +25,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/list_item_border"
-        android:divider="@drawable/custom_divider"/>
+        android:divider="@drawable/custom_divider"
+        android:textColor="#3BA7C9"/>
 
     <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout
@@ -45,7 +46,13 @@
             android:layout_weight="1"
             android:text="@string/btn_Confirm"
             android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:background="@drawable/btn_photo_gradient"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
 
         <!-- Next Button -->
         <com.google.android.material.button.MaterialButton
@@ -56,6 +63,12 @@
             android:layout_weight="1"
             android:text="@string/btn_next"
             android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:background="@drawable/btn_photo_gradient"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
     </LinearLayout>
 </LinearLayout>
