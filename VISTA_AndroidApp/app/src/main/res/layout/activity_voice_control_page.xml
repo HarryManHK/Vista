@@ -14,12 +14,13 @@
         android:id="@+id/tvResult"
         android:layout_width="345dp"
         android:layout_height="422dp"
-        android:background="#40FFFFFF"
+        android:background="#303BA7C9"
         android:textColor="#3BA7C9"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+
         />
 
     <com.google.android.material.button.MaterialButton
