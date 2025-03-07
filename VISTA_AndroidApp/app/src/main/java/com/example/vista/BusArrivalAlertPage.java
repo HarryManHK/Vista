@@ -22,6 +22,7 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.overlay.Marker;
 
+import com.example.vista.DatabaseHelper.BusStopInfomationHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationRequest;
@@ -121,6 +122,58 @@ public class BusArrivalAlertPage extends AppCompatActivity {
 
         btnFindBusEditConfirm.setOnClickListener(view -> handleConfirmButtonClick());
         btnFindBusEditNext.setOnClickListener(view -> handleNextButtonClick());
+
+
+        // Assume you have already retrieved the routeNumber and routeBound (e.g., "42A" and "outbound")
+        BusStopInfomationHelper busStopInfoHelper = new BusStopInfomationHelper(this);
+        busStopInfoHelper.fetchAndStoreBusStops(routeNumber, routeBound, new BusStopInfomationHelper.OnFetchCompleteListener() {
+            @Override
+            public void onFetchComplete(boolean success) {
+                if (success) {
+                    Log.d(TAG, "Bus stops fetched and stored successfully.");
+                    // Now you can print the records to verify:
+                    printAllRecord();
+                } else {
+                    Log.e(TAG, "Failed to fetch bus stops.");
+                }
+            }
+        });
+
+        printAllRecord();
+
+    }
+
+    private void printAllRecord() {
+        BusStopInfomationHelper helper = new BusStopInfomationHelper(this);
+        Cursor cursor = helper.getAllStopsRaw(); // or helper.getAllStops()
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_ID));
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_ROUTE_NUMBER));
+                String bound = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BOUND));
+                String stopNameEn = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME));
+                String stopNameZh = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME_ZH));
+                int seq = cursor.getInt(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_SEQ));
+                String stopId = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
+                double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LAT));
+                double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LONG));
+
+                Log.d(TAG,
+                        "Record: ID=" + id +
+                                ", routeNumber=" + routeNumber +
+                                ", bound=" + bound +
+                                ", stopNameEn=" + stopNameEn +
+                                ", stopNameZh=" + stopNameZh +
+                                ", seq=" + seq +
+                                ", stopId=" + stopId +
+                                ", lat=" + lat +
+                                ", lng=" + lng
+                );
+            } while (cursor.moveToNext());
+            cursor.close();
+        } else {
+            Log.d(TAG, "No records found in bus_stops table.");
+        }
     }
 
     private void getCurrentLocation() {

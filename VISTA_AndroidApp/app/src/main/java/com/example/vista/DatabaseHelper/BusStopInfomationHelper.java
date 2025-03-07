@@ -28,8 +28,8 @@ import okhttp3.Response;
 
 public class BusStopInfomationHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
-    private static final String DATABASE_NAME = "BusRouteDB.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final String DATABASE_NAME = "BusRouteInfoDB.db";
+    private static final int DATABASE_VERSION = 1;
     private static final String TABLE_NAME = "bus_stops";
 
     // 欄位名稱
@@ -188,5 +188,23 @@ public class BusStopInfomationHelper extends SQLiteOpenHelper {
     // 回呼介面
     public interface OnFetchCompleteListener {
         void onFetchComplete(boolean success);
+    }
+
+    // Retrieves all records from the bus_stops table
+    public Cursor getAllStops() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(
+                TABLE_NAME, // The table to query
+                null,       // Columns (null = all columns)
+                null,       // Selection (null = no selection)
+                null,       // Selection args (null = no selection)
+                null,       // GroupBy
+                null,       // Having
+                null        // OrderBy
+        );
+    }
+    public Cursor getAllStopsRaw() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
     }
 }
