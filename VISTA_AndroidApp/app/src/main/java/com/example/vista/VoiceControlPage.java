@@ -1,3 +1,4 @@
+// File: VoiceControlPage.java
 package com.example.vista;
 
 import android.Manifest;
@@ -16,10 +17,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.vista.VoiceControl.siliconflow_Deepseek_NLP;
+import com.example.vista.VoiceControl.NLPCallback;
+import com.example.vista.VoiceControl.NLPService;
 import com.example.vista.VoiceControl.VoiceCommandFactory;
 import com.google.android.material.button.MaterialButton;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -32,15 +35,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class VoiceControlPage extends AppCompatActivity {
 
@@ -51,9 +45,6 @@ public class VoiceControlPage extends AppCompatActivity {
     private TextView tvResult;
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final String TAG = "VoiceControlPage";
-
-    // Replace with your actual DeepSeek API key
-    private static final String DEEPSEEK_API_KEY = "sk-nvapiliqrltqkcpitxkbbxuwcmdfupyimcejzjfaydxihylb";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,7 +166,7 @@ public class VoiceControlPage extends AppCompatActivity {
 
                 // Convert audio to Base64 string
                 String base64Audio = Base64.encodeToString(audioBytes, Base64.NO_WRAP);
-                JSONObject jsonPayload = new JSONObject();
+                org.json.JSONObject jsonPayload = new org.json.JSONObject();
                 jsonPayload.put("wav", base64Audio);
 
                 URL url = new URL("https://speechtotextapi.harryman.cc/asr");
@@ -195,13 +186,13 @@ public class VoiceControlPage extends AppCompatActivity {
                 connection.disconnect();
                 Log.d(TAG, "ASR Response: " + response);
 
-                JSONObject responseJson = new JSONObject(response);
+                org.json.JSONObject responseJson = new org.json.JSONObject(response);
                 // Assuming the ASR API returns the recognized text under key "res"
                 String resultText = responseJson.optString("res", "No result");
                 runOnUiThread(() -> tvResult.setText(resultText));
 
-                // Send the recognized text to DeepSeek in non-streaming mode
-                sendTextToDeepseekNonStreaming(resultText);
+                // Process the recognized text with DeepSeek NLP
+                processASRResult(resultText);
 
             } catch (Exception e) {
                 Log.e(TAG, "sendAudioToServer error: " + e.getMessage());
@@ -210,124 +201,38 @@ public class VoiceControlPage extends AppCompatActivity {
         }).start();
     }
 
-    /**
-     * Sends the recognized text (from ASR) to DeepSeek (non-streaming) for NLP analysis.
-     * The prompt instructs DeepSeek to return one of the following standardized JSON formats:
-     *
-     * 1. 如果用戶想搭巴士，請返回格式：
-     * {
-     *   "action": "搭巴士",
-     *   "routeNumber": "42A",
-     *   "startPoint": "荃灣",
-     *   "destination": "佐敦"
-     * }
-     *
-     * 2. 如果用戶想查巴士到站時間，請返回格式：
-     * {
-     *   "action": "查巴士到站時間"
-     * }
-     *
-     * 請只返回 JSON 格式，不要其他額外文字，且全部使用繁體中文。
-     */
-    private void sendTextToDeepseekNonStreaming(String text) {
-        new Thread(() -> {
-            try {
-                // 定義提示詞，要求 DeepSeek 返回特定格式的 JSON
-                String prompt = "請根據以下用戶語音轉文字結果解析出使用者的命令，並嚴格按照以下兩種 JSON 格式返回：\n" +
-                        "1. 如果用戶想搭巴士，請返回格式：\n" +
-                        "{\n  \"action\": \"搭巴士\",\n  \"routeNumber\": \"42A\",\n  \"startPoint\": \"荃灣\",\n  \"destination\": \"佐敦\"\n}\n" +
-                        "2. 如果用戶想查巴士到站時間，請返回格式：\n" +
-                        "{\n  \"action\": \"查巴士到站時間\"\n}\n" +
-                        "請只返回 JSON 格式，不要其他額外文字，且全部使用繁體中文。\n" +
-                        "用戶語音轉文字結果：" + text;
-
-                // 構建 API 請求的 JSON 負載
-                JSONObject payload = new JSONObject();
-                payload.put("model", "deepseek-ai/DeepSeek-R1-Distill-Llama-8B");
-                payload.put("stream", false);
-                payload.put("max_tokens", 5000);
-                payload.put("temperature", 0.7);
-                payload.put("top_p", 0.9);
-                payload.put("frequency_penalty", 0.0);
-                payload.put("n", 1);
-
-                JSONObject messageObject = new JSONObject();
-                messageObject.put("role", "user");
-                messageObject.put("content", prompt);
-                payload.put("messages", new JSONArray().put(messageObject));
-
-                // 設置 HTTP 客戶端，增加超時時間
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .connectTimeout(90, TimeUnit.SECONDS)
-                        .readTimeout(90, TimeUnit.SECONDS)
-                        .writeTimeout(90, TimeUnit.SECONDS)
-                        .build();
-
-                RequestBody body = RequestBody.create(
-                        MediaType.parse("application/json"),
-                        payload.toString()
-                );
-
-                Request request = new Request.Builder()
-                        .url("https://api.siliconflow.cn/v1/chat/completions")
-                        .addHeader("Authorization", "Bearer " + DEEPSEEK_API_KEY)
-                        .addHeader("Content-Type", "application/json")
-                        .post(body)
-                        .build();
-
-                // 發送請求並獲取回應
-                Response response = client.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d(TAG, "DeepSeek 原始回應: " + responseBody);
-
-                    // 解析 API 回應
-                    JSONObject responseJson = new JSONObject(responseBody);
-                    JSONArray choices = responseJson.getJSONArray("choices");
-                    if (choices.length() > 0) {
-                        JSONObject choice = choices.getJSONObject(0);
-                        String content = choice.getJSONObject("message").getString("content");
-                        Log.d(TAG, "提取的內容: " + content);
-
-                        // 將 content 解析為 JSON 物件
-                        JSONObject commandJson = new JSONObject(content);
+    private void processASRResult(String resultText) {
+        NLPService nlpService = new siliconflow_Deepseek_NLP();
+        nlpService.processText(resultText, new NLPCallback() {
+            @Override
+            public void onSuccess(JSONObject commandJson) {
+                // Update UI on the main thread
+                runOnUiThread(() -> {
+                    try {
                         String action = commandJson.getString("action");
-                        Log.d(TAG, "解析出的動作: " + action);
-
-                        // 檢查 action 是否為空
-                        if (action.isEmpty()) {
-                            Log.e(TAG, "動作字段為空");
-                            runOnUiThread(() -> tvResult.setText("錯誤：動作字段為空"));
+                        String displayText;
+                        if ("搭巴士".equals(action)) {
+                            displayText = String.format("搭巴士: %s 從 %s 到 %s",
+                                    commandJson.getString("routeNumber"),
+                                    commandJson.getString("startPoint"),
+                                    commandJson.getString("destination"));
                         } else {
-                            // 根據 action 格式化顯示文字
-                            String displayText;
-                            if ("搭巴士".equals(action)) {
-                                displayText = String.format("搭巴士: %s 從 %s 到 %s",
-                                        commandJson.getString("routeNumber"),
-                                        commandJson.getString("startPoint"),
-                                        commandJson.getString("destination"));
-                            } else {
-                                displayText = action; // 例如 "查巴士到站時間"
-                            }
-                            final String finalDisplayText = displayText;
-                            runOnUiThread(() -> {
-                                tvResult.setText(finalDisplayText);
-                                VoiceCommandFactory.executeCommand(VoiceControlPage.this, content);
-                            });
+                            displayText = action; // e.g., "查巴士到站時間"
                         }
-                    } else {
-                        Log.e(TAG, "回應中沒有 choices");
-                        runOnUiThread(() -> tvResult.setText("錯誤：回應中沒有選擇"));
+                        tvResult.setText(displayText);
+                        // Execute command if needed (using VoiceCommandFactory)
+                        VoiceCommandFactory.executeCommand(VoiceControlPage.this, commandJson.toString());
+                    } catch (Exception e) {
+                        tvResult.setText("Error parsing command: " + e.getMessage());
                     }
-                } else {
-                    Log.e(TAG, "DeepSeek API 錯誤碼: " + response.code());
-                    runOnUiThread(() -> tvResult.setText("DeepSeek API 錯誤: " + response.code()));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "sendTextToDeepseekNonStreaming 錯誤: " + e.getMessage());
-                runOnUiThread(() -> tvResult.setText("DeepSeek 錯誤: " + e.getMessage()));
+                });
             }
-        }).start();
+
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(() -> tvResult.setText("Error: " + e.getMessage()));
+            }
+        });
     }
 
     private String convertStreamToString(InputStream is) throws Exception {
