@@ -33,6 +33,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -156,8 +158,6 @@ public class VoiceControlPage extends AppCompatActivity {
 
     /**
      * Sends the recorded audio file to an ASR service for voice-to-text conversion.
-     * When the ASR response is received, it sends the recognized text to DeepSeek (non-streaming)
-     * and then calls VoiceCommandFactory to execute the corresponding action.
      */
     private void sendAudioToServer() {
         new Thread(() -> {
@@ -232,6 +232,7 @@ public class VoiceControlPage extends AppCompatActivity {
     private void sendTextToDeepseekNonStreaming(String text) {
         new Thread(() -> {
             try {
+                // 定義提示詞，要求 DeepSeek 返回特定格式的 JSON
                 String prompt = "請根據以下用戶語音轉文字結果解析出使用者的命令，並嚴格按照以下兩種 JSON 格式返回：\n" +
                         "1. 如果用戶想搭巴士，請返回格式：\n" +
                         "{\n  \"action\": \"搭巴士\",\n  \"routeNumber\": \"42A\",\n  \"startPoint\": \"荃灣\",\n  \"destination\": \"佐敦\"\n}\n" +
@@ -240,6 +241,7 @@ public class VoiceControlPage extends AppCompatActivity {
                         "請只返回 JSON 格式，不要其他額外文字，且全部使用繁體中文。\n" +
                         "用戶語音轉文字結果：" + text;
 
+                // 構建 API 請求的 JSON 負載
                 JSONObject payload = new JSONObject();
                 payload.put("model", "deepseek-ai/DeepSeek-R1-Distill-Llama-8B");
                 payload.put("stream", false);
@@ -254,6 +256,7 @@ public class VoiceControlPage extends AppCompatActivity {
                 messageObject.put("content", prompt);
                 payload.put("messages", new JSONArray().put(messageObject));
 
+                // 設置 HTTP 客戶端，增加超時時間
                 OkHttpClient client = new OkHttpClient.Builder()
                         .connectTimeout(90, TimeUnit.SECONDS)
                         .readTimeout(90, TimeUnit.SECONDS)
@@ -272,60 +275,57 @@ public class VoiceControlPage extends AppCompatActivity {
                         .post(body)
                         .build();
 
+                // 發送請求並獲取回應
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Log.d(TAG, "DeepSeek Non-Streaming Response: " + responseBody);
-                    String correctedJson = responseBody.replace("“", "\"").replace("”", "\"");
+                    Log.d(TAG, "DeepSeek 原始回應: " + responseBody);
 
-                    // Locate the "content" key and extract the JSON command using brace matching.
-                    int contentIndex = correctedJson.indexOf("\"content\":");
-                    if (contentIndex != -1) {
-                        int firstBrace = correctedJson.indexOf("{", contentIndex);
-                        if (firstBrace != -1) {
-                            int braceCount = 0;
-                            int i = firstBrace;
-                            for (; i < correctedJson.length(); i++) {
-                                char c = correctedJson.charAt(i);
-                                if (c == '{') {
-                                    braceCount++;
-                                } else if (c == '}') {
-                                    braceCount--;
-                                    if (braceCount == 0) {
-                                        break;
-                                    }
-                                }
-                            }
-                            if (braceCount == 0) {
-                                String commandJson = correctedJson.substring(firstBrace, i + 1).trim();
-                                // Remove newline and carriage return characters
-                                commandJson = commandJson.replaceAll("[\\n\\r]", "").trim();
+                    // 解析 API 回應
+                    JSONObject responseJson = new JSONObject(responseBody);
+                    JSONArray choices = responseJson.getJSONArray("choices");
+                    if (choices.length() > 0) {
+                        JSONObject choice = choices.getJSONObject(0);
+                        String content = choice.getJSONObject("message").getString("content");
+                        Log.d(TAG, "提取的內容: " + content);
 
-                                Log.d(TAG, "Extracted command JSON: " + commandJson);
-                                final String commandToExecute = commandJson;
-                                runOnUiThread(() -> {
-                                    tvResult.setText(commandToExecute);
-                                    VoiceCommandFactory.executeCommand(VoiceControlPage.this, commandToExecute);
-                                });
-                            } else {
-                                Log.e(TAG, "Failed to match braces for JSON command.");
-                                runOnUiThread(() -> tvResult.setText("Failed to extract JSON command."));
-                            }
+                        // 將 content 解析為 JSON 物件
+                        JSONObject commandJson = new JSONObject(content);
+                        String action = commandJson.getString("action");
+                        Log.d(TAG, "解析出的動作: " + action);
+
+                        // 檢查 action 是否為空
+                        if (action.isEmpty()) {
+                            Log.e(TAG, "動作字段為空");
+                            runOnUiThread(() -> tvResult.setText("錯誤：動作字段為空"));
                         } else {
-                            Log.e(TAG, "No '{' found after \"content\":");
-                            runOnUiThread(() -> tvResult.setText("No command JSON found."));
+                            // 根據 action 格式化顯示文字
+                            String displayText;
+                            if ("搭巴士".equals(action)) {
+                                displayText = String.format("搭巴士: %s 從 %s 到 %s",
+                                        commandJson.getString("routeNumber"),
+                                        commandJson.getString("startPoint"),
+                                        commandJson.getString("destination"));
+                            } else {
+                                displayText = action; // 例如 "查巴士到站時間"
+                            }
+                            final String finalDisplayText = displayText;
+                            runOnUiThread(() -> {
+                                tvResult.setText(finalDisplayText);
+                                VoiceCommandFactory.executeCommand(VoiceControlPage.this, content);
+                            });
                         }
                     } else {
-                        Log.e(TAG, "\"content\" key not found in response.");
-                        runOnUiThread(() -> tvResult.setText("\"content\" key not found."));
+                        Log.e(TAG, "回應中沒有 choices");
+                        runOnUiThread(() -> tvResult.setText("錯誤：回應中沒有選擇"));
                     }
                 } else {
-                    Log.e(TAG, "DeepSeek API error: " + response.code());
-                    runOnUiThread(() -> tvResult.setText("DeepSeek API error: " + response.code()));
+                    Log.e(TAG, "DeepSeek API 錯誤碼: " + response.code());
+                    runOnUiThread(() -> tvResult.setText("DeepSeek API 錯誤: " + response.code()));
                 }
             } catch (Exception e) {
-                Log.e(TAG, "sendTextToDeepseekNonStreaming error: " + e.getMessage());
-                runOnUiThread(() -> tvResult.setText("DeepSeek Error: " + e.getMessage()));
+                Log.e(TAG, "sendTextToDeepseekNonStreaming 錯誤: " + e.getMessage());
+                runOnUiThread(() -> tvResult.setText("DeepSeek 錯誤: " + e.getMessage()));
             }
         }).start();
     }
