@@ -74,11 +74,17 @@ public class siliconflow_Deepseek_NLP implements NLPService {
     }
 
     private String createPrompt(String text) {
-        return "請根據以下用戶語音轉文字結果解析出使用者的命令，並嚴格按照以下兩種 JSON 格式返回：\n" +
+        return "請根據以下用戶語音轉文字結果解析出使用者的命令，並嚴格按照以下五種 JSON 格式返回：\n" +
                 "1. 如果用戶想搭巴士，請返回格式：\n" +
                 "{\n  \"action\": \"搭巴士\",\n  \"routeNumber\": \"42A\",\n  \"startPoint\": \"荃灣\",\n  \"destination\": \"佐敦\"\n}\n" +
                 "2. 如果用戶想查巴士到站時間，請返回格式：\n" +
                 "{\n  \"action\": \"查巴士到站時間\"\n}\n" +
+                "3. 如果用戶想檢測巴士站，請返回格式：\n" +
+                "{\n  \"action\": \"檢測巴士站\"\n}\n" +
+                "4. 如果用戶想巴士到站提醒，請返回格式：\n" +
+                "{\n  \"action\": \"巴士到站提醒\"\n}\n" +
+                "5. 如果用戶希望圖片生成文字，請返回格式：\n" +
+                "{\n  \"action\": \"圖片生成文字\"\n}\n" +
                 "請只返回 JSON 格式，不要其他額外文字，且全部使用繁體中文。\n" +
                 "用戶語音轉文字結果：" + text;
     }
