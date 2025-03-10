@@ -44,7 +44,7 @@ public class VoiceControlPage extends AppCompatActivity {
     private MaterialButton btnStart;
     private TextView tvResult;
     private static final int PERMISSION_REQUEST_CODE = 200;
-    private static final String TAG = "VoiceControlPage";
+    private static final String TAG = "VoiceControlPage_debug";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,5 +244,9 @@ public class VoiceControlPage extends AppCompatActivity {
         }
         reader.close();
         return sb.toString();
+    }
+
+    public void updateResult(String message) {
+        runOnUiThread(() -> tvResult.setText(message));
     }
 }
