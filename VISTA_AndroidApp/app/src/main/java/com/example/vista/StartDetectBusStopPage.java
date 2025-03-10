@@ -12,6 +12,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -33,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,8 +121,8 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
         } else {
             Log.d(TAG, "Camera permission already granted");
-            setupCamera();
-            setupSocketIO();
+//            setupCamera();
+//            setupSocketIO();
         }
 
         // 檢查和請求NFC權限
@@ -385,16 +387,34 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             try {
                 ndef.connect();
                 NdefMessage ndefMessage = ndef.getNdefMessage();
-                if (ndefMessage != null) {
-                    String nfcData = new String(ndefMessage.getRecords()[0].getPayload());
-                    Log.d(TAG, "NFC Data (NDEF): " + nfcData);
-                    checkNfcDataWithJson(nfcData);
+                if (ndefMessage != null && ndefMessage.getRecords().length > 0) {
+                    byte[] payload = ndefMessage.getRecords()[0].getPayload();
+                    // 第一個字節低6位表示語言碼長度
+                    int languageCodeLength = payload[0] & 0x3F;
+                    // 判斷編碼：如果第7位為0，則使用 UTF-8，否則使用 UTF-16
+                    String textEncoding = ((payload[0] & 0x80) == 0) ? "UTF-8" : "UTF-16";
+                    // 從 payload 中跳過狀態位和語言碼，剩餘部分為真正的文本
+                    String text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
+                    Log.d(TAG, "NFC Data (NDEF): " + text);
+                    checkNfcDataWithJson(text);
                 } else {
                     Log.d(TAG, "No NDEF message found");
                 }
-                ndef.close();
-            } catch (Exception e) {
+            } catch (IOException | FormatException e) {
                 Log.e(TAG, "Error reading NDEF tag: " + e.toString(), e);
+                // 若發生 IOException，嘗試直接讀取標籤的 ID 作 fallback
+                byte[] id = tag.getId();
+                if (id != null && id.length > 0) {
+                    String tagId = bytesToHex(id);
+                    Log.d(TAG, "Tag ID: " + tagId);
+                    checkNfcDataWithJson(tagId);
+                }
+            } finally {
+                try {
+                    ndef.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Error closing NDEF connection: " + e.toString(), e);
+                }
             }
         } else {
             Log.d(TAG, "Tag is not NDEF, checking raw bytes");
@@ -408,6 +428,8 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             }
         }
     }
+
+
 
     private String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
