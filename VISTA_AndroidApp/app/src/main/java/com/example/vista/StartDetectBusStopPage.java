@@ -1,6 +1,8 @@
 package com.example.vista;
 
 import android.Manifest;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,12 +12,17 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -23,10 +30,10 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +41,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
 
     private static final String TAG = "StartDetectBusStopPage_debug";
     private static final int CAMERA_PERMISSION_CODE = 100;
+    private static final int NFC_PERMISSION_CODE = 101;
     private SurfaceView cameraSurfaceView;
     private ImageView detectedImageView;
     private Socket socket;
@@ -43,8 +51,30 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private int previewWidth;
     private int previewHeight;
     private int previewFormat;
+    private NfcAdapter nfcAdapter;
+    private List<BusStop> busStops = new ArrayList<>();
+    private PendingIntent nfcPendingIntent;
 
-    // Inner class to hold detection data
+    // BusStop內部類
+    private static class BusStop {
+        String stop;
+        String nameEn;
+        String nameTc;
+        String nameSc;
+        double lat;
+        double lon;
+
+        BusStop(String stop, String nameEn, String nameTc, String nameSc, double lat, double lon) {
+            this.stop = stop;
+            this.nameEn = nameEn;
+            this.nameTc = nameTc;
+            this.nameSc = nameSc;
+            this.lat = lat;
+            this.lon = lon;
+        }
+    }
+
+    // Detection內部類
     private static class Detection {
         double xmin, ymin, xmax, ymax, confidence;
         int classId;
@@ -69,7 +99,21 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
         detectedImageView = findViewById(R.id.detectedImageView);
 
-        // Check and request camera permission
+        // 初始化NFC適配器
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter == null) {
+            Toast.makeText(this, "此設備不支持NFC", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        // 創建PendingIntent用於NFC前台分發
+        nfcPendingIntent = PendingIntent.getActivity(
+                this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                PendingIntent.FLAG_MUTABLE
+        );
+
+        // 檢查和請求相機權限
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Requesting camera permission");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
@@ -78,6 +122,17 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             setupCamera();
             setupSocketIO();
         }
+
+        // 檢查和請求NFC權限
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.NFC) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Requesting NFC permission");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.NFC}, NFC_PERMISSION_CODE);
+        } else {
+            Log.d(TAG, "NFC permission already granted");
+        }
+
+        // 讀取busStop.json數據
+        loadBusStopsFromJson();
     }
 
     private void setupCamera() {
@@ -90,7 +145,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                 try {
                     Log.d(TAG, "Surface created, starting camera preview");
                     camera.setPreviewDisplay(holder);
-                    camera.setDisplayOrientation(90); // Rotate preview by 90 degrees
+                    camera.setDisplayOrientation(90);
                     camera.startPreview();
                 } catch (Exception e) {
                     Log.e(TAG, "Error setting camera preview: " + e.getMessage());
@@ -104,7 +159,6 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                     android.hardware.Camera.Parameters parameters = camera.getParameters();
                     List<android.hardware.Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
 
-                    // Set preview size to 1080x1920 if supported
                     for (android.hardware.Camera.Size size : supportedPreviewSizes) {
                         if (size.width == 1080 && size.height == 1920) {
                             parameters.setPreviewSize(size.width, size.height);
@@ -117,10 +171,9 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                     android.hardware.Camera.Size previewSize = parameters.getPreviewSize();
                     previewWidth = previewSize.width;
                     previewHeight = previewSize.height;
-                    previewFormat = parameters.getPreviewFormat(); // Typically NV21
+                    previewFormat = parameters.getPreviewFormat();
                     Log.d(TAG, "Preview size: " + previewWidth + "x" + previewHeight + ", format: " + previewFormat);
 
-                    // Set focus mode to continuous
                     if (parameters.getSupportedFocusModes().contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                         parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                         camera.setParameters(parameters);
@@ -150,44 +203,31 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private void setupSocketIO() {
         try {
             Log.d(TAG, "Setting up Socket.IO connection");
-            socket = IO.socket("https://d.harryman.cc"); // Replace with your server URL
-            socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    Log.d(TAG, "Connected to server");
-                }
-            });
-            socket.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    Log.e(TAG, "Connection error: " + args[0]);
-                }
-            });
-            socket.on("detections", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    try {
-                        Log.d(TAG, "Received detections from server");
-                        JSONObject data = (JSONObject) args[0];
-                        JSONArray detectionsArray = data.getJSONArray("detections");
-                        detections.clear();
-                        for (int i = 0; i < detectionsArray.length(); i++) {
-                            JSONObject detection = detectionsArray.getJSONObject(i);
-                            detections.add(new Detection(
-                                    detection.getDouble("xmin"),
-                                    detection.getDouble("ymin"),
-                                    detection.getDouble("xmax"),
-                                    detection.getDouble("ymax"),
-                                    detection.getDouble("confidence"),
-                                    detection.getInt("class_id"),
-                                    detection.getString("name")
-                            ));
-                        }
-                        Log.d(TAG, "Parsed " + detections.size() + " detections");
-                        runOnUiThread(() -> updateUIWithDetections());
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Error parsing detections: " + e.getMessage());
+            socket = IO.socket("https://d.harryman.cc");
+            socket.on(Socket.EVENT_CONNECT, args -> Log.d(TAG, "Connected to server"));
+            socket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.e(TAG, "Connection error: " + args[0]));
+            socket.on("detections", args -> {
+                try {
+                    Log.d(TAG, "Received detections from server");
+                    JSONObject data = (JSONObject) args[0];
+                    JSONArray detectionsArray = data.getJSONArray("detections");
+                    detections.clear();
+                    for (int i = 0; i < detectionsArray.length(); i++) {
+                        JSONObject detection = detectionsArray.getJSONObject(i);
+                        detections.add(new Detection(
+                                detection.getDouble("xmin"),
+                                detection.getDouble("ymin"),
+                                detection.getDouble("xmax"),
+                                detection.getDouble("ymax"),
+                                detection.getDouble("confidence"),
+                                detection.getInt("class_id"),
+                                detection.getString("name")
+                        ));
                     }
+                    Log.d(TAG, "Parsed " + detections.size() + " detections");
+                    runOnUiThread(() -> updateUIWithDetections());
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing detections: " + e.getMessage());
                 }
             });
             socket.connect();
@@ -199,36 +239,29 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private void sendImageToServer(byte[] data, int width, int height, int format) {
         try {
             Log.d(TAG, "Sending image to server");
-
-            // Convert YUV data to JPEG
             YuvImage yuvImage = new YuvImage(data, format, width, height, null);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             yuvImage.compressToJpeg(new Rect(0, 0, width, height), 90, byteArrayOutputStream);
             byte[] jpegData = byteArrayOutputStream.toByteArray();
 
-            // Decode JPEG to Bitmap
             Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
-
-            // Rotate Bitmap by 90 degrees
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
-            // Convert rotated Bitmap back to JPEG
             ByteArrayOutputStream rotatedStream = new ByteArrayOutputStream();
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, rotatedStream); // Increased compression quality
+            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, rotatedStream);
             byte[] rotatedJpegData = rotatedStream.toByteArray();
 
-            // Encode to Base64 and send
             String encodedImage = Base64.encodeToString(rotatedJpegData, Base64.DEFAULT);
-            if (socket.connected()) {
+            if (socket != null && socket.connected()) {
                 socket.emit("image", encodedImage);
                 Log.d(TAG, "Image sent");
             } else {
                 Log.e(TAG, "Socket not connected, cannot send image");
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error sending image: " + e.getMessage());
+            Log.e(TAG, "Error sending image: " + e.toString(), e);
         }
     }
 
@@ -238,22 +271,15 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             Log.e(TAG, "Preview size not set");
             return;
         }
-        // Swap width and height since the image is rotated 90 degrees
         Bitmap bitmap = Bitmap.createBitmap(previewHeight, previewWidth, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
-
-        // Set paint properties for the rectangle (box)
-        paint.setColor(Color.RED); // Set rectangle color to red
-        paint.setStyle(Paint.Style.STROKE); // Make the rectangle outline only
-        paint.setStrokeWidth(5); // Set border thickness
-
-        // Set paint properties for the label text
-        paint.setColor(Color.WHITE); // Set text color to white for better contrast
-        paint.setTextSize(40); // Increase text size for better readability
+        paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
+        paint.setTextSize(40);
 
         for (Detection detection : detections) {
-            // Draw bounding box (rectangle) around detected object
             canvas.drawRect(
                     (float) detection.xmin,
                     (float) detection.ymin,
@@ -261,19 +287,149 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                     (float) detection.ymax,
                     paint
             );
-
-            // Draw label with confidence score on top of the bounding box
             String label = detection.name + " " + String.format("%.2f", detection.confidence);
             float textWidth = paint.measureText(label);
             float xPos = (float) ((detection.xmin + (detection.xmax - detection.xmin - textWidth) / 2));
             float yPos = (float) detection.ymin - 10;
+            canvas.drawText(label, xPos, yPos, paint);
 
-            canvas.drawText(label, xPos, yPos, paint); // Draw the label
+            if (detection.name != null && detection.name.contains("CircleBusStopRoute")) {
+                camera = null;
+            }
         }
-
-        // Display the resulting image with bounding boxes and labels
         detectedImageView.setImageBitmap(bitmap);
         Log.d(TAG, "UI updated");
+    }
+
+    private void loadBusStopsFromJson() {
+        try {
+            InputStream inputStream = getAssets().open("busStop.json");
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+            String json = new String(buffer, "UTF-8");
+
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray dataArray = jsonObject.getJSONArray("data");
+            busStops.clear();
+
+            for (int i = 0; i < dataArray.length(); i++) {
+                JSONObject stop = dataArray.getJSONObject(i);
+                busStops.add(new BusStop(
+                        stop.getString("stop"),
+                        stop.getString("name_en"),
+                        stop.getString("name_tc"),
+                        stop.getString("name_sc"),
+                        stop.getDouble("lat"),
+                        stop.getDouble("long")
+                ));
+            }
+            Log.d(TAG, "Loaded " + busStops.size() + " bus stops from busStop.json");
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading busStop.json: " + e.toString(), e);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (nfcAdapter != null) {
+            Log.d(TAG, "Enabling foreground dispatch");
+            nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, null, null);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (nfcAdapter != null) {
+            Log.d(TAG, "Disabling foreground dispatch");
+            nfcAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "onNewIntent called with action: " + intent.getAction());
+        if (intent.getAction() != null && (
+                NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
+                        NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) ||
+                        NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction()))) {
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            if (tag != null) {
+                Log.d(TAG, "Tag detected");
+                handleNfcTag(tag);
+            } else {
+                Log.e(TAG, "No tag found in NFC intent");
+            }
+        } else {
+            Log.d(TAG, "Non-NFC intent or action is null, checking for tag anyway");
+            if (nfcAdapter != null) {
+                Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                if (tag != null) {
+                    Log.d(TAG, "Tag detected from intent extras");
+                    handleNfcTag(tag);
+                } else {
+                    Log.e(TAG, "No tag found in intent extras");
+                }
+            }
+        }
+    }
+
+    private void handleNfcTag(Tag tag) {
+        Log.d(TAG, "Handling NFC tag: " + tag.toString());
+        Ndef ndef = Ndef.get(tag);
+        if (ndef != null) {
+            try {
+                ndef.connect();
+                NdefMessage ndefMessage = ndef.getNdefMessage();
+                if (ndefMessage != null) {
+                    String nfcData = new String(ndefMessage.getRecords()[0].getPayload());
+                    Log.d(TAG, "NFC Data (NDEF): " + nfcData);
+                    checkNfcDataWithJson(nfcData);
+                } else {
+                    Log.d(TAG, "No NDEF message found");
+                }
+                ndef.close();
+            } catch (Exception e) {
+                Log.e(TAG, "Error reading NDEF tag: " + e.toString(), e);
+            }
+        } else {
+            Log.d(TAG, "Tag is not NDEF, checking raw bytes");
+            byte[] id = tag.getId();
+            if (id != null && id.length > 0) {
+                String tagId = bytesToHex(id);
+                Log.d(TAG, "Tag ID: " + tagId);
+                checkNfcDataWithJson(tagId);
+            } else {
+                Log.e(TAG, "No tag ID available");
+            }
+        }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
+    }
+
+    // 添加checkNfcDataWithJson方法
+    private void checkNfcDataWithJson(String nfcData) {
+        Log.d(TAG, "Checking NFC data: " + nfcData);
+        for (BusStop busStop : busStops) {
+            if (busStop.stop.equals(nfcData)) {
+                String successMessage = "NFC驗證成功！\n站點: " + busStop.nameTc;
+                runOnUiThread(() -> Toast.makeText(this, successMessage, Toast.LENGTH_LONG).show());
+                Log.d(TAG, "NFC data matched: " + busStop.nameTc);
+                return;
+            }
+        }
+        runOnUiThread(() -> Toast.makeText(this, "NFC數據不匹配", Toast.LENGTH_LONG).show());
+        Log.d(TAG, "No matching bus stop found for NFC data");
     }
 
     @Override
@@ -283,8 +439,20 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             Log.d(TAG, "Camera permission granted");
             setupCamera();
             setupSocketIO();
+        } else if (requestCode == NFC_PERMISSION_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "NFC permission granted");
         } else {
-            Log.d(TAG, "Camera permission denied");
+            Log.d(TAG, "Permission denied: " + requestCode);
+        }
+    }
+
+    private void stopCameraPreview() {
+        if (camera != null) {
+            Log.d(TAG, "Stopping camera preview");
+            camera.setPreviewCallback(null); // 停止預覽回調
+            camera.stopPreview(); // 停止預覽
+            camera.release(); // 釋放相機資源
+            camera = null; // 清空相機對象
         }
     }
 
