@@ -1,10 +1,8 @@
-<!-- res/values/themes.xml -->
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.VISTA" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- 主顏色設置，根據需要調整 -->
+<resources>
+    <style name="Theme.VISTA" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/semi_transparent_white</item>
         <item name="colorPrimaryVariant">@color/semi_transparent_white</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- 其他主題屬性 -->
+        <item name="android:statusBarColor">#D3D3D3</item>
     </style>
 </resources>
