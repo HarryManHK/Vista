@@ -112,7 +112,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
             Toast.makeText(this, "此設備不支持NFC", Toast.LENGTH_LONG).show();
-            finish();
+            //finish();
             return;
         }
 
@@ -128,8 +128,8 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
         } else {
             Log.d(TAG, "Camera permission already granted");
-//            setupCamera();
-//            setupSocketIO();
+            setupCamera();
+            setupSocketIO();
         }
 
         // 檢查和請求NFC權限

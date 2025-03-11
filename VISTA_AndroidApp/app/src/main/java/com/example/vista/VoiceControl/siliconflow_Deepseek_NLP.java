@@ -18,6 +18,7 @@ public class siliconflow_Deepseek_NLP implements NLPService {
     private static final String TAG = "DeepSeekNLPService_debug";
     // Replace with your actual DeepSeek API key
     private static final String API_KEY = "sk-nvapiliqrltqkcpitxkbbxuwcmdfupyimcejzjfaydxihylb";
+    private static final int max_tokens = 5000;
 
     @Override
     public void processText(String text, NLPCallback callback) {
@@ -107,7 +108,7 @@ public class siliconflow_Deepseek_NLP implements NLPService {
         JSONObject payload = new JSONObject();
         payload.put("model", "deepseek-ai/DeepSeek-R1-Distill-Llama-8B");
         payload.put("stream", false);
-        payload.put("max_tokens", 5000);
+        payload.put("max_tokens", max_tokens);
         payload.put("temperature", 0.7);
         payload.put("top_p", 0.9);
         payload.put("frequency_penalty", 0.0);
