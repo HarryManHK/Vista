@@ -344,4 +344,36 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
         }
         return cursor;
     }
+
+    public String getStartPointStopId() {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        String startPointStopId = null;
+
+        try {
+            db = this.getReadableDatabase();
+            String query = "SELECT " + COLUMN_START_POINT_STOP_ID +
+                    " FROM " + TABLE_BUS_ROUTE +
+                    " ORDER BY " + COLUMN_ID +
+                    " DESC LIMIT 1";
+
+            cursor = db.rawQuery(query, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                startPointStopId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_POINT_STOP_ID));
+                Log.d(TAG, "getStartPointStopId: Retrieved start point stop ID: " + startPointStopId);
+            } else {
+                Log.d(TAG, "getStartPointStopId: No start point stop ID found");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getStartPointStopId: Exception occurred while retrieving start point stop ID", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            // Note: We don't close db here as SQLiteOpenHelper manages the database lifecycle
+        }
+
+        return startPointStopId;
+    }
+
 }

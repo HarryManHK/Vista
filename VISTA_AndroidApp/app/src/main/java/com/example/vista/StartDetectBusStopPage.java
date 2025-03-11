@@ -27,6 +27,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -56,6 +59,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private NfcAdapter nfcAdapter;
     private List<BusStop> busStops = new ArrayList<>();
     private PendingIntent nfcPendingIntent;
+    private BusDatabaseHelper dbHelper;  // 添加這行
 
     // BusStop內部類
     private static class BusStop {
@@ -100,6 +104,9 @@ public class StartDetectBusStopPage extends AppCompatActivity {
 
         cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
         detectedImageView = findViewById(R.id.detectedImageView);
+
+        // 初始化 DatabaseHelper
+        dbHelper = BusDatabaseHelper.getInstance(this);  // 添加這行
 
         // 初始化NFC適配器
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -439,17 +446,31 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         return sb.toString();
     }
 
-    // 添加checkNfcDataWithJson方法
     private void checkNfcDataWithJson(String nfcData) {
         Log.d(TAG, "Checking NFC data: " + nfcData);
+
+        // 獲取資料庫中的 start_point_stop_id
+        String startPointStopId = dbHelper.getStartPointStopId();
+
         for (BusStop busStop : busStops) {
             if (busStop.stop.equals(nfcData)) {
-                String successMessage = "NFC驗證成功！\n站點: " + busStop.nameTc;
-                runOnUiThread(() -> Toast.makeText(this, successMessage, Toast.LENGTH_LONG).show());
-                Log.d(TAG, "NFC data matched: " + busStop.nameTc);
+                String message;
+                if (startPointStopId != null && startPointStopId.equals(nfcData)) {
+                    message = "已到達起點站！\n站點: " + busStop.nameTc;
+                    // 如果需要，可以在這裡添加額外的起點到達邏輯
+                } else {
+                    message = "目前的車站不是起點站\n或是同一車站的不同等待位置\n" + busStop.nameTc;
+                }
+
+                String finalMessage = message;
+                runOnUiThread(() -> Toast.makeText(this, finalMessage, Toast.LENGTH_LONG).show());
+                Log.d(TAG, "NFC data matched: " + busStop.nameTc +
+                        ", isStartPoint: " + (startPointStopId != null && startPointStopId.equals(nfcData)));
                 return;
             }
         }
+
+        // 如果沒有匹配的站點
         runOnUiThread(() -> Toast.makeText(this, "NFC數據不匹配", Toast.LENGTH_LONG).show());
         Log.d(TAG, "No matching bus stop found for NFC data");
     }
