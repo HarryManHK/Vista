@@ -113,7 +113,7 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         // 紅線 (Polyline) 設定
         routeLine = new Polyline();
         routeLine.setColor(Color.RED);
-        routeLine.setWidth(5.0f);
+        routeLine.setWidth(10.0f);
         mapView.getOverlays().add(routeLine);
 
         getDBLocation();
