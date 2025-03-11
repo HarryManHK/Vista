@@ -113,7 +113,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         if (nfcAdapter == null) {
             Toast.makeText(this, "此設備不支持NFC", Toast.LENGTH_LONG).show();
             //finish();
-            return;
+            //return;
         }
 
         // 創建PendingIntent用於NFC前台分發

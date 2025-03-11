@@ -15,14 +15,11 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
 
-    // Database Name and Version
     private static final String DATABASE_NAME = "BusRouteDB.db";
-    private static final int DATABASE_VERSION = 3; // Incremented version to handle schema changes
+    private static final int DATABASE_VERSION = 3;
 
-    // Table Name
     public static final String TABLE_BUS_ROUTE = "BusRoute";
 
-    // Column Names
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_ROUTE_NUMBER = "route_number";
     public static final String COLUMN_TO = "to_station";
@@ -41,7 +38,6 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DESTINATION_LAT = "destination_lat";
     public static final String COLUMN_DESTINATION_LONG = "destination_long";
 
-    // Create Table SQL Statement with IF NOT EXISTS
     private static final String TABLE_CREATE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_BUS_ROUTE + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -63,25 +59,13 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_DESTINATION_LONG + " TEXT" +
                     ");";
 
-    // Singleton instance
     private static BusDatabaseHelper instance;
 
-    /**
-     * Private constructor to prevent direct instantiation.
-     *
-     * @param context The application context.
-     */
-    private BusDatabaseHelper(Context context) { // Changed to private for Singleton pattern
+    private BusDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         Log.d(TAG, "DatabaseHelper: Constructor called");
     }
 
-    /**
-     * Get the singleton instance of DatabaseHelper.
-     *
-     * @param context The application context.
-     * @return The singleton instance of DatabaseHelper.
-     */
     public static synchronized BusDatabaseHelper getInstance(Context context) {
         if (instance == null) {
             instance = new BusDatabaseHelper(context.getApplicationContext());
@@ -96,25 +80,9 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(TABLE_CREATE);
             Log.d(TAG, "onCreate: Database table created");
 
-            // Insert initial bus route data using the provided db instance
             insertOrUpdateBusRoute(db,
-                    "---", // routeNumber
-                    "---", // toStation
-                    "---", // toStation_ZH
-                    "---", // bound
-                    "---", // startPoint
-                    "---", // startPoint_ZH
-                    "---", // startPointSeq
-                    "---", // startPointStopId
-                    "---", // startPointLat
-                    "---", // startPointLong
-                    "---", // destination
-                    "---", // destination_ZH
-                    "---", // destinationStopId
-                    "---", // destinationSeq
-                    "---", // destinationLat
-                    "---"  // destinationLong
-            );
+                    "---", "---", "---", "---", "---", "---", "---", "---", "---", "---",
+                    "---", "---", "---", "---", "---", "---");
             Log.d(TAG, "onCreate: Initial bus route inserted");
         } catch (Exception e) {
             Log.e(TAG, "onCreate: Error creating database", e);
@@ -125,7 +93,6 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         try {
             if (oldVersion < 2) {
-                // Add new columns to the BusRoute table
                 db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_BOUND + " TEXT;");
                 db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_START_POINT_SEQ + " TEXT;");
                 db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_START_POINT_STOP_ID + " TEXT;");
@@ -142,35 +109,11 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + TABLE_BUS_ROUTE + " ADD COLUMN " + COLUMN_TO_ZH + " TEXT;");
                 Log.d(TAG, "onUpgrade: Added new columns to BusRoute table");
             }
-            // Future upgrades can be handled here
         } catch (Exception e) {
             Log.e(TAG, "onUpgrade: Error upgrading database", e);
         }
     }
 
-    /**
-     * Insert or Update a bus route in the database.
-     * If a route exists, it updates the existing record; otherwise, it inserts a new one.
-     *
-     * @param db                        The SQLiteDatabase instance to use.
-     * @param routeNumber               The route number (e.g., "43A").
-     * @param toStation                 The destination station (e.g., "佐敦(西九龍站)").
-     * @param toStation_ZH              The destination station Chinese(e.g., "佐敦(西九龍站)").
-     * @param bound                     The bound direction (e.g., "Outbound").
-     * @param startPoint                The start point (e.g., "2站").
-     * @param startPoint_ZH             The start point Chinese (e.g., "2站").
-     * @param startPointSeq             The sequence number for the start point.
-     * @param startPointStopId          The stop ID for the start point.
-     * @param startPointLat             The latitude for the start point.
-     * @param startPointLong            The longitude for the start point.
-     * @param destination               The destination point (e.g., "2站").
-     * @param destination_ZH            The destination point Chinese (e.g., "2站").
-     * @param destinationStopId         The stop ID for the destination.
-     * @param destinationSeq            The sequence number for the destination.
-     * @param destinationLat            The latitude for the destination.
-     * @param destinationLong           The longitude for the destination.
-     * @return The row ID of the newly inserted or updated row, or -1 if an error occurred.
-     */
     public long insertOrUpdateBusRoute(SQLiteDatabase db,
                                        String routeNumber,
                                        String toStation,
@@ -208,13 +151,11 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
 
         long rowId = -1;
         try {
-            // Assuming there's only one record, fetch its ID
             Cursor cursor = db.rawQuery("SELECT " + COLUMN_ID + " FROM " + TABLE_BUS_ROUTE + " LIMIT 1", null);
             if (cursor != null && cursor.moveToFirst()) {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
                 cursor.close();
 
-                // Update the existing record
                 int rowsAffected = db.update(TABLE_BUS_ROUTE, values, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
                 if (rowsAffected > 0) {
                     Log.d(TAG, "insertOrUpdateBusRoute: Updated existing bus route with ID " + id);
@@ -223,7 +164,6 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
                     Log.e(TAG, "insertOrUpdateBusRoute: Failed to update existing bus route");
                 }
             } else {
-                // Insert a new record since none exists
                 if (cursor != null) {
                     cursor.close();
                 }
@@ -241,28 +181,6 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
-    /**
-     * Insert a new bus route into the database.
-     * This method uses getWritableDatabase(), so it should not be called within onCreate() to avoid recursion.
-     *
-     * @param routeNumber           The route number (e.g., "43A").
-     * @param toStation             The destination station (e.g., "佐敦(西九龍站)").
-     * @param toStation_ZH          The destination station Chinese (e.g., "佐敦(西九龍站)").
-     * @param bound                 The bound direction (e.g., "Outbound").
-     * @param startPoint            The start point (e.g., "2站").
-     * @param startPoint_ZH         The start point Chinese(e.g., "2站").
-     * @param startPointSeq         The sequence number for the start point.
-     * @param startPointStopId      The stop ID for the start point.
-     * @param startPointLat         The latitude for the start point.
-     * @param startPointLong        The longitude for the start point.
-     * @param destination           The destination point (e.g., "2站").
-     * @param destination_ZH        The destination point Chinese (e.g., "2站").
-     * @param destinationStopId     The stop ID for the destination.
-     * @param destinationSeq        The sequence number for the destination.
-     * @param destinationLat        The latitude for the destination.
-     * @param destinationLong       The longitude for the destination.
-     * @return The row ID of the newly inserted row, or -1 if an error occurred.
-     */
     public long insertBusRoute(String routeNumber,
                                String toStation,
                                String toStation_ZH,
@@ -303,15 +221,9 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             Log.e(TAG, "insertBusRoute: Exception occurred while getting writable database", e);
         }
-        // Do not close the database here; SQLiteOpenHelper manages the database lifecycle
         return newRowId;
     }
 
-    /**
-     * Clear all entries from the BusRoute table.
-     *
-     * @param db The SQLiteDatabase instance to use.
-     */
     public void clearBusRouteTable(SQLiteDatabase db) {
         try {
             db.execSQL("DELETE FROM " + TABLE_BUS_ROUTE + ";");
@@ -321,11 +233,6 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    /**
-     * Retrieve the latest bus route from the database.
-     *
-     * @return A Cursor pointing to the latest bus route, or null if no data exists.
-     */
     public Cursor getLatestBusRoute() {
         SQLiteDatabase db = null;
         Cursor cursor = null;
@@ -335,7 +242,6 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery(query, null);
             if (cursor != null) {
                 Log.d(TAG, "getLatestBusRoute: Retrieved latest bus route");
-                // No need to moveToFirst() here; the calling method handles it
             } else {
                 Log.d(TAG, "getLatestBusRoute: No data found");
             }
@@ -370,10 +276,8 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
             if (cursor != null) {
                 cursor.close();
             }
-            // Note: We don't close db here as SQLiteOpenHelper manages the database lifecycle
         }
 
         return startPointStopId;
     }
-
 }
