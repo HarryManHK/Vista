@@ -7,89 +7,120 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp"
-    android:weightSum="5">
+    android:padding="16dp">
 
-    <!-- Main Menu text -->
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+    <!-- Wrapper Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:textColor="#3BA7C9"
-        android:text="@string/SettingActivity_Setting"
-        android:textSize="50sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <!-- Language Setting Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLanSetting"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="357dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/SettingActivity_LanguageSetting"
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
+        <!-- Header Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSettingPageSetting"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="end"
+                android:background="@drawable/button_setting"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:gravity="center"
+                android:text="@string/SettingActivity_Setting"
+                android:textSize="50sp"
+                android:textStyle="bold"
+                android:textColor="#3BA7C9" />
+        </LinearLayout>
 
-    <!-- Voice Setting Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnVoiceSetting"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="361dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/SettingActivity_VoiceSetting"
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
+        <!-- Top Buttons Container -->
+        <LinearLayout
+            android:layout_width="356dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLanSetting"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/SettingActivity_LanguageSetting"
+                android:textSize="22sp"
+                android:background="@drawable/btn_photo_gradient"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVoiceSetting"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/SettingActivity_VoiceSetting"
+                android:textSize="22sp"
+                android:background="@drawable/btn_photo_gradient"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+        </LinearLayout>
 
-    <!-- Empty Button 1 (Retained as requested) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="357dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text=""
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
-
-    <!-- Empty Button 2 (Retained as requested) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button5"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="361dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text=""
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
-
-
+        <!-- Bottom Buttons Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text=""
+                android:textSize="22sp"
+                android:background="@drawable/btn_photo_gradient"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button5"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginBottom="16dp"
+                android:text=""
+                android:textSize="22sp"
+                android:background="@drawable/btn_photo_gradient"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
