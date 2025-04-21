@@ -9,39 +9,67 @@
     android:padding="16dp">
 
     <!-- Logo -->
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="371dp"
-        android:layout_height="172dp"
-        android:layout_gravity="center"
-        android:src="@drawable/vista_logo" />
 
     <!-- Title -->
 
     <!-- Buttons Container -->
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:orientation="vertical"
         android:gravity="center">
 
-        <!-- Top Row: Setting Button -->
+        <!-- Setting Button -->
+
+        <!-- Top Row: Logo -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainMenuSetting"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="end"
+            android:background="@drawable/button_setting"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- VISTA Logo -->
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="217dp"
+                android:layout_height="172dp"
+                android:src="@drawable/vista_logo"
+                android:layout_marginBottom="32dp"/>
+        </LinearLayout>
+
+        <!-- Top Buttons Container -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="start">
-
-            <!-- Setting Button -->
+            android:layout_marginBottom="32dp"
+            android:gravity="center">
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMainMenuSetting"
+                android:id="@+id/btnMainMenuImgToTxt"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_photo_gradient"
-                android:text="@string/MainMenuPageActivity_Setting"
+                android:text="@string/MainMenuPageActivity_ImageToText"
                 android:textColor="@android:color/white"
                 android:textSize="22sp"
                 app:backgroundTint="@null"
@@ -49,19 +77,7 @@
                 app:cornerRadius="0dp"
                 app:strokeColor="@null"
                 app:strokeWidth="0dp" />
-        </LinearLayout>
 
-        <!-- Grid for Other Buttons -->
-        <GridLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:columnCount="2"
-            android:rowCount="2"
-            android:alignmentMode="alignMargins"
-            android:columnOrderPreserved="true">
-
-            <!-- Find Bus Stop Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button5"
                 android:layout_width="150dp"
@@ -77,24 +93,13 @@
                 app:cornerRadius="0dp"
                 app:strokeColor="@null"
                 app:strokeWidth="0dp" />
-
-            <!-- Image to Text Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMainMenuImgToTxt"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/btn_photo_gradient"
-                android:text="@string/MainMenuPageActivity_ImageToText"
-                android:textColor="@android:color/white"
-                android:textSize="22sp"
-                app:backgroundTint="@null"
-                app:backgroundTintMode="src_over"
-                app:cornerRadius="0dp"
-                app:strokeColor="@null"
-                app:strokeWidth="0dp" />
-
-            <!-- ChatBot Button -->
+        </LinearLayout>
+        <!-- Bottom Buttons Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnMainMenuChatbot"
                 android:layout_width="150dp"
@@ -110,17 +115,13 @@
                 app:cornerRadius="0dp"
                 app:strokeColor="@null"
                 app:strokeWidth="0dp" />
-
-            <!-- Voice Control Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVoiceControl"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_photo_gradient"
-                android:rotation="0"
-                android:rotationX="0"
-                android:rotationY="0"
                 android:text="Voice Control"
                 android:textColor="@android:color/white"
                 android:textSize="22sp"
@@ -129,6 +130,6 @@
                 app:cornerRadius="0dp"
                 app:strokeColor="@null"
                 app:strokeWidth="0dp" />
-        </GridLayout>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

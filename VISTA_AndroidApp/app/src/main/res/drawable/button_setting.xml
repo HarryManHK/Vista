@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 背景漸變 -->
+    <item android:drawable="@drawable/btn_photo_gradient"/>
+    <!-- 中央 settings icon -->
+    <item
+        android:drawable="@drawable/ic_gear"
+        android:width="48dp"
+        android:height="48dp"
+        android:gravity="center"/>
+</layer-list>
