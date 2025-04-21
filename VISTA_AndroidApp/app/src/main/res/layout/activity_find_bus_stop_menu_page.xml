@@ -6,86 +6,120 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp"
-    android:weightSum="5">
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/txtFindBusStopMenuPageBusRoute"
-        android:layout_width="wrap_content"
+    <!-- Wrapper Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#3BA7C9"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:gravity="center"/>
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <!-- Image to Text Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFindBusStopMenuPageEditDestination"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="357dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/FindBusStopMenuPage_EditDestination"
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
+        <!-- Header Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFindBusStopMenuPageSetting"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="end"
+                android:background="@drawable/button_setting"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+            <TextView
+                android:id="@+id/txtFindBusStopMenuPageBusRoute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:gravity="center"
+                android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#3BA7C9" />
+        </LinearLayout>
 
-    <!-- Find Bus Stop Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFindBusStopMenuPageShowArriveTIme"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="361dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/FindBusStopMenuPage_ShowArriveTIme"
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
+        <!-- Top Buttons Container -->
+        <LinearLayout
+            android:layout_width="356dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFindBusStopMenuPageEditDestination"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_photo_gradient"
+                android:text="@string/FindBusStopMenuPage_EditDestination"
+                android:textSize="22sp"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFindBusStopMenuPageShowArriveTIme"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_photo_gradient"
+                android:text="@string/FindBusStopMenuPage_ShowArriveTIme"
+                android:textSize="22sp"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+        </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFindBusStopMenuPageStartDetectBusStop"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="354dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/FindBusStopMenuPage_StartDetectBusStop"
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFindBusStopMenuPageBusArrivalAlert"
-        style="@style/SemiTransparentRoundedButton"
-        android:layout_width="355dp"
-        android:layout_height="63dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:text="@string/FindBusStopMenuPage_BusArrivalAlert"
-        android:textSize="22sp"
-        android:background="@drawable/btn_photo_gradient"
-        app:backgroundTint="@null"
-        app:backgroundTintMode="src_over"
-        app:cornerRadius="0dp"
-        app:strokeColor="@null"
-        app:strokeWidth="0dp"/>
-
-
+        <!-- Bottom Buttons Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFindBusStopMenuPageStartDetectBusStop"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_photo_gradient"
+                android:text="@string/FindBusStopMenuPage_StartDetectBusStop"
+                android:textSize="22sp"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFindBusStopMenuPageBusArrivalAlert"
+                style="@style/SemiTransparentRoundedButton"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_photo_gradient"
+                android:text="@string/FindBusStopMenuPage_BusArrivalAlert"
+                android:textSize="22sp"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="src_over"
+                app:cornerRadius="0dp"
+                app:strokeColor="@null"
+                app:strokeWidth="0dp" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
