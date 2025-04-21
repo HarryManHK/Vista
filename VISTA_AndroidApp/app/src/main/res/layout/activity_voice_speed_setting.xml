@@ -20,6 +20,7 @@
         android:textColor="#3BA7C9
 "/>
 
+    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <ListView
         android:id="@+id/lvLanguageSpeedSetting"
         android:layout_width="match_parent"
@@ -27,9 +28,8 @@
         android:layout_weight="1"
         android:background="@drawable/list_item_border"
         android:divider="@drawable/custom_divider"
-        android:textColor="#3BA7C9"/>
+        android:textColor="#3BA7C9" />
 
-    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

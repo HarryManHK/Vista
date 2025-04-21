@@ -37,7 +37,8 @@
         android:text=""
         android:textColor="#3BA7C9"
         android:textSize="26sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        />
 
     <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout

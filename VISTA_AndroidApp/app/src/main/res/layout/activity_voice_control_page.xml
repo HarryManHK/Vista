@@ -6,7 +6,8 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
+    android:padding="16dp"
+    >
 
     <!-- Display area for the recognized text -->
 

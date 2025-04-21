@@ -20,6 +20,7 @@
         android:textSize="26sp"
         android:textStyle="bold" />
 
+    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <ListView
         android:id="@+id/lvShowAllStop"
         android:layout_width="match_parent"
@@ -28,9 +29,8 @@
         android:background="@drawable/list_item_border"
         android:divider="@drawable/custom_divider"
         android:text="#3BA7C9
-"/>
+" />
 
-    <!-- LinearLayout for Confirm and Next Buttons at the Bottom -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
