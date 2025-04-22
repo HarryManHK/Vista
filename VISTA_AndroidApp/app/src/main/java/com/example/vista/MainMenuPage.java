@@ -57,7 +57,7 @@ public class MainMenuPage extends AppCompatActivity {
         checkAndRequestPermissions();
 
         // Initialize buttons
-        txtTitle = findViewById(R.id.textView2);
+        //txtTitle = findViewById(R.id.textView2);
         btnImageToText = findViewById(R.id.btnMainMenuImgToTxt);
         btnFindBusStop = findViewById(R.id.button5);
         btnSetting = findViewById(R.id.btnMainMenuSetting);
@@ -185,7 +185,7 @@ public class MainMenuPage extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         recreate();
-        txtTitle.setText(getString(R.string.MainMenuPageActivity_title));
+        //txtTitle.setText(getString(R.string.MainMenuPageActivity_title));
         btnSetting.setText(getString(R.string.MainMenuPageActivity_Setting));
         btnImageToText.setText(getString(R.string.MainMenuPageActivity_ImageToText));
         btnFindBusStop.setText(getString(R.string.MainMenuPageActivity_FindBusStop));
