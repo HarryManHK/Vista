@@ -32,6 +32,7 @@
             android:layout_marginEnd="16dp"
             android:layout_gravity="end"
             android:background="@drawable/button_setting"
+            android:onClick="openSettingPage"
             app:backgroundTint="@null"
             app:backgroundTintMode="src_over"
             app:cornerRadius="0dp"
