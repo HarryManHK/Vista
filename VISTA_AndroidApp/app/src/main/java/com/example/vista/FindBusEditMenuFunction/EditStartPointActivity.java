@@ -16,6 +16,7 @@ import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -89,6 +90,14 @@ public class EditStartPointActivity extends AppCompatActivity {
                 // Get the selected bus stop
                 BusStop selectedBusStop = busStops.get(selectedPosition);
                 updateDatabase(selectedBusStop);
+                tts.speak(new String[]{
+                    "Selected starting point is " + selectedBusStop.getNameEn() + ".",
+                    "已選起點是" + selectedBusStop.getNameZH() + "。"
+                });
+                // Navigate to destination selection
+                Intent intent = new Intent(EditStartPointActivity.this, EditDestinationActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(EditStartPointActivity.this, "Please select a start point bus stop", Toast.LENGTH_SHORT).show();
             }

@@ -1,6 +1,7 @@
 package com.example.vista.FindBusEditMenuFunction;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -72,8 +73,6 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         // Set up the "Confirm" button
         Button btnConfirm = findViewById(R.id.btnMainMenuConfirm);
         btnConfirm.setOnClickListener(v -> {
-
-
             if (selectedPosition != -1) {
                 // Update database with the selected route information
                 String selectedOutbound = "";
@@ -90,6 +89,14 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
                 Log.d(TAG,selectedPosition+", "+selectedOutbound_ZH +", "+selectedOutbound);
 
                 updateDatabase(selectedOutbound, selectedOutbound_ZH);
+                tts.speak(new String[]{
+                    "You've chosen " + selectedOutbound + " as your outbound stop.",
+                    "您已選擇" + selectedOutbound_ZH + "作為您的出站站點。"
+                });
+                // Navigate to start point selection
+                Intent intent = new Intent(EditOutboundDirectionActivity.this, EditStartPointActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(EditOutboundDirectionActivity.this, "Please select an outbound direction", Toast.LENGTH_SHORT).show();
             }

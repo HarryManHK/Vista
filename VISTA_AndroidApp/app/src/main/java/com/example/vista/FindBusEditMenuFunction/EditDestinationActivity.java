@@ -1,6 +1,7 @@
 package com.example.vista.FindBusEditMenuFunction;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.SoundEffectConstants;
 import com.example.vista.BusStopListViewAdapter;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
+import com.example.vista.FindBusStopMenuPage;
 import com.example.vista.R;
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
@@ -91,6 +93,13 @@ public class EditDestinationActivity extends AppCompatActivity {
                 // Get the selected bus stop
                 BusStop selectedBusStop = busStops.get(selectedPosition);
                 updateDatabase(selectedBusStop);
+                tts.speak(new String[]{"You've chosen " + selectedBusStop.getNameEn() + " as destination.","已選目的地是" + selectedBusStop.getNameZH()});
+                // Show user selected option
+                String displayName = languageCode.equals("en") ? selectedBusStop.getNameEn() : selectedBusStop.getNameZH();
+                Toast.makeText(EditDestinationActivity.this, "Selected: " + displayName, Toast.LENGTH_SHORT).show();
+                // Navigate to find bus stop menu
+                Intent intent = new Intent(EditDestinationActivity.this, FindBusStopMenuPage.class);
+                startActivity(intent);
                 finish();
             } else {
                 Toast.makeText(EditDestinationActivity.this, "Please select a destination bus stop", Toast.LENGTH_SHORT).show();

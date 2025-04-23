@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.R;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -26,6 +27,7 @@ public class EditRouteActivity extends AppCompatActivity {
     private EditText etBusRoute;
     private BusDatabaseHelper dbHelper;
     private String TAG = "EditRouteActivity";
+    private CustomTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,9 @@ public class EditRouteActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // 初始化 TTS
+        tts = new CustomTextToSpeech(this);
 
         // Initialize EditText and DatabaseHelper
         etBusRoute = findViewById(R.id.etBusRoute);
@@ -74,9 +79,18 @@ public class EditRouteActivity extends AppCompatActivity {
 
             if (result != -1) {
                 Toast.makeText(EditRouteActivity.this, "Bus route saved successfully", Toast.LENGTH_SHORT).show();
+                // voice assistance
+                tts.speak(new String[]{
+                    "You've chosen Route " + routeNumber + ".",
+                    "您已選擇" + routeNumber + "號線。"
+                });
                 Log.d(TAG, "Bus route saved with ID: " + result);
                 // Optionally, clear the input field after successful save
                 etBusRoute.setText("");
+                // Navigate to the outbound direction selection
+                Intent intent = new Intent(EditRouteActivity.this, EditOutboundDirectionActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(EditRouteActivity.this, "Error saving bus route", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "Error saving bus route");
