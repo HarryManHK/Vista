@@ -1,7 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:paddingBottom="24dp">
 
     <!-- 聊天訊息列表 -->
     <androidx.recyclerview.widget.RecyclerView
@@ -11,15 +14,53 @@
         android:layout_weight="1"
         android:padding="16dp"/>
 
-    <!-- 用戶輸入框 -->
-    <EditText
-        android:id="@+id/messageInput"
+    <!-- Input area: EditText and Send button side by side -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Type a message"
-        android:padding="8dp"/>
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#F7F7F9"
+        android:elevation="4dp">
 
-    <!-- 送出訊息按鈕 -->
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Type a message"
+            android:background="@drawable/bg_user_bubble"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:maxLines="4"
+            android:inputType="textMultiLine|textCapSentences"
+            android:textColor="#000000"
+            android:textColorHint="#000000"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/voiceInputButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#fff"
+            app:icon="@android:drawable/ic_btn_speak_now"
+            app:iconTint="#2774AE"
+            app:cornerRadius="24dp"
+            android:contentDescription="Voice Input"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sendButton"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#2774AE"
+            android:text="Send"
+            android:textColor="#fff"
+            app:cornerRadius="24dp"
+            app:icon="@android:drawable/ic_menu_send"
+            app:iconTint="#fff"
+            app:iconGravity="textStart"/>
+    </LinearLayout>
 
     <!-- 加載中的進度條 -->
     <ProgressBar
@@ -29,10 +70,4 @@
         android:layout_gravity="center"
         android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/sendButton"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:padding="8dp"
-        android:text="Send" />
 </LinearLayout>

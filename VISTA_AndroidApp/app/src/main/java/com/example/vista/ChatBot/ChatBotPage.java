@@ -5,6 +5,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.content.Intent;
+import android.content.ActivityNotFoundException;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,9 +36,12 @@ public class ChatBotPage extends AppCompatActivity {
     private RecyclerView chatRecyclerView;
     private EditText messageInput;
     private Button sendButton;
+    private Button voiceInputButton;
     private ProgressBar loadingProgressBar;
     private ChatAdapter chatAdapter;
     private List<Message> messageList;
+
+    private static final int VOICE_INPUT_REQUEST_CODE = 1011;
 
     private static final String TAG = "ChatBotPage_debug";  // For logging
 
@@ -45,11 +51,33 @@ public class ChatBotPage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat_bot_page);
 
+        // Enable immersive mode (hide navigation bar for fullscreen chat)
+        getWindow().getDecorView().setSystemUiVisibility(
+            android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+        );
+
         // Initialize views
         chatRecyclerView = findViewById(R.id.chatRecyclerView);
         messageInput = findViewById(R.id.messageInput);
         sendButton = findViewById(R.id.sendButton);
+        voiceInputButton = findViewById(R.id.voiceInputButton);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
+
+        voiceInputButton.setOnClickListener(v -> {
+            Intent intent = new Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL, android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, "請說話...");
+            try {
+                startActivityForResult(intent, VOICE_INPUT_REQUEST_CODE);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, "此裝置不支援語音輸入", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         messageList = new ArrayList<>();
         chatAdapter = new ChatAdapter(messageList);
@@ -68,6 +96,18 @@ public class ChatBotPage extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == VOICE_INPUT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            ArrayList<String> results = data.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty()) {
+                messageInput.setText(results.get(0));
+                messageInput.setSelection(messageInput.getText().length());
+            }
+        }
     }
 
     private void sendUserMessage(String message) throws JSONException {
@@ -135,31 +175,12 @@ public class ChatBotPage extends AppCompatActivity {
                                             .getJSONObject("delta")
                                             .optString("content", "");
 
-                                    String reasoning_content = jsonObject.getJSONArray("choices")
-                                            .getJSONObject(0)
-                                            .getJSONObject("delta")
-                                            .optString("reasoning_content", "");
-
                                     // Only process and display non-null and non-empty content
                                     if (!content.equals("null") && !content.trim().isEmpty()) {
                                         // Append the content gradually
                                         for (char c : content.toCharArray()) {
                                             partialResponse.append(c);
                                             final String currentText = partialResponse.toString();
-
-                                            // Update the UI with each new chunk
-                                            runOnUiThread(() -> {
-                                                messageList.set(thinkingMessagePosition, new Message(currentText, false));
-                                                chatAdapter.notifyItemChanged(thinkingMessagePosition);
-                                                chatRecyclerView.scrollToPosition(thinkingMessagePosition);
-                                            });
-                                        }
-                                    }
-                                    if (!reasoning_content.equals("null") && !reasoning_content.trim().isEmpty()) {
-                                        for (char c : reasoning_content.toCharArray()) {
-                                            partialResponse.append(c);
-                                            final String currentText = partialResponse.toString();
-
                                             // Update the UI with each new chunk
                                             runOnUiThread(() -> {
                                                 messageList.set(thinkingMessagePosition, new Message(currentText, false));

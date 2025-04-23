@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.vista"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.vista"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -26,8 +26,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -38,27 +38,19 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.play.services.location)
+    implementation(libs.cardview)
 
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // OkHttp
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation(libs.okhttp3)
 
-    // Socket.IO client
+    // Socket.IO client (not in catalog)
     implementation("io.socket:socket.io-client:2.1.0") {
         exclude(group = "org.json", module = "json") // if needed
     }
 
-    // Map
-    implementation ("org.osmdroid:osmdroid-android:6.1.0")
-
-    //UI library
-    implementation("com.google.android.material:material:1.9.0")
-
-    implementation ("androidx.cardview:cardview:1.0.0")
-
-
+    implementation(libs.osmdroid)
 }

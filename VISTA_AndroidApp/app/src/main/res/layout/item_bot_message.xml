@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="end"
-    android:layout_marginBottom="10dp"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:gravity="start"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:layout_marginBottom="12dp">
 
-    <TextView
-        android:id="@+id/messageTextView"
-        android:layout_width="wrap_content"
+    <!-- Avatar -->
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_robot"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_avatar_circle"
+        android:scaleType="centerCrop"/>
+
+    <!-- Message bubble -->
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:background="#ECECEC"
-        android:maxWidth="250dp"
-        android:padding="10dp"
-        android:textColor="#3BA7C9" />
+        android:layout_weight="1"
+        android:gravity="start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="280dp"
+            android:background="@drawable/bg_bot_bubble"
+            android:textColor="#2774AE"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:elevation="2dp"/>
+    </LinearLayout>
 </LinearLayout>
