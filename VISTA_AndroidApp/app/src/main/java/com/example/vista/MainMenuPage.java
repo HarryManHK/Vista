@@ -10,6 +10,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import androidx.appcompat.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;  // Import this for runtime permissions
 import androidx.core.content.ContextCompat;
@@ -22,6 +27,23 @@ import com.example.vista.ChatBot.*;
 public class MainMenuPage extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 101;
+    // 權限列表（如有新增請在此補上）
+    private static String[] getRequiredPermissions() {
+        List<String> perms = new ArrayList<>();
+        perms.add(Manifest.permission.CAMERA);
+        perms.add(Manifest.permission.INTERNET);
+        perms.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        perms.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        perms.add(Manifest.permission.ACCESS_NETWORK_STATE);
+        perms.add(Manifest.permission.RECORD_AUDIO);
+        perms.add(Manifest.permission.NFC);
+        // 只有 Android 10 (API 29) 或以下才檢查儲存權限
+        if (android.os.Build.VERSION.SDK_INT < 30) {
+            perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            perms.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        return perms.toArray(new String[0]);
+    }
 
     private TextView txtTitle;
     private MaterialButton btnImageToText, btnFindBusStop, btnSetting, btnChatbot, btnVoiceControl;
@@ -125,28 +147,16 @@ public class MainMenuPage extends AppCompatActivity {
 
     // Method to check and request necessary permissions.
     private void checkAndRequestPermissions() {
-        String[] permissions = {
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.INTERNET,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.RECORD_AUDIO
-        };
-
-        boolean allGranted = true;
-        for (String permission : permissions) {
+        String[] requiredPermissions = getRequiredPermissions();
+        List<String> missingPermissions = new ArrayList<>();
+        for (String permission : requiredPermissions) {
             if (ContextCompat.checkSelfPermission(this, permission)
                     != PackageManager.PERMISSION_GRANTED) {
-                allGranted = false;
-                break;
+                missingPermissions.add(permission);
             }
         }
-
-        if (!allGranted) {
-            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+        if (!missingPermissions.isEmpty()) {
+            ActivityCompat.requestPermissions(this, missingPermissions.toArray(new String[0]), PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -154,18 +164,52 @@ public class MainMenuPage extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            boolean grantedAll = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    grantedAll = false;
-                    break;
+            List<String> denied = new ArrayList<>();
+            for (int i = 0; i < permissions.length; i++) {
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    denied.add(permissions[i]);
                 }
             }
-            if (!grantedAll) {
-                Toast.makeText(this, "Not all permissions were granted. Some features may not work.", Toast.LENGTH_LONG).show();
+            if (!denied.isEmpty()) {
+                StringBuilder msg = new StringBuilder("以下權限未授權：\n");
+                for (String p : denied) {
+                    msg.append("- ").append(getPermissionLabel(p)).append("\n");
+                }
+                msg.append("\n部分功能可能無法正常運作。\n\n請在設定中手動開啟權限。");
+                new AlertDialog.Builder(this)
+                        .setTitle("權限提示")
+                        .setMessage(msg.toString())
+                        .setPositiveButton("前往設定", (d, w) -> openAppSettings())
+                        .setNegativeButton("取消", null)
+                        .show();
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    // 權限顯示友善名稱
+    private String getPermissionLabel(String permission) {
+        switch (permission) {
+            case Manifest.permission.CAMERA: return "相機";
+            case Manifest.permission.READ_EXTERNAL_STORAGE:
+            case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                if (android.os.Build.VERSION.SDK_INT >= 30) return "（Android 11+ 不需手動授權）";
+                return permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE) ? "讀取儲存空間" : "寫入儲存空間";
+            case Manifest.permission.INTERNET: return "網路";
+            case Manifest.permission.ACCESS_FINE_LOCATION: return "精確定位";
+            case Manifest.permission.ACCESS_COARSE_LOCATION: return "粗略定位";
+            case Manifest.permission.ACCESS_NETWORK_STATE: return "網路狀態";
+            case Manifest.permission.RECORD_AUDIO: return "麥克風";
+            case Manifest.permission.NFC: return "NFC";
+            default: return permission;
+        }
+    }
+
+    // 跳轉到 App 設定頁面
+    private void openAppSettings() {
+        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+        startActivity(intent);
     }
 
     // Function to announce the button label using TextToSpeech

@@ -42,6 +42,7 @@ public class ChatBotPage extends AppCompatActivity {
     private List<Message> messageList;
 
     private static final int VOICE_INPUT_REQUEST_CODE = 1011;
+    private static final int PERMISSION_REQUEST_CODE = 1022;
 
     private static final String TAG = "ChatBotPage_debug";  // For logging
 
@@ -69,6 +70,10 @@ public class ChatBotPage extends AppCompatActivity {
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
 
         voiceInputButton.setOnClickListener(v -> {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_CODE);
+                return;
+            }
             Intent intent = new Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
             intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL, android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
             intent.putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, "請說話...");
@@ -78,6 +83,11 @@ public class ChatBotPage extends AppCompatActivity {
                 Toast.makeText(this, "此裝置不支援語音輸入", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // 啟動時自動檢查權限
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_CODE);
+        }
 
         messageList = new ArrayList<>();
         chatAdapter = new ChatAdapter(messageList);
@@ -96,6 +106,23 @@ public class ChatBotPage extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+            if (!allGranted) {
+                Toast.makeText(this, "未授權麥克風權限，語音輸入無法使用", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override

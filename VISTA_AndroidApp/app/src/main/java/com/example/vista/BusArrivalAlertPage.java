@@ -73,6 +73,8 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     private TextView currentLocationTextView;
     private LocationRequest locationRequest;
     private static final int LOCATION_REQUEST_CODE = 100;
+    private static final int PERMISSION_REQUEST_CODE = 2001; // for location
+
     private MyLocationNewOverlay mLocationOverlay;
     private List<BusStopOverlayItem> busStopItems = new ArrayList<>();
     private List<GeoPoint> waypoints = new ArrayList<>();
@@ -122,7 +124,13 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                 .setFastestInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        getCurrentLocation();
+        // 檢查定位權限
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED ||
+            androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+        } else {
+            getCurrentLocation();
+        }
 
         mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), mapView);
         mLocationOverlay.enableMyLocation();
