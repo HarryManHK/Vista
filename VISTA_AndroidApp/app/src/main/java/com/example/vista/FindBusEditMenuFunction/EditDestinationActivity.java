@@ -17,6 +17,7 @@ import com.example.vista.BusStopListViewAdapter;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -52,6 +53,7 @@ public class EditDestinationActivity extends AppCompatActivity {
     // Retrieve language setting (from database)
     private String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
     private String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+    private CustomTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,8 @@ public class EditDestinationActivity extends AppCompatActivity {
 
         // Initialize ListView and DatabaseHelper
         lvShowAllStop = findViewById(R.id.lvShowAllStop);
+        // Initialize TextToSpeech
+        tts = new CustomTextToSpeech(this);
         dbHelper = BusDatabaseHelper.getInstance(this);
         busStops = new ArrayList<>();
 
@@ -76,6 +80,8 @@ public class EditDestinationActivity extends AppCompatActivity {
         // Set up the ListView's click listener to handle selection
         lvShowAllStop.setOnItemClickListener((parent, view, position, id) -> {
             selectItem(position, view);
+            BusStop selectedBusStop = busStops.get(position);
+            tts.speak(new String[]{selectedBusStop.getNameEn(), selectedBusStop.getNameZH()});
         });
 
         // Set up the "Confirm" button
@@ -119,8 +125,9 @@ public class EditDestinationActivity extends AppCompatActivity {
         selectedPosition = position;
         ((BusStopListViewAdapter) adapter).setSelectedPosition(position);
         view.playSoundEffect(SoundEffectConstants.CLICK);
+        BusStop selectedBusStop = busStops.get(position);
+        tts.speak(new String[]{selectedBusStop.getNameEn(), selectedBusStop.getNameZH()});
     }
-
 
     /**
      * Selects the next item in the ListView. Cycles back to the first item if at the end.
@@ -153,8 +160,10 @@ public class EditDestinationActivity extends AppCompatActivity {
                 visibleItem.playSoundEffect(SoundEffectConstants.CLICK);
             }
         }
+        // Speak selected destination bus stop
+        BusStop selectedBusStop = busStops.get(selectedPosition);
+        tts.speak(new String[]{selectedBusStop.getNameEn(), selectedBusStop.getNameZH()});
     }
-
 
     /**
      * AsyncTask to download bus stops data from the API.

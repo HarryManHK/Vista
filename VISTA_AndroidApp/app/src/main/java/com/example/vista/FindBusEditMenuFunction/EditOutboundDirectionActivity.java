@@ -15,6 +15,7 @@ import android.view.SoundEffectConstants;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,7 +43,7 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
     private int selectedPosition = -1; // Track the selected item in the ListView
     private String[] origMultiLan;
     private String[] destMultiLan;
-
+    private CustomTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +55,18 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
         // Load bus route data and call the API
         getBusRouteData();
 
+        // Initialize TextToSpeech
+        tts = new CustomTextToSpeech(this);
+
         // Set up the ListView's click listener to change background color and play sound
         lvShowRouteOutbound.setOnItemClickListener((parent, view, position, id) -> {
             selectItem(position, view);
+            // Speak selected outbound direction
+            if (position == 0) {
+                tts.speak(new String[]{destMultiLan[0], destMultiLan[1]});
+            } else if (position == 1) {
+                tts.speak(new String[]{origMultiLan[0], origMultiLan[1]});
+            }
         });
 
         // Set up the "Confirm" button
@@ -123,6 +133,12 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
 
         // Play click sound
         view.playSoundEffect(SoundEffectConstants.CLICK);
+        // Speak selected outbound direction
+        if (position == 0) {
+            tts.speak(new String[]{destMultiLan[0], destMultiLan[1]});
+        } else if (position == 1) {
+            tts.speak(new String[]{origMultiLan[0], origMultiLan[1]});
+        }
     }
 
     /**
@@ -152,6 +168,12 @@ public class EditOutboundDirectionActivity extends AppCompatActivity {
             selectedPosition = nextPosition;
             // Optionally, you can notify the user to manually select
             Toast.makeText(this, "Please select the highlighted item", Toast.LENGTH_SHORT).show();
+        }
+        // Speak selected outbound direction
+        if (selectedPosition == 0) {
+            tts.speak(new String[]{destMultiLan[0], destMultiLan[1]});
+        } else if (selectedPosition == 1) {
+            tts.speak(new String[]{origMultiLan[0], origMultiLan[1]});
         }
     }
 
