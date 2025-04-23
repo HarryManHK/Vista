@@ -2,9 +2,11 @@
 package com.example.vista;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -25,25 +27,18 @@ import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class VoiceControlPage extends AppCompatActivity {
 
-    private boolean isRecording = false;
-    private MediaRecorder recorder;
-    private String audioFilePath;
     private MaterialButton btnStart;
     private TextView tvResult;
     private static final int PERMISSION_REQUEST_CODE = 200;
+    private static final int SPEECH_REQUEST_CODE = 300;
     private static final String TAG = "VoiceControlPage_debug";
 
     @Override
@@ -63,43 +58,30 @@ public class VoiceControlPage extends AppCompatActivity {
         // Check and request permissions if needed
         if (!checkPermissions()) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET},
                     PERMISSION_REQUEST_CODE);
         }
 
         btnStart = findViewById(R.id.btnVoiceControl_start);
         tvResult = findViewById(R.id.tvResult);
-        // Set file path (using .3gp format)
-        audioFilePath = getExternalCacheDir().getAbsolutePath() + "/test.3gp";
-        Log.d(TAG, "Audio file path: " + audioFilePath);
 
         btnStart.setOnClickListener(v -> {
             if (!checkPermissions()) {
                 tvResult.setText("Permissions not granted");
                 ActivityCompat.requestPermissions(VoiceControlPage.this,
-                        new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET},
                         PERMISSION_REQUEST_CODE);
                 return;
             }
-            if (!isRecording) {
-                startRecording();
-                btnStart.setText("Stop");
-            } else {
-                stopRecording();
-                btnStart.setText("Start");
-                sendAudioToServer();
-            }
-            isRecording = !isRecording;
+            startGoogleVoiceRecognition();
         });
     }
 
     private boolean checkPermissions() {
         int recordPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         int internetPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
-        int storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return recordPermission == PackageManager.PERMISSION_GRANTED &&
-                internetPermission == PackageManager.PERMISSION_GRANTED &&
-                storagePermission == PackageManager.PERMISSION_GRANTED;
+                internetPermission == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -119,86 +101,31 @@ public class VoiceControlPage extends AppCompatActivity {
         }
     }
 
-    private void startRecording() {
+    private void startGoogleVoiceRecognition() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "zh-HK"); // Or Locale.getDefault()
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "請開始說話...");
         try {
-            recorder = new MediaRecorder();
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            recorder.setOutputFile(audioFilePath);
-            recorder.prepare();
-            recorder.start();
-            Log.d(TAG, "Recording started successfully");
+            startActivityForResult(intent, SPEECH_REQUEST_CODE);
         } catch (Exception e) {
-            Log.e(TAG, "startRecording error: " + e.getMessage());
+            tvResult.setText("Google 語音服務不可用: " + e.getMessage());
         }
     }
 
-    private void stopRecording() {
-        try {
-            if (recorder != null) {
-                recorder.stop();
-                recorder.release();
-                recorder = null;
-                Log.d(TAG, "Recording stopped successfully");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "stopRecording error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Sends the recorded audio file to an ASR service for voice-to-text conversion.
-     */
-    private void sendAudioToServer() {
-        new Thread(() -> {
-            try {
-                File audioFile = new File(audioFilePath);
-                if (!audioFile.exists()) {
-                    runOnUiThread(() -> tvResult.setText("Error: Audio file not found."));
-                    return;
-                }
-                byte[] audioBytes = new byte[(int) audioFile.length()];
-                FileInputStream fis = new FileInputStream(audioFile);
-                int bytesRead = fis.read(audioBytes);
-                fis.close();
-                Log.d(TAG, "Bytes read: " + bytesRead);
-
-                // Convert audio to Base64 string
-                String base64Audio = Base64.encodeToString(audioBytes, Base64.NO_WRAP);
-                org.json.JSONObject jsonPayload = new org.json.JSONObject();
-                jsonPayload.put("wav", base64Audio);
-
-                URL url = new URL("https://speechtotextapi.harryman.cc/asr");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                connection.setDoOutput(true);
-                connection.setDoInput(true);
-
-                OutputStream os = connection.getOutputStream();
-                os.write(jsonPayload.toString().getBytes(StandardCharsets.UTF_8));
-                os.close();
-
-                InputStream in = new BufferedInputStream(connection.getInputStream());
-                String response = convertStreamToString(in);
-                in.close();
-                connection.disconnect();
-                Log.d(TAG, "ASR Response: " + response);
-
-                org.json.JSONObject responseJson = new org.json.JSONObject(response);
-                // Assuming the ASR API returns the recognized text under key "res"
-                String resultText = responseJson.optString("res", "No result");
-                runOnUiThread(() -> tvResult.setText(resultText));
-
-                // Process the recognized text with DeepSeek NLP
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty()) {
+                String resultText = results.get(0);
+                tvResult.setText(resultText);
                 processASRResult(resultText);
-
-            } catch (Exception e) {
-                Log.e(TAG, "sendAudioToServer error: " + e.getMessage());
-                runOnUiThread(() -> tvResult.setText("Error: " + e.getMessage()));
+            } else {
+                tvResult.setText("未能識別語音");
             }
-        }).start();
+        }
     }
 
     private void processASRResult(String resultText) {
@@ -233,17 +160,6 @@ public class VoiceControlPage extends AppCompatActivity {
                 runOnUiThread(() -> tvResult.setText("Error: " + e.getMessage()));
             }
         });
-    }
-
-    private String convertStreamToString(InputStream is) throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
-        reader.close();
-        return sb.toString();
     }
 
     public void updateResult(String message) {
