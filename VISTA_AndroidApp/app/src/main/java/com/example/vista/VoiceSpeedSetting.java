@@ -99,8 +99,8 @@ public class VoiceSpeedSetting extends AppCompatActivity {
             Log.d(TAG, "onItemClick: Selected speed = " + selectedSpeed + "x");
             // Speak selected speed
             tts.speak(new String[]{
-                "voice speed" + selectedSpeed + " times.",
-                "語速" + selectedSpeed + " 倍。"
+                "selected voice speed" + selectedSpeed + " times.",
+                "已選語速" + selectedSpeed + " 倍。"
             });
         });
 

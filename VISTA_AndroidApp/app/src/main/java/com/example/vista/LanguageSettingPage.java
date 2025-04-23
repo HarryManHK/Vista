@@ -104,8 +104,8 @@ public class LanguageSettingPage extends AppCompatActivity {
                 selectedPosition = position;
                 // TTS 報讀選擇
                 customTextToSpeech.speak(new String[]{
-                    "You've chosen " + languages[selectedPosition] + ".",
-                    "您已選擇 " + languages[selectedPosition]
+                    "You've chosen " + languages[selectedPosition] + " interface.",
+                    "您已選擇 " + languages[selectedPosition] + "介面。"
                 });
             }
         });

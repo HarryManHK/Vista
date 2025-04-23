@@ -50,6 +50,9 @@ public class VoiceLanguageSetting extends AppCompatActivity {
         // A sample list of language codes you want to display
         final String[] languages = {"en", "zh"};
 
+        // Human-friendly labels for TTS
+        final String[] languageLabels = {"English", "繁體中文"};
+
         // Populate the ListView using an ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -65,9 +68,10 @@ public class VoiceLanguageSetting extends AppCompatActivity {
                 String selectedLanguage = (String) parent.getItemAtPosition(position);
                 setVoiceLanguage(selectedLanguage);
                 // TTS 報讀選擇
+                String displayLabel = languageLabels[position];
                 tts.speak(new String[]{
-                    "You've chosen " + selectedLanguage + ".",
-                    "您已選擇語言：" + selectedLanguage
+                    "You've chosen voice language " + displayLabel + ".",
+                    "您已選擇語音語言：" + displayLabel
                 });
             }
         });
@@ -79,9 +83,10 @@ public class VoiceLanguageSetting extends AppCompatActivity {
             if (pos != AdapterView.INVALID_POSITION) {
                 String sel = (String) lvVoiceLanguageSetting.getItemAtPosition(pos);
                 // TTS 報讀確認
+                String displayLabel = languageLabels[pos];
                 tts.speak(new String[]{
-                    "Language set to " + sel + ".",
-                    "語言已設定為：" + sel
+                    "Language voice set to " + displayLabel + ".",
+                    "語音語言已設定為：" + displayLabel
                 });
                 // 導航回 SettingPage
                 startActivity(new Intent(VoiceLanguageSetting.this, SettingPage.class));
