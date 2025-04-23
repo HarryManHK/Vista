@@ -17,8 +17,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.vista.TextToSpeech.CustomTextToSpeech;
-
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
+import com.example.vista.SettingPage;
 
 public class LanguageSettingPage extends AppCompatActivity {
 
@@ -100,8 +100,13 @@ public class LanguageSettingPage extends AppCompatActivity {
         // Handle item selection
         lvLanguageSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 selectedPosition = position;
+                // TTS 報讀選擇
+                customTextToSpeech.speak(new String[]{
+                    "You've chosen " + languages[selectedPosition] + ".",
+                    "您已選擇 " + languages[selectedPosition]
+                });
             }
         });
 
@@ -178,43 +183,6 @@ public class LanguageSettingPage extends AppCompatActivity {
     /**
      * Confirm the selected language and apply the setting
      */
-//    private void confirmSelection() {
-//
-//        if (selectedPosition == -1) {
-//            Toast.makeText(this, "Please select a language.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        String selectedLanguageCode = languageCodes[selectedPosition];
-//        String language;
-//        String country;
-//
-//        if (selectedLanguageCode.equals("en")) {
-//            language = "en";
-//            country = "US"; // You can set your desired default country code
-//        } else if (selectedLanguageCode.equals("zh")) {
-//            language = "zh";
-//            country = "HK";
-//        } else {
-//            // Handle other cases if necessary
-//            language = "en";
-//            country = "US";
-//        }
-//
-//        // Save the setting to the database
-//        boolean isSaved = saveLanguageSetting(language, country);
-//        if (isSaved) {
-//            // Set the locale using LocaleHelper
-//            LocaleHelper.setLocale(this, language, country);
-//
-//            // Inform the user and refresh the activity
-//            Toast.makeText(this, "Language changed to " + languages[selectedPosition], Toast.LENGTH_SHORT).show();
-//            recreate(); // Restart activity to apply changes
-//        } else {
-//            Toast.makeText(this, "Failed to save language setting.", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     private void confirmSelection() {
         if (selectedPosition == -1) {
             Toast.makeText(this, "Please select a language.", Toast.LENGTH_SHORT).show();
@@ -248,49 +216,19 @@ public class LanguageSettingPage extends AppCompatActivity {
             // Inform the user that the language has been changed
             Toast.makeText(this, "Language changed to " + languages[selectedPosition], Toast.LENGTH_SHORT).show();
 
-            // Restart the app to apply the changes
-            restartApp();
+            // TTS 播報確認並跳轉至設置頁面
+            customTextToSpeech.speak(new String[]{
+                "Language set to " + languages[selectedPosition] + ".",
+                "語言已設定為 " + languages[selectedPosition]
+            });
+            startActivity(new Intent(LanguageSettingPage.this, SettingPage.class));
+            finish();
         } else {
             Toast.makeText(this, "Failed to save language setting.", Toast.LENGTH_SHORT).show();
         }
 
         // Re-enable the button after the action is complete
         btnConfirm.setEnabled(true);
-    }
-
-    /**
-     * Restart the app and apply the language settings
-     */
-    private void restartApp() {
-        // Create an Intent to launch the main activity again
-        Intent intent = new Intent(this, MainMenuPage.class); // Replace MainActivity with your main activity
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear the activity stack and start a new task
-
-        // Apply the language change (if necessary)
-        String selectedLanguageCode = languageCodes[selectedPosition];
-        String language;
-        String country;
-
-        if (selectedLanguageCode.equals("en")) {
-            language = "en";
-            country = "US"; // You can set your desired default country code
-        } else if (selectedLanguageCode.equals("zh")) {
-            language = "zh";
-            country = "HK";
-        } else {
-            language = "en";
-            country = "US";
-        }
-
-        // Save the language setting to the database
-        saveLanguageSetting(language, country);
-
-        // Set the locale using LocaleHelper (to apply the language setting)
-        LocaleHelper.setLocale(this, language, country);
-
-        // Start the activity again and finish the current one
-        startActivity(intent);
-        finish(); // This will close the current activity
     }
 
     @Override

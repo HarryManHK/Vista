@@ -1,5 +1,6 @@
 package com.example.vista;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.AdapterView;
@@ -14,6 +15,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+import com.example.vista.SettingPage;
 
 public class VoiceSpeedSetting extends AppCompatActivity {
 
@@ -30,6 +33,7 @@ public class VoiceSpeedSetting extends AppCompatActivity {
     private float selectedSpeed = 1.0f; // default
 
     private SettingDatabaseHelper dbHelper;
+    private CustomTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,9 @@ public class VoiceSpeedSetting extends AppCompatActivity {
 
         // Acquire database helper
         dbHelper = SettingDatabaseHelper.getInstance(getApplicationContext());
+
+        // Initialize TTS
+        tts = new CustomTextToSpeech(this);
 
         // Adjust for system bars (status bar, navigation bar)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -90,6 +97,11 @@ public class VoiceSpeedSetting extends AppCompatActivity {
         lvLanguageSpeedSetting.setOnItemClickListener((AdapterView<?> parent, android.view.View view, int position, long id) -> {
             selectedSpeed = speeds[position];
             Log.d(TAG, "onItemClick: Selected speed = " + selectedSpeed + "x");
+            // Speak selected speed
+            tts.speak(new String[]{
+                "voice speed" + selectedSpeed + " times.",
+                "語速" + selectedSpeed + " 倍。"
+            });
         });
 
         // Confirm button: saves the selected speed to the database
@@ -103,6 +115,14 @@ public class VoiceSpeedSetting extends AppCompatActivity {
                         "Voice speed updated to " + selectedSpeed + "x",
                         Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onClick: Voice speed successfully updated");
+                // Speak confirmation and navigate to settings
+                tts.speak(new String[]{
+                    "Voice speed updated to " + selectedSpeed + " times.",
+                    "語速已更新為 " + selectedSpeed + " 倍。"
+                });
+                Intent intent = new Intent(VoiceSpeedSetting.this, SettingPage.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(VoiceSpeedSetting.this,
                         "Failed to update voice speed.",
