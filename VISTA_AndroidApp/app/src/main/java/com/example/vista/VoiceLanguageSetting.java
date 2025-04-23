@@ -1,9 +1,11 @@
 package com.example.vista;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -15,10 +17,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+import com.example.vista.SettingPage;
 
 public class VoiceLanguageSetting extends AppCompatActivity {
 
     private ListView lvVoiceLanguageSetting;
+    private Button btnConfirm, btnNext;
+    private CustomTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,11 @@ public class VoiceLanguageSetting extends AppCompatActivity {
         // Initialize ListView
         lvVoiceLanguageSetting = findViewById(R.id.lvVoiceLanguageSetting);
 
+        // Initialize TTS
+        tts = new CustomTextToSpeech(this);
+        btnConfirm = findViewById(R.id.btnLanguageSpeedConfirm);
+        btnNext = findViewById(R.id.btnLanguageSpeedNext);
+
         // A sample list of language codes you want to display
         final String[] languages = {"en", "zh"};
 
@@ -51,9 +62,32 @@ public class VoiceLanguageSetting extends AppCompatActivity {
         lvVoiceLanguageSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedLanguage = adapter.getItem(position);
-                // Call your custom function to update the DB
+                String selectedLanguage = (String) parent.getItemAtPosition(position);
                 setVoiceLanguage(selectedLanguage);
+                // TTS 報讀選擇
+                tts.speak(new String[]{
+                    "You've chosen " + selectedLanguage + ".",
+                    "您已選擇語言：" + selectedLanguage
+                });
+            }
+        });
+
+        // Confirm button click listener
+        btnConfirm.setOnClickListener(v -> {
+            // 確保有選擇
+            int pos = lvVoiceLanguageSetting.getCheckedItemPosition();
+            if (pos != AdapterView.INVALID_POSITION) {
+                String sel = (String) lvVoiceLanguageSetting.getItemAtPosition(pos);
+                // TTS 報讀確認
+                tts.speak(new String[]{
+                    "Language set to " + sel + ".",
+                    "語言已設定為：" + sel
+                });
+                // 導航回 SettingPage
+                startActivity(new Intent(VoiceLanguageSetting.this, SettingPage.class));
+                finish();
+            } else {
+                Toast.makeText(this, "Please select a language.", Toast.LENGTH_SHORT).show();
             }
         });
     }
