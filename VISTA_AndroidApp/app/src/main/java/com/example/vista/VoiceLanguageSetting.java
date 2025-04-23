@@ -50,6 +50,10 @@ public class VoiceLanguageSetting extends AppCompatActivity {
         // A sample list of language codes you want to display
         final String[] languages = {"en", "zh"};
 
+        // Human-friendly labels for TTS (English first, then Chinese)
+        final String[] EnglishlanguageLabels = {"English", "Traditional Chinese"};
+        final String[] ChineseLanguageLabels = {"英文", "中文(香港)"};
+        
         // Populate the ListView using an ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -64,10 +68,10 @@ public class VoiceLanguageSetting extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedLanguage = (String) parent.getItemAtPosition(position);
                 setVoiceLanguage(selectedLanguage);
-                // TTS 報讀選擇
+                // TTS 報讀選擇（依陣列順序：英文、中文）
                 tts.speak(new String[]{
-                    "You've chosen " + selectedLanguage + ".",
-                    "您已選擇語言：" + selectedLanguage
+                    "You've chosen voice language " + EnglishlanguageLabels[position],
+                    "您已選擇語音語言：" +ChineseLanguageLabels[position]
                 });
             }
         });
@@ -78,10 +82,10 @@ public class VoiceLanguageSetting extends AppCompatActivity {
             int pos = lvVoiceLanguageSetting.getCheckedItemPosition();
             if (pos != AdapterView.INVALID_POSITION) {
                 String sel = (String) lvVoiceLanguageSetting.getItemAtPosition(pos);
-                // TTS 報讀確認
+                // TTS 報讀確認（依陣列順序：英文、中文）
                 tts.speak(new String[]{
-                    "Language set to " + sel + ".",
-                    "語言已設定為：" + sel
+                    "Language voice set to " + EnglishlanguageLabels[pos] + ".",
+                    "語音語言已設定為：" + ChineseLanguageLabels[pos]
                 });
                 // 導航回 SettingPage
                 startActivity(new Intent(VoiceLanguageSetting.this, SettingPage.class));
