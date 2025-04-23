@@ -39,12 +39,13 @@
             app:strokeColor="@null"
             app:strokeWidth="0dp" />
 
+        <!-- Top Buttons Container -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="314dp"
+            android:layout_height="215dp"
             android:layout_marginTop="0dp"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <!-- VISTA Logo -->
 
@@ -52,11 +53,10 @@
                 android:id="@+id/imageView2"
                 android:layout_width="217dp"
                 android:layout_height="172dp"
-                android:src="@drawable/vista_logo"
-                android:layout_marginBottom="32dp"/>
+                android:layout_marginBottom="32dp"
+                android:src="@drawable/vista_logo" />
         </LinearLayout>
 
-        <!-- Top Buttons Container -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,6 +67,7 @@
                 android:id="@+id/btnMainMenuImgToTxt"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_photo_gradient"
@@ -83,6 +84,7 @@
                 android:id="@+id/button5"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_photo_gradient"
@@ -105,6 +107,7 @@
                 android:id="@+id/btnMainMenuChatbot"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_photo_gradient"
@@ -120,6 +123,7 @@
                 android:id="@+id/btnVoiceControl"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/btn_photo_gradient"

@@ -23,18 +23,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnVoiceSettingPageSetting"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="end"
-                android:background="@drawable/button_setting"
-                android:onClick="openSettingPage"
-                app:backgroundTint="@null"
-                app:backgroundTintMode="src_over"
-                app:cornerRadius="0dp"
-                app:strokeColor="@null"
-                app:strokeWidth="0dp" />
+
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
