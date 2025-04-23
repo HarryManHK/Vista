@@ -52,5 +52,7 @@ dependencies {
         exclude(group = "org.json", module = "json") // if needed
     }
 
+    implementation ("androidx.core:core:1.12.0")
+
     implementation(libs.osmdroid)
 }

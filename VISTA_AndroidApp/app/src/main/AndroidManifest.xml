@@ -11,12 +11,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.NFC" />
-    <uses-feature android:name="android.hardware.nfc"
+
+    <uses-feature
+        android:name="android.hardware.nfc"
         android:required="true" />
-
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -33,6 +33,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VISTA"
         tools:targetApi="31">
+        <activity
+            android:name=".VoiceControl.ByBus.VoiceControlEditStartPoint"
+            android:exported="false" />
+        <activity
+            android:name=".VoiceControl.ByBus.VoiceControlEditEndPoint"
+            android:exported="false" />
+        <activity
+            android:name=".VoiceControl.ByBus.VoiceControlEditDestination"
+            android:exported="false" />
+        <activity
+            android:name=".VoiceControl.ByBus.VoiceControlBusRoute"
+            android:exported="false" />
         <activity
             android:name=".VoiceControlPage"
             android:exported="false" />
@@ -71,27 +83,29 @@
             android:exported="false" />
         <activity
             android:name=".BusArrivalAlertPage"
-            android:exported="false" />
-        <!-- NFC Activity -->
+            android:exported="false" /> <!-- NFC Activity -->
         <activity
             android:name=".StartDetectBusStopPage"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ShowArriveTimePage"
             android:exported="false" />

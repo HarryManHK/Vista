@@ -1,6 +1,7 @@
 package com.example.vista.VoiceControl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -17,29 +18,9 @@ public class ByBusCommand implements Command{
     }
 
     public void execute(JSONObject json){
-        // 如果 json 為 null，則在 tvResult 顯示提示訊息
-        if (json == null) {
-            if (context instanceof VoiceControlPage) {
-                ((VoiceControlPage) context).updateResult("請說出搭巴士指令，例如：搭巴士 42A 從 荃灣 到 佐敦");
-            }
-            return;
-        }
-
-        // 解析搭巴士相關資訊
-        String routeNumber = json.optString("routeNumber", "");
-        String startPoint = json.optString("startPoint", "");
-        String destination = json.optString("destination", "");
-        Log.d(TAG, "Executing command: 搭巴士, routeNumber=" + routeNumber +
-                ", startPoint=" + startPoint + ", destination=" + destination);
-
-        BusDatabaseHelper dbHelper = BusDatabaseHelper.getInstance(context);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dbHelper.insertOrUpdateBusRoute(db,
-                routeNumber,
-                destination, destination, "Outbound",
-                startPoint, startPoint,
-                "", "", "", "",
-                destination, destination,
-                "", "", "", "");
+        // 直接跳轉到 VoiceControlBusRoute 頁面
+        Intent intent = new Intent(context, com.example.vista.VoiceControl.ByBus.VoiceControlBusRoute.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }

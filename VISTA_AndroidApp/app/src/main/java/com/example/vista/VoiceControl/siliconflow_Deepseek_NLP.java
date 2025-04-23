@@ -58,9 +58,16 @@ public class siliconflow_Deepseek_NLP implements NLPService {
                     if (choices.length() > 0) {
                         JSONObject choice = choices.getJSONObject(0);
                         String content = choice.getJSONObject("message").getString("content");
-                        // Parse the returned JSON command
-                        JSONObject commandJson = new JSONObject(content);
-                        callback.onSuccess(commandJson);
+                        // 嘗試將 content 轉為 JSONObject，若失敗則直接回傳純文字內容
+                        try {
+                            JSONObject commandJson = new JSONObject(content);
+                            callback.onSuccess(commandJson);
+                        } catch (Exception e) {
+                            // 回傳純文字結果包裝在 JSONObject 裡
+                            JSONObject textJson = new JSONObject();
+                            textJson.put("content", content.trim());
+                            callback.onSuccess(textJson);
+                        }
                     } else {
                         callback.onFailure(new Exception("No choices in response"));
                     }

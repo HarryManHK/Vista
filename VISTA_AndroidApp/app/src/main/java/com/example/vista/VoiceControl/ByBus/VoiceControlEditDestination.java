@@ -1,0 +1,481 @@
+package com.example.vista.VoiceControl.ByBus;
+
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.SoundEffectConstants;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.example.vista.DatabaseHelper.BusDatabaseHelper;
+import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
+import com.example.vista.FindBusEditMenuFunction.EditStartPointActivity;
+import com.example.vista.R;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+import com.example.vista.VoiceControl.NLPCallback;
+import com.example.vista.VoiceControl.siliconflow_Deepseek_NLP;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class VoiceControlEditDestination extends AppCompatActivity {
+    private com.example.vista.VoiceControl.ByBus.VoiceControlEditDestination.DownloadTask task = null;
+    private ListView lvShowRouteOutbound;
+    private String[] listItems;
+    private String BusRoute;
+    private String TAG = "EditOutboundDirectionActivity_debug";
+    private int selectedPosition = -1; // Track the selected item in the ListView
+    private String[] origMultiLan;
+    private String[] destMultiLan;
+    private CustomTextToSpeech tts;
+    private BusDatabaseHelper dbHelper;
+    private SettingDatabaseHelper SettingDBHelper;
+    private static final int REQ_CODE_SPEECH_INPUT = 2001;
+    private siliconflow_Deepseek_NLP nlpService;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_voice_control_edit_destination);
+
+        lvShowRouteOutbound = findViewById(R.id.lvShowRouteOutbound);
+        // Initialize DatabaseHelpers and TTS
+        dbHelper = BusDatabaseHelper.getInstance(this);
+        SettingDBHelper = SettingDatabaseHelper.getInstance(this);
+        tts = new CustomTextToSpeech(this);
+        nlpService = new siliconflow_Deepseek_NLP();
+
+        // Load bus route data and call the API
+        getBusRouteData();
+
+        // Set up the ListView's click listener to change background color and play sound
+        lvShowRouteOutbound.setOnItemClickListener((parent, view, position, id) -> {
+            selectItem(position, view);
+            // Speak selected outbound direction
+            if (position == 0) {
+                tts.speak(new String[]{destMultiLan[0], destMultiLan[1]});
+            } else if (position == 1) {
+                tts.speak(new String[]{origMultiLan[0], origMultiLan[1]});
+            }
+        });
+
+        // Set up the "Confirm" button
+        Button btnConfirm = findViewById(R.id.btnMainMenuConfirm);
+        btnConfirm.setOnClickListener(v -> {
+            if (selectedPosition != -1) {
+                // Update database with the selected route information
+                String selectedOutbound = "";
+                String selectedOutbound_ZH = "";
+
+                if (selectedPosition == 0){
+                    selectedOutbound_ZH = destMultiLan[1];
+                    selectedOutbound = destMultiLan[0];
+                }else if(selectedPosition == 1){
+                    selectedOutbound_ZH = origMultiLan[1];
+                    selectedOutbound = origMultiLan[0];
+                }
+
+                Log.d(TAG,selectedPosition+", "+selectedOutbound_ZH +", "+selectedOutbound);
+
+                updateDatabase(selectedOutbound, selectedOutbound_ZH);
+                tts.speak(new String[]{
+                        "You've chosen " + selectedOutbound + " as your outbound stop.",
+                        "您已選擇" + selectedOutbound_ZH + "作為您的出站站點。"
+                });
+                // Navigate to start point selection
+                Intent intent = new Intent(com.example.vista.VoiceControl.ByBus.VoiceControlEditDestination.this, EditStartPointActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "請先選擇出站方向", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Set up the "Next" button
+        Button btnNext = findViewById(R.id.btnMainMenuNext);
+        btnNext.setOnClickListener(v -> {
+            selectNextItem();
+        });
+
+        // 頁面一打開自動啟動 Google Voice Service
+        promptSpeechInput();
+
+        // Start the DownloadTask after BusRoute is set
+        if (BusRoute != null && !BusRoute.isEmpty()) {
+            if (task == null || task.getStatus() == AsyncTask.Status.FINISHED) {
+                task = new com.example.vista.VoiceControl.ByBus.VoiceControlEditDestination.DownloadTask(this);
+                task.execute("https://data.etabus.gov.hk/v1/transport/kmb/route/" + BusRoute + "/outbound/1");
+            }
+        } else {
+            Toast.makeText(this, "Bus route data not available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (tts != null) {
+            tts.shutdown();
+        }
+    }
+
+    /**
+     * Handles the selection of a ListView item.
+     *
+     * @param position The position of the item clicked.
+     * @param view     The view of the item clicked.
+     */
+    private void selectItem(int position, View view) {
+        // Reset the background of the previously selected item
+        if (selectedPosition != -1) {
+            View prevView = lvShowRouteOutbound.getChildAt(selectedPosition);
+            if (prevView != null) {
+                prevView.setBackgroundColor(getResources().getColor(android.R.color.transparent)); // reset to transparent
+            }
+        }
+
+        // Set the background of the currently selected item
+        view.setBackgroundColor(getResources().getColor(android.R.color.darker_gray)); // selected color
+        selectedPosition = position; // Update selected position
+
+        // Play click sound
+        view.playSoundEffect(SoundEffectConstants.CLICK);
+        // Speak selected outbound direction
+        if (position == 0) {
+            tts.speak(new String[]{destMultiLan[0], destMultiLan[1]});
+        } else if (position == 1) {
+            tts.speak(new String[]{origMultiLan[0], origMultiLan[1]});
+        }
+    }
+
+    /**
+     * Selects the next item in the ListView. Cycles back to the first item if at the end.
+     */
+    private void selectNextItem() {
+        if (listItems == null || listItems.length == 0) {
+            Toast.makeText(this, "No items to select", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int nextPosition;
+        if (selectedPosition == -1) {
+            nextPosition = 0; // Select first item if none selected
+        } else {
+            nextPosition = (selectedPosition + 1) % listItems.length; // Cycle to next item
+        }
+
+        // Get the view for the next position
+        View nextView = lvShowRouteOutbound.getChildAt(nextPosition);
+        if (nextView != null) {
+            selectItem(nextPosition, nextView);
+            lvShowRouteOutbound.setSelection(nextPosition); // Scroll to the selected item if needed
+        } else {
+            // If the view is not visible, set the selection and let the user click to see it
+            lvShowRouteOutbound.setSelection(nextPosition);
+            selectedPosition = nextPosition;
+            // Optionally, you can notify the user to manually select
+            Toast.makeText(this, "Please select the highlighted item", Toast.LENGTH_SHORT).show();
+        }
+        // Speak selected outbound direction
+        if (selectedPosition == 0) {
+            tts.speak(new String[]{destMultiLan[0], destMultiLan[1]});
+        } else if (selectedPosition == 1) {
+            tts.speak(new String[]{origMultiLan[0], origMultiLan[1]});
+        }
+    }
+
+    /**
+     * AsyncTask to download bus route data from the API.
+     */
+    private class DownloadTask extends AsyncTask<String, Integer, String> {
+        private Context mContext;
+        // Constructor to pass context to the AsyncTask
+        public DownloadTask(Context context) {
+            this.mContext = context;
+        }
+
+        @Override
+        protected String doInBackground(String... values) {
+            InputStream inputStream = null;
+            String result = "";
+            try {
+                URL url = new URL(values[0]);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
+                con.connect();
+
+                inputStream = con.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+                inputStream.close();
+                result = stringBuilder.toString();
+            } catch (Exception e) {
+                Log.e(TAG, "DownloadTask Error: " + e.toString());
+                result = null;
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result == null) {
+                Toast.makeText(mContext, "Failed to fetch data", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                // Parse the result as a JSONObject
+                JSONObject jsonObject = new JSONObject(result);
+
+                // Extract the "data" JSONObject
+                JSONObject dataObject = jsonObject.getJSONObject("data");
+
+                // Retrieve language setting (from database)
+                String[] languageSetting = SettingDatabaseHelper.getInstance(mContext).getLanguageSetting();
+                String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+
+                // Determine which fields to show based on the language setting
+                String orig = languageCode.equals("zh") ? dataObject.getString("orig_tc") : dataObject.getString("orig_en");
+                String dest = languageCode.equals("zh") ? dataObject.getString("dest_tc") : dataObject.getString("dest_en");
+
+                destMultiLan = new String[2];
+                destMultiLan[0] = dataObject.getString("dest_en");
+                destMultiLan[1] = dataObject.getString("dest_tc");
+
+                origMultiLan = new String[2];
+                origMultiLan[0] = dataObject.getString("orig_en");
+                origMultiLan[1] = dataObject.getString("orig_tc");
+
+                // Set these values to listItems array
+                listItems = new String[2]; // Only need 2 items for now
+                listItems[0] = dest;  // "dest_en" to listItems[0] with label
+                listItems[1] = orig;  // "orig_en" to listItems[1] with label
+
+                // Null check for origMultiLan and destMultiLan before use
+                if (origMultiLan == null || destMultiLan == null) {
+                    Toast.makeText(mContext, "Language data not loaded", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Set the adapter for the ListView
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,
+                        R.layout.list_item_white_text, listItems);
+                lvShowRouteOutbound.setAdapter(adapter);
+            } catch (Exception e) {
+                Log.e("EditOutboundDirection", "onPostExecute Error: " + e.toString());
+                Toast.makeText(mContext, "Error parsing data", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * 啟動 Google Voice Service 進行語音輸入
+     */
+    private void promptSpeechInput() {
+        Intent intent = new Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, java.util.Locale.getDefault());
+        intent.putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, "請說出欲前往的巴士站");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (android.content.ActivityNotFoundException a) {
+            Toast.makeText(this, "語音辨識服務不可用", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_SPEECH_INPUT && resultCode == RESULT_OK && data != null) {
+            try {
+                java.util.ArrayList<String> result = data.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS);
+                if (result != null && !result.isEmpty()) {
+                    String recognized = result.get(0);
+                    tts.speak(new String[]{
+                        "Input received: " + recognized + ". Finding the most relevant bus stop...",
+                        "已接收語音：" + recognized + "，正在為你選擇最相關的巴士站..."
+                    });
+                    sendBusStopsToNLP(recognized, listItems);
+                } else {
+                    Toast.makeText(this, "語音辨識失敗，請再試一次", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Voice input error: ", e);
+                Toast.makeText(this, "語音輸入發生錯誤", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * 語音辨識結果 + 候選站名送到 Deepseek NLP，根據 NLP 結果自動選站
+     */
+    private void sendBusStopsToNLP(String userSpeech, String[] candidates) {
+        // 將所有候選站名組成一個字串
+        StringBuilder sb = new StringBuilder();
+        for (String stop : candidates) {
+            sb.append(stop).append("\n");
+        }
+        String busStopList = sb.toString();
+        // 新 prompt：只要求回傳最相關的站名本身，不要 JSON、不加多餘文字
+        String nlpPrompt = "候選站名如下：\n" + busStopList
+                + "請根據以上候選站名，判斷哪一個最接近『" + userSpeech + "』。只回傳最相關的站名本身，不要回傳任何 JSON、指令或多餘文字。";
+        nlpService.processText(nlpPrompt, new NLPCallback() {
+            @Override
+            public void onSuccess(org.json.JSONObject commandJson) {
+                runOnUiThread(() -> {
+                    String nlpResult = "";
+                    if (commandJson != null) {
+                        // 嘗試從 content、result、text 等欄位取，或直接 toString
+                        if (commandJson.has("content")) {
+                            nlpResult = commandJson.optString("content");
+                        } else if (commandJson.has("result")) {
+                            nlpResult = commandJson.optString("result");
+                        } else if (commandJson.has("text")) {
+                            nlpResult = commandJson.optString("text");
+                        } else {
+                            nlpResult = commandJson.toString();
+                        }
+                        // 若回傳內容還包在大括號內，嘗試去掉
+                        nlpResult = nlpResult.replaceAll("[{}\"\n]", "").trim();
+                    }
+                    int foundIdx = -1;
+                    for (int i = 0; i < candidates.length; i++) {
+                        if (candidates[i].replaceAll("\\s", "").contains(nlpResult.replaceAll("\\s", "")) || nlpResult.replaceAll("\\s", "").contains(candidates[i].replaceAll("\\s", ""))) {
+                            foundIdx = i;
+                            break;
+                        }
+                    }
+                    if (foundIdx != -1) {
+                        // 自動選擇該站名
+                        View itemView = lvShowRouteOutbound.getChildAt(foundIdx);
+                        if (itemView != null) {
+                            selectItem(foundIdx, itemView);
+                        } else {
+                            selectItem(foundIdx, null);
+                        }
+                        selectedPosition = foundIdx;
+                        tts.speak(new String[]{
+                            "Selected bus stop: " + candidates[foundIdx],
+                            "已自動選擇巴士站：" + candidates[foundIdx]
+                        });
+                    } else {
+                        tts.speak(new String[]{
+                            "Sorry, no matching bus stop found.",
+                            "抱歉，沒有找到相符的巴士站"
+                        });
+                    }
+                });
+            }
+            @Override
+            public void onFailure(Exception e) {
+                runOnUiThread(() -> Toast.makeText(VoiceControlEditDestination.this, "NLP服務異常", Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    /**
+     * Retrieves the latest bus route data from the database.
+     */
+    private void getBusRouteData() {
+        Cursor cursor = null;
+        try {
+            cursor = dbHelper.getLatestBusRoute();
+            if (cursor != null && cursor.moveToFirst()) {
+                String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
+                BusRoute = routeNumber; // Get bus route number
+            } else {
+                Log.d(TAG, "Error loading bus route data.");
+                Toast.makeText(this, "No bus route data found", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getBusRouteData Error: " + e.toString());
+            Toast.makeText(this, "Error loading bus route data", Toast.LENGTH_SHORT).show();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    /**
+     * Updates the database with the selected outbound direction.
+     *
+     * @param selectedOutbound The selected outbound direction.
+     */
+    private void updateDatabase(String selectedOutbound,String selectedOutbound_ZH) {
+        // Determine the bound based on the selected position
+        String bound;
+        if (selectedPosition == 1) {
+            bound = "inbound";
+        } else if (selectedPosition == 0) {
+            bound = "outbound";
+        } else {
+            bound = "---"; // Default or unknown bound
+        }
+
+        // Placeholder values for the other columns
+        String startPoint = "---"; // Replace with actual start point if available
+        String startPoint_ZH = "---"; // Replace with actual start point if available
+        String startPointSeq = "---"; // Replace with actual sequence if available
+        String startPointStopId = "---"; // Replace with actual stop ID if available
+        String startPointLat = "---"; // Replace with actual latitude if available
+        String startPointLong = "---"; // Replace with actual longitude if available
+        String destination = "---"; // Replace with actual destination if available
+        String destination_ZH = "---"; // Replace with actual destination if available
+        String destinationStopId = "---"; // Replace with actual stop ID if available
+        String destinationSeq = "---"; // Replace with actual sequence if available
+        String destinationLat = "---"; // Replace with actual latitude if available
+        String destinationLong = "---"; // Replace with actual longitude if available
+
+        // Update the database with the selected information
+        long result = dbHelper.insertOrUpdateBusRoute(
+                dbHelper.getWritableDatabase(),
+                BusRoute,
+                selectedOutbound,    // to_station
+                selectedOutbound_ZH, // to_station_ZH
+                bound,               // bound
+                startPoint,          // start_point
+                startPoint_ZH,          // start_point
+                startPointSeq,       // start_point_seq
+                startPointStopId,    // start_point_stop_id
+                startPointLat,       // start_point_lat
+                startPointLong,      // start_point_long
+                destination,         // destination
+                destination_ZH,         // destination
+                destinationStopId,   // destination_stop_id
+                destinationSeq,      // destination_seq
+                destinationLat,      // destination_lat
+                destinationLong      // destination_long
+        );
+
+        if (result != -1) {
+            Log.d(TAG, "Database updated successfully with selected bus route");
+            Toast.makeText(this, "Outbound direction updated", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.e(TAG, "Error updating database");
+            Toast.makeText(this, "Error updating database", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
