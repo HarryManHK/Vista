@@ -15,6 +15,8 @@ import com.example.vista.BusStopListViewAdapter;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
 import com.example.vista.DatabaseHelper.SettingDatabaseHelper;
 import com.example.vista.R;
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -49,6 +51,7 @@ public class EditStartPointActivity extends AppCompatActivity {
     // Retrieve language setting (from database)
     private String[] languageSetting = SettingDatabaseHelper.getInstance(this).getLanguageSetting();
     private String languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+    private CustomTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +70,17 @@ public class EditStartPointActivity extends AppCompatActivity {
         dbHelper = BusDatabaseHelper.getInstance(this);
         busStops = new ArrayList<>();
 
+        // Initialize TextToSpeech
+        tts = new CustomTextToSpeech(this);
+
         // Load bus route data
         getBusRouteData();
 
         // Set up the ListView's click listener to handle selection
         lvShowAllStop.setOnItemClickListener((parent, view, position, id) -> {
             selectItem(position, view);
+            BusStop selectedBusStop = busStops.get(position);
+            tts.speak(new String[]{selectedBusStop.getNameEn(), selectedBusStop.getNameZH()});
         });
 
         // Set up the "Confirm" button
@@ -82,6 +90,14 @@ public class EditStartPointActivity extends AppCompatActivity {
                 // Get the selected bus stop
                 BusStop selectedBusStop = busStops.get(selectedPosition);
                 updateDatabase(selectedBusStop);
+                tts.speak(new String[]{
+                    "Selected starting point is " + selectedBusStop.getNameEn() + ".",
+                    "已選起點是" + selectedBusStop.getNameZH() + "。"
+                });
+                // Navigate to destination selection
+                Intent intent = new Intent(EditStartPointActivity.this, EditDestinationActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(EditStartPointActivity.this, "Please select a start point bus stop", Toast.LENGTH_SHORT).show();
             }
@@ -149,6 +165,9 @@ public class EditStartPointActivity extends AppCompatActivity {
                 visibleItem.playSoundEffect(SoundEffectConstants.CLICK);
             }
         }
+
+        BusStop selectedBusStop = busStops.get(nextPosition);
+        tts.speak(new String[]{selectedBusStop.getNameEn(), selectedBusStop.getNameZH()});
     }
 
 

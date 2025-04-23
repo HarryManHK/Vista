@@ -28,8 +28,8 @@
         android:layout_weight="1"
         android:background="@drawable/list_item_border"
         android:divider="@drawable/custom_divider"
-        android:text="#3BA7C9
-" />
+        android:text="#3BA7C9"
+        />
 
     <LinearLayout
         android:orientation="horizontal"
