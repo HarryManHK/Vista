@@ -234,4 +234,9 @@ public class MainMenuPage extends AppCompatActivity {
         btnImageToText.setText(getString(R.string.MainMenuPageActivity_ImageToText));
         btnFindBusStop.setText(getString(R.string.MainMenuPageActivity_FindBusStop));
     }
+
+    public void openSettingPage(View view) {
+        Intent intent = new Intent(this, SettingPage.class);
+        startActivity(intent);
+    }
 }
