@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:padding="15dp"
+    >
 
     <!-- Wrapper Container -->
     <LinearLayout
@@ -17,19 +17,19 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <!-- Header Container -->
+    <!-- Header Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:layout_gravity="center">
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/VoiceSettingPage_title"
                 android:textSize="50sp"
                 android:textStyle="bold"
@@ -38,20 +38,20 @@
 
         <!-- Top Buttons Container -->
         <LinearLayout
-            android:layout_width="356dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <com.google.android.material.button.MaterialButton
+            android:orientation="horizontal"
+            android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLanSetting"
                 style="@style/SemiTransparentRoundedButton"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/btn_photo_gradient"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="center"
+
+            android:background="@drawable/btn_photo_gradient"
                 android:text="@string/VoiceSettingPage_VoiceLanguageSetting"
                 android:textSize="22sp"
                 app:backgroundTint="@null"
@@ -64,8 +64,9 @@
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
+
                 android:background="@drawable/btn_photo_gradient"
                 android:text="@string/VoiceSettingPage_VoiceSpeedSetting"
                 android:textSize="22sp"
@@ -87,8 +88,9 @@
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
+
                 android:background="@drawable/btn_photo_gradient"
                 android:text="@string/VoiceSettingPage_VoiceGenderSetting"
                 android:textSize="22sp"
@@ -102,7 +104,8 @@
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
                 android:background="@drawable/btn_photo_gradient"
                 android:text=""
                 android:textSize="22sp"

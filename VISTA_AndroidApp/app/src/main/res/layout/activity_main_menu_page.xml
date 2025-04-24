@@ -6,22 +6,16 @@
     android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp">
-
-    <!-- Logo -->
-
-    <!-- Title -->
-
-    <!-- Buttons Container -->
-
-
+    android:padding="15dp"
+    >
+    <!-- Main Menu Page Layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:orientation="vertical"
         android:gravity="center">
-
+        <!-- Wrapper Container -->
         <!-- Setting Button -->
 
         <!-- Top Row: Logo -->
@@ -33,6 +27,7 @@
             android:layout_gravity="end"
             android:background="@drawable/button_setting"
             android:onClick="openSettingPage"
+            android:contentDescription="@string/setting"
             app:backgroundTint="@null"
             app:backgroundTintMode="src_over"
             app:cornerRadius="0dp"
@@ -61,6 +56,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
+            <!-- Action Buttons Container -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnMainMenuImgToTxt"
                 android:layout_width="150dp"
@@ -100,6 +96,7 @@
             android:orientation="horizontal"
 
             android:gravity="center">
+            <!-- Chatbot Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnMainMenuChatbot"
                 android:layout_width="150dp"
@@ -114,6 +111,7 @@
                 app:cornerRadius="0dp"
                 app:strokeColor="@null"
                 app:strokeWidth="0dp" />
+            <!-- Voice Control Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVoiceControl"
                 android:layout_width="150dp"
