@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatBotPage extends AppCompatActivity {
+    private com.example.vista.TextToSpeech.CustomTextToSpeech customTextToSpeech;
 
     private Deepseek_R1_siliconflow_Client chatGPTClient;
     private RecyclerView chatRecyclerView;
@@ -48,6 +49,7 @@ public class ChatBotPage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        customTextToSpeech = new com.example.vista.TextToSpeech.CustomTextToSpeech(this);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat_bot_page);
@@ -213,6 +215,10 @@ public class ChatBotPage extends AppCompatActivity {
                                                 messageList.set(thinkingMessagePosition, new Message(currentText, false));
                                                 chatAdapter.notifyItemChanged(thinkingMessagePosition);
                                                 chatRecyclerView.scrollToPosition(thinkingMessagePosition);
+                                                // 自動語音播報
+                                                if (customTextToSpeech != null) {
+                                                    customTextToSpeech.speak(new String[]{currentText, currentText});
+                                                }
                                             });
                                         }
                                     }

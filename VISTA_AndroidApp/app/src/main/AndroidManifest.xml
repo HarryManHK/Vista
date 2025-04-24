@@ -34,6 +34,9 @@
         android:theme="@style/Theme.VISTA"
         tools:targetApi="31">
         <activity
+            android:name=".BusDetectionPage"
+            android:exported="false" />
+        <activity
             android:name=".VoiceControl.ByBus.VoiceControlEditStartPoint"
             android:exported="false" />
         <activity
