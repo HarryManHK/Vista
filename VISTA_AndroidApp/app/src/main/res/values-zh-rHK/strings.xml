@@ -8,6 +8,8 @@
     <string name="MainMenuPageActivity_ImageToText">圖片生成文字</string>
     <string name="MainMenuPageActivity_Setting">設定</string>
     <string name="MainMenuPageActivity_FindBusStop">搭巴士</string>
+    <string name="MainMenuPageActivity_ChatBot">聊天機械人</string>
+    <string name="MainMenuPageActivity_VoiceControl">語音控制</string>
 
     <string name="SettingActivity_LanguageSetting">語言設定</string>
     <string name="SettingActivity_VoiceSetting">語音設定</string>
@@ -48,5 +50,9 @@
     <string name="VoiceSettingPage_VoiceGenderSetting">配音性別設定</string>
 
     <string name="EditRoute_openKeyboard">打開鍵盤</string>
+    <string name="VoiceControlPage_Start">開始</string>
+    <string name="showArriveTimePage_currentBusStop">現時巴士站：</string>
+    <string name="selectImageDetectPage_result">結果：</string>
+    <string name="FindBusStopMenuPage_BusRouteInfo">路線:42A\n前往:佐敦(西九龍站)\n起點: xxx站\n終點:xxx站</string>
 
 </resources>

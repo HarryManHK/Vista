@@ -29,7 +29,7 @@
         style="@style/SemiTransparentRoundedButton"
         android:layout_width="168dp"
         android:layout_height="100dp"
-        android:text="Start"
+        android:text="@string/VoiceControlPage_Start"
         android:textSize="22sp"
         android:background="@drawable/btn_photo_gradient"
         app:backgroundTint="@null"

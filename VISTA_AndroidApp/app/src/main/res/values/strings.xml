@@ -8,7 +8,9 @@
     <string name="MainMenuPageActivity_title">Main Menu</string>
     <string name="MainMenuPageActivity_ImageToText">Image To Text</string>
     <string name="MainMenuPageActivity_Setting">Setting</string>
-    <string name="MainMenuPageActivity_FindBusStop">Bus Function</string>
+    <string name="MainMenuPageActivity_FindBusStop">BUS&#10;FUNCTION</string>
+    <string name="MainMenuPageActivity_ChatBot">Chat Bot</string>
+    <string name="MainMenuPageActivity_VoiceControl">Voice Control</string>
 
     <string name="SettingActivity_Setting">Setting</string>
     <string name="SettingActivity_LanguageSetting">Language Setting</string>
@@ -50,6 +52,10 @@
     <string name="VoiceSettingPage_VoiceGenderSetting">Voice Gender Setting</string>
 
     <string name="EditRoute_openKeyboard">Open Keyboard</string>
+    <string name="VoiceControlPage_Start">Start</string>
+    <string name="showArriveTimePage_currentBusStop">Current Bus Stop:</string>
+    <string name="selectImageDetectPage_result">Result:</string>
+    <string name="FindBusStopMenuPage_BusRouteInfo">Route:42A\nTo:Jordan (West Kowloon Station)\nStart Point: xxx\nDestination: xxx</string>
 
 
 </resources>

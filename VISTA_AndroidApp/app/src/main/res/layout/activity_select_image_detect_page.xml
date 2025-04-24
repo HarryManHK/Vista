@@ -43,7 +43,7 @@
             android:maxLines="10"
             android:padding="8dp"
             android:scrollHorizontally="false"
-            android:text="Result:"
+            android:text="@string/selectImageDetectPage_result"
             android:textColor="#3BA7C9"
             android:textSize="20sp" />
     </android.widget.ScrollView>

@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
                 android:gravity="center"
-                android:text="Route:42A\nTo:佐敦(西九龍站)\nSart Point: xxx站\nDestination:xxx站"
+                android:text="@string/FindBusStopMenuPage_BusRouteInfo"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#3BA7C9" />
