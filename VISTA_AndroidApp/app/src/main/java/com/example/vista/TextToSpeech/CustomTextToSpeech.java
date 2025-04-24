@@ -116,7 +116,12 @@ public class CustomTextToSpeech {
     // Function to speak text based on the language
     public void speak(String[] text) {
         if (text != null && text.length > 0) {
-            String textToSpeak = currentLanguage.equals("en") ? text[0] : text[1];
+            String textToSpeak;
+            if (text.length == 1) {
+                textToSpeak = text[0];
+            } else {
+                textToSpeak = currentLanguage.equals("en") ? text[0] : text[1];
+            }
             textToSpeech.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null);
         }
     }

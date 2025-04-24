@@ -193,4 +193,58 @@ public class BusStopInfomationHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
     }
+
+    // Retrieves the Chinese name of a bus stop by stopId
+    public String getStopNameZh(String stopId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String stopNameZh = null;
+        Cursor cursor = null;
+        try {
+            cursor = db.query(TABLE_NAME,
+                    new String[]{COLUMN_BUS_STOP_NAME_ZH},
+                    COLUMN_BUS_STOP_ID + "=?",
+                    new String[]{stopId},
+                    null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                stopNameZh = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BUS_STOP_NAME_ZH));
+                Log.d(TAG, "getStopNameZh: Retrieved Chinese stop name: " + stopNameZh);
+            } else {
+                Log.d(TAG, "getStopNameZh: No Chinese stop name found for stopId: " + stopId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getStopNameZh: Exception occurred while retrieving Chinese stop name", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return stopNameZh;
+    }
+
+    // Retrieves the English name of a bus stop by stopId
+    public String getStopNameEn(String stopId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String stopNameEn = null;
+        Cursor cursor = null;
+        try {
+            cursor = db.query(TABLE_NAME,
+                    new String[]{COLUMN_BUS_STOP_NAME},
+                    COLUMN_BUS_STOP_ID + "=?",
+                    new String[]{stopId},
+                    null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                stopNameEn = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BUS_STOP_NAME));
+                Log.d(TAG, "getStopNameEn: Retrieved English stop name: " + stopNameEn);
+            } else {
+                Log.d(TAG, "getStopNameEn: No English stop name found for stopId: " + stopId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getStopNameEn: Exception occurred while retrieving English stop name", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return stopNameEn;
+    }
 }

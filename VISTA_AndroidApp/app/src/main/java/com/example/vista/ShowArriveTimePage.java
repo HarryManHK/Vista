@@ -192,6 +192,9 @@ public class ShowArriveTimePage extends Activity {
         String url = "https://data.etabus.gov.hk/v1/transport/kmb/route-eta/"
                 + routeNumber + "/" + serviceType;
 
+        Log.d(TAG, "[UI] params: routeNumber=" + routeNumber + ", bound=" + boundValFromDB + ", serviceType=" + serviceType);
+        Log.d(TAG, "[UI] KMB ETA URL: " + url);
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
 
@@ -232,6 +235,7 @@ public class ShowArriveTimePage extends Activity {
         try {
             JSONObject root = new JSONObject(jsonString);
             JSONArray dataArray = root.optJSONArray("data");
+            Log.d(TAG, "[UI] KMB raw data: " + dataArray);
             if (dataArray == null) {
                 Log.w(TAG, "No 'data' array in JSON response.");
                 return;
@@ -261,6 +265,34 @@ public class ShowArriveTimePage extends Activity {
 
                     count++;
                 }
+            }
+
+            // fallback: 若本方向無資料，自動查詢另一個方向
+            if (etaList.isEmpty()) {
+                String fallbackDir = boundValFromDB.equals("I") ? "O" : "I";
+                int fallbackCount = 0;
+                for (int i = 0; i < dataArray.length(); i++) {
+                    if (fallbackCount >= 3) break;
+                    JSONObject item = dataArray.getJSONObject(i);
+                    String dirFromJson = item.optString("dir", "");
+                    int seqVal = item.optInt("seq", -1);
+                    if (seqVal == routeSeq && dirFromJson.equalsIgnoreCase(fallbackDir)) {
+                        String etaString = item.optString("eta", "N/A");
+                        String etaDiffString = calculateTimeDifference(etaString);
+                        int etaSeq = item.optInt("eta_seq", -1);
+                        String displayText = "[" + fallbackDir + "] ETA #" + etaSeq + ": " + etaDiffString;
+                        etaList.add(displayText);
+                        fallbackCount++;
+                    }
+                }
+                final String fallbackMsg = fallbackCount > 0 ?
+                        ("zh".equals(languageCode) ? "僅有另一方向班次" : "Only opposite direction buses available") :
+                        ("zh".equals(languageCode) ? "此路線無班次" : "No bus for this route");
+                runOnUiThread(() -> {
+                    etaAdapter.notifyDataSetChanged();
+                    Toast.makeText(ShowArriveTimePage.this, fallbackMsg, Toast.LENGTH_SHORT).show();
+                });
+                return;
             }
 
             runOnUiThread(() -> {

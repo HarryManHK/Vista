@@ -281,4 +281,54 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
 
         return startPointStopId;
     }
+
+    // Retrieves the latest route number from the BusRoute table
+    public String getRouteNumber() {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        String routeNumber = null;
+        try {
+            db = this.getReadableDatabase();
+            String query = "SELECT " + COLUMN_ROUTE_NUMBER + " FROM " + TABLE_BUS_ROUTE + " ORDER BY " + COLUMN_ID + " DESC LIMIT 1";
+            cursor = db.rawQuery(query, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROUTE_NUMBER));
+                Log.d(TAG, "getRouteNumber: Retrieved route number: " + routeNumber);
+            } else {
+                Log.d(TAG, "getRouteNumber: No route number found");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getRouteNumber: Exception occurred while retrieving route number", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return routeNumber;
+    }
+
+    // Retrieves the latest bound from the BusRoute table
+    public String getRouteBound() {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        String bound = null;
+        try {
+            db = this.getReadableDatabase();
+            String query = "SELECT " + COLUMN_BOUND + " FROM " + TABLE_BUS_ROUTE + " ORDER BY " + COLUMN_ID + " DESC LIMIT 1";
+            cursor = db.rawQuery(query, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                bound = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOUND));
+                Log.d(TAG, "getRouteBound: Retrieved bound: " + bound);
+            } else {
+                Log.d(TAG, "getRouteBound: No bound found");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getRouteBound: Exception occurred while retrieving bound", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return bound;
+    }
 }

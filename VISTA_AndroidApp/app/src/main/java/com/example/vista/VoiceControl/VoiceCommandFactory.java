@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.vista.BusArrivalAlertPage;
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
@@ -44,6 +45,10 @@ public class VoiceCommandFactory {
                 Log.d(TAG, "Executing command: 圖片生成文字");
                 // 跳轉到 ImageToTextPage
                 context.startActivity(new Intent(context, ImageToTextMenu.class));
+                Log.d(TAG, "Executing command: 查距離");
+                // TODO: Replace this with actual distance calculation or navigation if needed
+                Toast.makeText(context, "正在查詢距離...", Toast.LENGTH_SHORT).show();
+                // Optionally, you could navigate to a dedicated distance page or trigger distance calculation logic here
             } else {
                 Log.d(TAG, "No matching command found for action: " + action);
             }
