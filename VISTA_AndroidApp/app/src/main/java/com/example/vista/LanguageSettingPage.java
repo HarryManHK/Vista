@@ -84,6 +84,10 @@ public class LanguageSettingPage extends AppCompatActivity {
                 "zh"     // Traditional Chinese (Hong Kong)
         };
 
+        // Define TTS labels for interface selection
+        final String[] EnglishInterfaceLabels = {"English interface", "Traditional Chinese interface"};
+        final String[] ChineseInterfaceLabels = {"英文介面", "繁體中文介面"};
+
         // Set up the adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -104,8 +108,8 @@ public class LanguageSettingPage extends AppCompatActivity {
                 selectedPosition = position;
                 // TTS 報讀選擇
                 customTextToSpeech.speak(new String[]{
-                    "You've chosen " + languages[selectedPosition] + " interface.",
-                    "您已選擇 " + languages[selectedPosition] + "介面。"
+                    "Language set to " + EnglishInterfaceLabels[selectedPosition] + ".",
+                    "語言已設定為 " + ChineseInterfaceLabels[selectedPosition]
                 });
             }
         });
@@ -217,9 +221,11 @@ public class LanguageSettingPage extends AppCompatActivity {
             Toast.makeText(this, "Language changed to " + languages[selectedPosition], Toast.LENGTH_SHORT).show();
 
             // TTS 播報確認並跳轉至設置頁面
+            final String[] EnglishInterfaceLabels = {"English interface", "Traditional Chinese interface"};
+            final String[] ChineseInterfaceLabels = {"英文介面", "繁體中文介面"};
             customTextToSpeech.speak(new String[]{
-                "Language set to " + languages[selectedPosition] + ".",
-                "語言已設定為 " + languages[selectedPosition]
+                "Language set to " + EnglishInterfaceLabels[selectedPosition] + ".",
+                "語言已設定為 " + ChineseInterfaceLabels[selectedPosition]
             });
             startActivity(new Intent(LanguageSettingPage.this, SettingPage.class));
             finish();
