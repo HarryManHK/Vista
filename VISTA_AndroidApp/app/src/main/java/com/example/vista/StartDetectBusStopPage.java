@@ -219,19 +219,36 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                 try {
                     Log.d(TAG, "Received detections from server");
                     JSONObject data = (JSONObject) args[0];
-                    JSONArray detectionsArray = data.getJSONArray("detections");
+                    JSONArray circleArray = data.optJSONArray("circle");
+                    JSONArray bigArray = data.optJSONArray("big");
                     detections.clear();
-                    for (int i = 0; i < detectionsArray.length(); i++) {
-                        JSONObject detection = detectionsArray.getJSONObject(i);
-                        detections.add(new Detection(
-                                detection.getDouble("xmin"),
-                                detection.getDouble("ymin"),
-                                detection.getDouble("xmax"),
-                                detection.getDouble("ymax"),
-                                detection.getDouble("confidence"),
-                                detection.getInt("class_id"),
-                                detection.getString("name")
-                        ));
+                    if (circleArray != null) {
+                        for (int i = 0; i < circleArray.length(); i++) {
+                            JSONObject detection = circleArray.getJSONObject(i);
+                            detections.add(new Detection(
+                                    detection.getDouble("xmin"),
+                                    detection.getDouble("ymin"),
+                                    detection.getDouble("xmax"),
+                                    detection.getDouble("ymax"),
+                                    detection.getDouble("confidence"),
+                                    detection.getInt("class_id"),
+                                    detection.getString("name")
+                            ));
+                        }
+                    }
+                    if (bigArray != null) {
+                        for (int i = 0; i < bigArray.length(); i++) {
+                            JSONObject detection = bigArray.getJSONObject(i);
+                            detections.add(new Detection(
+                                    detection.getDouble("xmin"),
+                                    detection.getDouble("ymin"),
+                                    detection.getDouble("xmax"),
+                                    detection.getDouble("ymax"),
+                                    detection.getDouble("confidence"),
+                                    detection.getInt("class_id"),
+                                    detection.getString("name")
+                            ));
+                        }
                     }
                     Log.d(TAG, "Parsed " + detections.size() + " detections");
                     runOnUiThread(() -> updateUIWithDetections());
