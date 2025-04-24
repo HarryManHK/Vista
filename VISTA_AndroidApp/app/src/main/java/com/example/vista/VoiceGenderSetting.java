@@ -83,6 +83,16 @@ public class VoiceGenderSetting extends AppCompatActivity {
             }
         });
 
-        // Next 按鈕：目前無動作，可視需求新增
+        // Next button: move list to next item
+        btnVoiceGenderNext.setOnClickListener(v -> {
+            int pos = lvVoiceGenderSetting.getCheckedItemPosition();
+            if (pos == AdapterView.INVALID_POSITION) {
+                pos = 0;
+            } else {
+                pos = (pos + 1) % genders.length;
+            }
+            lvVoiceGenderSetting.setItemChecked(pos, true);
+            lvVoiceGenderSetting.smoothScrollToPosition(pos);
+        });
     }
 }
