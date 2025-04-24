@@ -4,9 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:padding="15dp"
+    >
+    <!-- Find Bus Stop Menu Page Layout -->
 
     <!-- Wrapper Container -->
     <LinearLayout
@@ -17,50 +19,54 @@
         android:gravity="center">
 
         <!-- Header Container -->
+            <!-- Setting Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMainMenuSetting"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="end"
+            android:background="@drawable/button_setting"
+            android:onClick="openSettingPage"
+            android:contentDescription="@string/setting"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
             android:orientation="vertical"
             android:gravity="center">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFindBusStopMenuPageSetting"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="end"
-                android:background="@drawable/button_setting"
-                android:onClick="openSettingPage"
-                app:backgroundTint="@null"
-                app:backgroundTintMode="src_over"
-                app:cornerRadius="0dp"
-                app:strokeColor="@null"
-                app:strokeWidth="0dp" />
+            <!-- Bus Route Info -->
             <TextView
                 android:id="@+id/txtFindBusStopMenuPageBusRoute"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_marginBottom="32dp"
                 android:gravity="center"
                 android:text="@string/FindBusStopMenuPage_BusRouteInfo"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#3BA7C9" />
         </LinearLayout>
 
         <!-- Top Buttons Container -->
         <LinearLayout
-            android:layout_width="356dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <com.google.android.material.button.MaterialButton
+            android:orientation="horizontal"
+            android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFindBusStopMenuPageEditDestination"
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
                 android:background="@drawable/btn_photo_gradient"
                 android:text="@string/FindBusStopMenuPage_EditDestination"
                 android:textSize="22sp"
@@ -69,13 +75,14 @@
                 app:cornerRadius="0dp"
                 app:strokeColor="@null"
                 app:strokeWidth="0dp" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFindBusStopMenuPageShowArriveTIme"
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
                 android:background="@drawable/btn_photo_gradient"
                 android:text="@string/FindBusStopMenuPage_ShowArriveTIme"
                 android:textSize="22sp"
@@ -90,15 +97,16 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFindBusStopMenuPageStartDetectBusStop"
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
                 android:background="@drawable/btn_photo_gradient"
                 android:text="@string/FindBusStopMenuPage_StartDetectBusStop"
                 android:textSize="22sp"
@@ -112,7 +120,8 @@
                 style="@style/SemiTransparentRoundedButton"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
                 android:background="@drawable/btn_photo_gradient"
                 android:text="@string/FindBusStopMenuPage_BusArrivalAlert"
                 android:textSize="22sp"
