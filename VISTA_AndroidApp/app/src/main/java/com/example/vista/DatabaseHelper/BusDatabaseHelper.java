@@ -151,7 +151,8 @@ public class BusDatabaseHelper extends SQLiteOpenHelper {
 
         long rowId = -1;
         try {
-            Cursor cursor = db.rawQuery("SELECT " + COLUMN_ID + " FROM " + TABLE_BUS_ROUTE + " LIMIT 1", null);
+            // Select the most recent bus route ID for updating
+            Cursor cursor = db.rawQuery("SELECT " + COLUMN_ID + " FROM " + TABLE_BUS_ROUTE + " ORDER BY " + COLUMN_ID + " DESC LIMIT 1", null);
             if (cursor != null && cursor.moveToFirst()) {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
                 cursor.close();

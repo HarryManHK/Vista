@@ -145,7 +145,10 @@ public class VoiceControlEditEndPoint extends AppCompatActivity {
     private void selectItem(int position, View view) {
         selectedPosition = position;
         ((BusStopListViewAdapter) adapter).setSelectedPosition(position);
-        view.playSoundEffect(SoundEffectConstants.CLICK);
+        // Safely play click sound
+        if (view != null) {
+            view.playSoundEffect(SoundEffectConstants.CLICK);
+        }
         com.example.vista.VoiceControl.ByBus.VoiceControlEditEndPoint.BusStop selectedBusStop = busStops.get(position);
         tts.speak(new String[]{selectedBusStop.getNameEn(), selectedBusStop.getNameZH()});
     }
@@ -429,7 +432,10 @@ public class VoiceControlEditEndPoint extends AppCompatActivity {
                 
                 // Retrieve language setting (from database)
                 languageSetting = SettingDBHelper.getLanguageSetting();
-                languageCode = (languageSetting != null && languageSetting.length > 0) ? languageSetting[0] : "en"; // Default to "en"
+                // Initialize languageCode to avoid NPE (default to "en")
+                languageCode = (languageSetting != null && languageSetting.length > 0)
+                        ? languageSetting[0]
+                        : "en";
             } else {
                 Log.d(TAG, "Error loading bus route data.");
                 Toast.makeText(this, "No bus route data found", Toast.LENGTH_SHORT).show();
