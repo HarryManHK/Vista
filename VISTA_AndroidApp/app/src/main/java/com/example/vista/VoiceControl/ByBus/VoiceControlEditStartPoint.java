@@ -102,7 +102,7 @@ public class VoiceControlEditStartPoint extends AppCompatActivity {
                         "已選起點是" + selectedBusStop.getNameZH() + "。"
                 });
                 // Navigate to destination selection
-                Intent intent = new Intent(com.example.vista.VoiceControl.ByBus.VoiceControlEditStartPoint.this, EditDestinationActivity.class);
+                Intent intent = new Intent(com.example.vista.VoiceControl.ByBus.VoiceControlEditStartPoint.this, VoiceControlEditEndPoint.class);
                 startActivity(intent);
                 finish();
             } else {
