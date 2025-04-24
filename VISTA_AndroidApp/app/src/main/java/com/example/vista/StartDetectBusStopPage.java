@@ -22,6 +22,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.SoundEffectConstants;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -29,7 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.vista.DatabaseHelper.BusDatabaseHelper;
-
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -59,7 +61,8 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private NfcAdapter nfcAdapter;
     private List<BusStop> busStops = new ArrayList<>();
     private PendingIntent nfcPendingIntent;
-    private BusDatabaseHelper dbHelper;  // 添加這行
+    private BusDatabaseHelper dbHelper;  
+    private CustomTextToSpeech customTTS;
 
     // BusStop內部類
     private static class BusStop {
@@ -106,7 +109,9 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         detectedImageView = findViewById(R.id.detectedImageView);
 
         // 初始化 DatabaseHelper
-        dbHelper = BusDatabaseHelper.getInstance(this);  // 添加這行
+        dbHelper = BusDatabaseHelper.getInstance(this);  
+
+        customTTS = new CustomTextToSpeech(this);
 
         // 初始化NFC適配器
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -142,6 +147,14 @@ public class StartDetectBusStopPage extends AppCompatActivity {
 
         // 讀取busStop.json數據
         loadBusStopsFromJson();
+        Button btnBusDetect = findViewById(R.id.btn_bus_detect);
+        btnBusDetect.setOnClickListener(v -> {
+            customTTS.speak(new String[]{"Navigating to Bus Detection Page", "正在轉到 BusDetectionPage"});
+            v.playSoundEffect(SoundEffectConstants.CLICK);
+            Toast.makeText(StartDetectBusStopPage.this, "正在轉到 BusDetectionPage", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(StartDetectBusStopPage.this, BusDetectionPage.class);
+            startActivity(intent);
+        });
     }
 
     private void setupCamera() {
