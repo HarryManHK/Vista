@@ -131,11 +131,16 @@ public class VoiceSpeedSetting extends AppCompatActivity {
             }
         });
 
-        // Next button: optional navigation (commented out by default)
-        /*
+        // Next button: move list to next item
         btnNext.setOnClickListener(v -> {
-            // e.g., navigate to another activity
+            int pos = lvLanguageSpeedSetting.getCheckedItemPosition();
+            if (pos == AdapterView.INVALID_POSITION) {
+                pos = 0;
+            } else {
+                pos = Math.min(pos + 1, speeds.length - 1);
+            }
+            lvLanguageSpeedSetting.setItemChecked(pos, true);
+            lvLanguageSpeedSetting.smoothScrollToPosition(pos);
         });
-        */
     }
 }

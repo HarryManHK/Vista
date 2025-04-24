@@ -94,6 +94,18 @@ public class VoiceLanguageSetting extends AppCompatActivity {
                 Toast.makeText(this, "Please select a language.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Next button: move list to next item
+        btnNext.setOnClickListener(v -> {
+            int pos = lvVoiceLanguageSetting.getCheckedItemPosition();
+            if (pos == AdapterView.INVALID_POSITION) {
+                pos = 0;
+            } else {
+                pos = (pos + 1) % languages.length;
+            }
+            lvVoiceLanguageSetting.setItemChecked(pos, true);
+            lvVoiceLanguageSetting.smoothScrollToPosition(pos);
+        });
     }
 
     /**

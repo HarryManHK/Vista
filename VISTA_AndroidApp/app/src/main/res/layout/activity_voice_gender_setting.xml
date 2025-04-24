@@ -1,10 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16sp"
+    android:background="@color/white"
     tools:context=".VoiceGenderSetting">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/VoiceSettingPage_VoiceGenderSetting"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#3BA7C9"/>
+
+    <!-- gender selection -->
+    <ListView
+        android:id="@+id/lvVoiceGenderSetting"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/list_item_border"
+        android:divider="@drawable/custom_divider"
+        android:textColor="#3BA7C9"/>
+
+    <!-- button layer -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_marginTop="16dp"
+        android:weightSum="2">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVoiceGenderConfirm"
+            style="@style/SemiTransparentRoundedButton"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="@string/btn_Confirm"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:background="@drawable/btn_photo_gradient"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVoiceGenderNext"
+            style="@style/SemiTransparentRoundedButton"
+            android:layout_width="0dp"
+            android:layout_height="83dp"
+            android:layout_weight="1"
+            android:text="@string/btn_next"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:background="@drawable/btn_photo_gradient"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="src_over"
+            app:cornerRadius="0dp"
+            app:strokeColor="@null"
+            app:strokeWidth="0dp"/>
+    </LinearLayout>
+</LinearLayout>

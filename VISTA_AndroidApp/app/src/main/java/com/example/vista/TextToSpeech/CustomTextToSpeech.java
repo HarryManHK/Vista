@@ -54,6 +54,14 @@ public class CustomTextToSpeech {
 
                     int result = textToSpeech.setLanguage(locale);
 
+                    // Set pitch based on gender setting
+                    SettingDatabaseHelper db = SettingDatabaseHelper.getInstance(context);
+                    SettingDatabaseHelper.VoiceSetting vs = db.getVoiceSetting();
+                    String gender = vs != null ? vs.getGender() : "male";
+                    float pitch = "female".equals(gender) ? 1.2f : 0.8f;
+                    textToSpeech.setPitch(pitch);
+                    Log.d(TAG, "Pitch set to: " + pitch);
+
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Toast.makeText(context, "Language not supported or missing data", Toast.LENGTH_SHORT).show();
                     }
