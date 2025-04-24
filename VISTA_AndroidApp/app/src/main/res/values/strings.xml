@@ -50,6 +50,8 @@
     <string name="VoiceSettingPage_VoiceGenderSetting">Voice Gender Setting</string>
 
     <string name="EditRoute_openKeyboard">Open Keyboard</string>
+    <string name="MainMenuPageActivity_VoiceControl">Voice Control</string>
+    <string name="MainMenuPageActivity_ChatBot">Chat Bot</string>
 
 
 </resources>

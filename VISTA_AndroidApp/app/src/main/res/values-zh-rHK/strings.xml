@@ -48,5 +48,7 @@
     <string name="VoiceSettingPage_VoiceGenderSetting">配音性別設定</string>
 
     <string name="EditRoute_openKeyboard">打開鍵盤</string>
+    <string name="MainMenuPageActivity_VoiceControl">語音控制</string>
+    <string name="MainMenuPageActivity_ChatBot">聊天機器人</string>
 
 </resources>
