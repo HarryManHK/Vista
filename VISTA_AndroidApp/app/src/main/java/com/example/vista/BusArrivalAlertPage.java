@@ -98,10 +98,12 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     private static final String LANGUAGE_ZH = "zh";
     private static final double DEFAULT_CENTER_LAT = 22.3964;
     private static final double DEFAULT_CENTER_LNG = 114.1095;
+
     // 工具方法：安全解析站序
     public String getVoiceLanguage() {
         return voiceLanguage;
     }
+
     private int parseRouteSeq(String seqStr) {
         try {
             return Integer.parseInt(seqStr);
@@ -109,6 +111,7 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             return 1;
         }
     }
+
     // Fallback: calculate straight-line (Haversine) distance and announce via TTS
     private void fallbackDistance(double lat1, double lon1, double lat2, double lon2, String reason) {
         final int R = 6371; // Earth radius in km
@@ -116,13 +119,13 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         double lonDistance = Math.toRadians(lon2 - lon1);
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = R * c; // in kilometers
 
         String zh = String.format("直線距離約 %.1f 公里 (原因: %s)", distance, reason);
         String en = String.format("Straight-line distance: %.1f km (Reason: %s)", distance, reason);
-        tts.speak(new String[]{zh, en});
+        tts.speak(new String[] { zh, en });
         Log.d(TAG, "[FallbackDistance] " + en);
     }
 
@@ -143,9 +146,11 @@ public class BusArrivalAlertPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 取得語音語言設定
-        com.example.vista.DatabaseHelper.SettingDatabaseHelper settingDbHelper = com.example.vista.DatabaseHelper.SettingDatabaseHelper.getInstance(this);
+        com.example.vista.DatabaseHelper.SettingDatabaseHelper settingDbHelper = com.example.vista.DatabaseHelper.SettingDatabaseHelper
+                .getInstance(this);
         voiceLanguage = settingDbHelper.getColumnVoiceLanguage();
-        if (voiceLanguage == null) voiceLanguage = "en";
+        if (voiceLanguage == null)
+            voiceLanguage = "en";
         // 初始化 database helper
         busDatabaseHelper = BusDatabaseHelper.getInstance(this);
         busStopInfoHelper = new BusStopInfomationHelper(this);
@@ -173,14 +178,15 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             stopsCursor.close();
         }
         // 根據用戶設定的起點 stopId 設定 currentTargetStopIndex
-String userStartStopId = busDatabaseHelper.getStartPointStopId();
-currentTargetStopIndex = 0;
-for (int i = 0; i < busStopItems.size(); i++) {
-    if (busStopItems.get(i).stopId.equals(userStartStopId)) {
-        currentTargetStopIndex = i;
-        break;
-    }
-}
+        String userStartStopId = busDatabaseHelper.getStartPointStopId();
+        currentTargetStopIndex = 1;
+        for (int i = 1; i < busStopItems.size() + 1; i++) {
+            if (busStopItems.get(i).stopId.equals(userStartStopId)) {
+                currentTargetStopIndex = i;
+                break;
+            }
+        }
+        Log.d(TAG, "Set currentTargetStopIndex=" + currentTargetStopIndex + " for stopId=" + userStartStopId);
 
         btnFindBusEditConfirm = findViewById(R.id.btnFindBusEditConfirm);
         btnFindBusEditNext = findViewById(R.id.btnFindBusEditNext);
@@ -318,8 +324,8 @@ for (int i = 0; i < busStopItems.size(); i++) {
                 androidx.core.content.ContextCompat.checkSelfPermission(this,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             androidx.core.app.ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION },
                     PERMISSION_REQUEST_CODE);
         } else {
             getCurrentLocation();
@@ -349,7 +355,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
         reminderEnabled = true;
         reminderStopIndex = 1;
         reminderHasSpoken = false;
-        tts.speak(new String[]{"已啟動到站提醒", "Bus stop reminder activated"});
+        tts.speak(new String[] { "已啟動到站提醒", "Bus stop reminder activated" });
 
         showLoading(true);
         printAllRecord();
@@ -416,7 +422,8 @@ for (int i = 0; i < busStopItems.size(); i++) {
                     try {
                         Log.d(TAG, "NLP raw json: " + commandJson.toString());
                         String action = commandJson.optString("action", null);
-                        if ((action == null || action.trim().isEmpty() || action.trim().equals("其他")) && commandJson.has("content")) {
+                        if ((action == null || action.trim().isEmpty() || action.trim().equals("其他"))
+                                && commandJson.has("content")) {
                             String content = commandJson.optString("content");
                             try {
                                 content = content.trim();
@@ -457,8 +464,9 @@ for (int i = 0; i < busStopItems.size(); i++) {
                                 Log.d(TAG, "[NLP] case 啟動巴士到站提醒: before");
                                 reminderEnabled = true;
                                 reminderHasSpoken = false;
-                                Log.d(TAG, "[NLP] 啟動提醒 reminderEnabled=" + reminderEnabled + ", reminderHasSpoken=" + reminderHasSpoken);
-                                tts.speak(new String[]{"已啟動到站提醒", "Bus stop reminder activated"});
+                                Log.d(TAG, "[NLP] 啟動提醒 reminderEnabled=" + reminderEnabled + ", reminderHasSpoken="
+                                        + reminderHasSpoken);
+                                tts.speak(new String[] { "已啟動到站提醒", "Bus stop reminder activated" });
                                 Log.d(TAG, "[NLP] case 啟動巴士到站提醒: after");
                                 break;
                             case "關閉巴士到站提醒":
@@ -471,34 +479,36 @@ for (int i = 0; i < busStopItems.size(); i++) {
                                 Log.d(TAG, "[NLP] case 下一站: before");
                                 int nextIndex = currentTargetStopIndex + 1;
                                 if (busStopItems != null && nextIndex < busStopItems.size()) {
-                                    String nextStopName = busStopItems.get(nextIndex).title;
-                                    String zh = "下一站" + nextStopName;
-                                    String en = "Next stop " + nextStopName;
+                                    String stopId = busStopItems.get(nextIndex).stopId;
+                                    String nextStopNameZh = busStopInfoHelper.getStopNameZh(stopId);
+                                    String nextStopNameEn = busStopInfoHelper.getStopNameEn(stopId);
+                                    String zh = "下一站" + (nextStopNameZh != null ? nextStopNameZh : "");
+                                    String en = "Next stop " + (nextStopNameEn != null ? nextStopNameEn : "");
                                     if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                        tts.speak(new String[]{zh});
-                                        Log.d(TAG, "[NLP] 下一站播報: " + zh);
+                                        tts.speak(new String[] { zh });
+                                        Log.d(TAG, "[NLP] 下一站播報: " + zh + nextStopNameZh);
                                     } else {
-                                        tts.speak(new String[]{en});
+                                        tts.speak(new String[] { en });
                                         Log.d(TAG, "[NLP] 下一站播報: " + en);
                                     }
                                 } else {
                                     String zh = "已到達終點";
                                     String en = "You have reached the final stop";
                                     if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                        tts.speak(new String[]{zh});
+                                        tts.speak(new String[] { zh });
                                         Log.d(TAG, "[NLP] 已到達終點播報: " + zh);
                                     } else {
-                                        tts.speak(new String[]{en});
+                                        tts.speak(new String[] { en });
                                         Log.d(TAG, "[NLP] 已到達終點播報: " + en);
                                     }
                                 }
                                 break;
                             default:
                                 Log.d(TAG, "[NLP] case default");
-                                tts.speak(new String[]{"Sorry, I didn't understand.", "抱歉，我不明白你的指令"});
+                                tts.speak(new String[] { "Sorry, I didn't understand.", "抱歉，我不明白你的指令" });
                         }
                     } catch (Exception e) {
-                        tts.speak(new String[]{"Error parsing NLP command.", "解析語音指令時發生錯誤"});
+                        tts.speak(new String[] { "Error parsing NLP command.", "解析語音指令時發生錯誤" });
                         Toast.makeText(BusArrivalAlertPage.this, "語音指令解析失敗，請再說一次", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -507,7 +517,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
             @Override
             public void onFailure(Exception e) {
                 runOnUiThread(() -> {
-                    tts.speak(new String[]{"NLP服務異常，請重試。", "NLP服務異常，請重試。"});
+                    tts.speak(new String[] { "NLP服務異常，請重試。", "NLP服務異常，請重試。" });
                     Toast.makeText(BusArrivalAlertPage.this, "語音指令解析失敗，請再試一次", Toast.LENGTH_SHORT).show();
                 });
             }
@@ -539,7 +549,8 @@ for (int i = 0; i < busStopItems.size(); i++) {
                     mapView.invalidate();
 
                     // 根據 busStopItems 追蹤距離目標站
-                    if (reminderEnabled && busStopItems != null && busStopItems.size() > 1 && currentTargetStopIndex < busStopItems.size()) {
+                    if (reminderEnabled && busStopItems != null && busStopItems.size() > 1
+                            && currentTargetStopIndex < busStopItems.size()) {
                         BusStopOverlayItem targetStop = busStopItems.get(currentTargetStopIndex);
                         double stopLat = targetStop.point.getLatitude();
                         double stopLng = targetStop.point.getLongitude();
@@ -548,7 +559,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
                             // 到站語音
                             String zh = "已到達" + targetStop.title;
                             String en = "Arrived at " + targetStop.title;
-                            tts.speak(new String[]{zh, en});
+                            tts.speak(new String[] { zh, en });
                             reminderHasSpoken = true;
                             // 切換下一站
                             if (currentTargetStopIndex < busStopItems.size() - 1) {
@@ -558,12 +569,12 @@ for (int i = 0; i < busStopItems.size(); i++) {
                                 BusStopOverlayItem nextStop = busStopItems.get(currentTargetStopIndex);
                                 String zhNext = "下一站：" + nextStop.title;
                                 String enNext = "Next stop: " + nextStop.title;
-                                tts.speak(new String[]{zhNext, enNext});
+                                tts.speak(new String[] { zhNext, enNext });
                             } else {
                                 // 終點
                                 String zhEnd = "已到達終點，旅程完成";
                                 String enEnd = "Arrived at destination. Journey complete.";
-                                tts.speak(new String[]{zhEnd, enEnd});
+                                tts.speak(new String[] { zhEnd, enEnd });
                             }
                         } else if (dist >= 100) {
                             reminderHasSpoken = false; // 離開範圍可再次提醒
@@ -603,10 +614,14 @@ for (int i = 0; i < busStopItems.size(); i++) {
             if (cursor != null && cursor.moveToFirst()) {
                 routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
                 routeBound = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
-                START_POINT_LAT = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_LAT));
-                START_POINT_LONG = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_LONG));
-                DESTINATION_LAT = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_LAT));
-                DESTINATION_LONG = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_LONG));
+                START_POINT_LAT = cursor
+                        .getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_LAT));
+                START_POINT_LONG = cursor
+                        .getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_LONG));
+                DESTINATION_LAT = cursor
+                        .getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_LAT));
+                DESTINATION_LONG = cursor
+                        .getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_DESTINATION_LONG));
 
                 Log.d(TAG, "Loaded route=" + routeNumber + ", bound=" + routeBound);
                 Log.d(TAG, "Rendering route: " + routeNumber + ", bound: " + routeBound);
@@ -692,7 +707,8 @@ for (int i = 0; i < busStopItems.size(); i++) {
                         continue;
                     }
 
-                    String stopId = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
+                    String stopId = cursor
+                            .getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
                     busStopItems.add(new BusStopOverlayItem(stopId, busStopPoint, title, R.drawable.bus_stop));
                     waypoints.add(busStopPoint);
                     Log.d(TAG, "Bus stop added at: lat=" + lat + ", lng=" + lng);
@@ -719,7 +735,8 @@ for (int i = 0; i < busStopItems.size(); i++) {
                     }
                 }
                 if (!isDestSet) {
-                    busStopItems.add(new BusStopOverlayItem("destination", destPoint, "Destination", R.drawable.end_point));
+                    busStopItems
+                            .add(new BusStopOverlayItem("destination", destPoint, "Destination", R.drawable.end_point));
                 }
                 Log.d(TAG, "Destination point added at: lat=" + DESTINATION_LAT + ", lng=" + DESTINATION_LONG);
             } catch (Exception e) {
@@ -845,7 +862,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
 
         double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
                 + Math.cos(lat1Rad) * Math.cos(lat2Rad)
-                * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+                        * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         final double R = 6371.0; // 地球半徑，單位：公里
         return R * c;
@@ -871,10 +888,11 @@ for (int i = 0; i < busStopItems.size(); i++) {
         reminderEnabled = !reminderEnabled;
         String zh = reminderEnabled ? "已啟動到站提醒" : "已關閉到站提醒";
         String en = reminderEnabled ? "Bus stop reminder activated" : "Bus stop reminder deactivated";
-        tts.speak(new String[]{zh, en});
+        tts.speak(new String[] { zh, en });
         Toast.makeText(this, zh, Toast.LENGTH_SHORT).show();
         // 重置提醒狀態
-        if (reminderEnabled) reminderHasSpoken = false;
+        if (reminderEnabled)
+            reminderHasSpoken = false;
     }
 
     // 查詢目前到下一站的距離，並語音播報
@@ -893,7 +911,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
                     stopId = busStopItems.get(currentTargetStopIndex).stopId;
                     Log.d(TAG, "[Distance] Using next stopId=" + stopId + " (index=" + currentTargetStopIndex + ")");
                 } else {
-                    tts.speak(new String[]{"已到達終點", "Arrived at destination"});
+                    tts.speak(new String[] { "已到達終點", "Arrived at destination" });
                     Log.d(TAG, "[Distance] 已到達終點，無下一站");
                     return;
                 }
@@ -912,23 +930,24 @@ for (int i = 0; i < busStopItems.size(); i++) {
                                     double currentLat = location.getLatitude();
                                     double currentLng = location.getLongitude();
                                     int maxRetries = 2;
-                                    Log.d(TAG, "[Distance] Querying OSRM: from (" + currentLat + ", " + currentLng + ") to (" + stopLat + ", " + stopLng + ")");
+                                    Log.d(TAG, "[Distance] Querying OSRM: from (" + currentLat + ", " + currentLng
+                                            + ") to (" + stopLat + ", " + stopLng + ")");
                                     makeOsrmRequestWithRetry(currentLat, currentLng, stopLat, stopLng, maxRetries);
                                 } else {
-                                    tts.speak(new String[]{"無法取得目前位置", "Cannot get current location"});
+                                    tts.speak(new String[] { "無法取得目前位置", "Cannot get current location" });
                                     Log.d(TAG, "[Distance] 無法取得目前位置");
                                 }
                             })
                             .addOnFailureListener(this, e -> {
-                                tts.speak(new String[]{"定位失敗", "Failed to get location"});
+                                tts.speak(new String[] { "定位失敗", "Failed to get location" });
                                 Log.d(TAG, "[Distance] 定位失敗");
                             });
                 } catch (SecurityException e) {
-                    tts.speak(new String[]{"無定位權限", "No location permission"});
+                    tts.speak(new String[] { "無定位權限", "No location permission" });
                     Log.d(TAG, "[Distance] 無定位權限");
                 }
             } else {
-                tts.speak(new String[]{"查無該站資料", "Stop info not found"});
+                tts.speak(new String[] { "查無該站資料", "Stop info not found" });
                 Log.d(TAG, "[Distance] 查無該站資料 stopId=" + stopId);
             }
         } catch (Exception e) {
@@ -937,11 +956,11 @@ for (int i = 0; i < busStopItems.size(); i++) {
         }
     }
 
-    private void makeOsrmRequestWithRetry(double currentLat, double currentLng, double stopLat, double stopLng, int retriesLeft) {
+    private void makeOsrmRequestWithRetry(double currentLat, double currentLng, double stopLat, double stopLng,
+            int retriesLeft) {
         String osrmUrl = String.format(
                 "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=false",
-                currentLng, currentLat, stopLng, stopLat
-        );
+                currentLng, currentLat, stopLng, stopLat);
         Log.d(TAG, "[Distance] OSRM URL: " + osrmUrl);
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(osrmUrl).build();
@@ -954,7 +973,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
                     Log.d(TAG, "Retrying OSRM request, retries left: " + (retriesLeft - 1));
                     makeOsrmRequestWithRetry(currentLat, currentLng, stopLat, stopLng, retriesLeft - 1);
                 } else {
-                    tts.speak(new String[]{"路線查詢逾時，改用直線距離", "Route timeout, fallback to straight-line"});
+                    tts.speak(new String[] { "路線查詢逾時，改用直線距離", "Route timeout, fallback to straight-line" });
                     fallbackDistance(currentLat, currentLng, stopLat, stopLng, "OSRM timeout");
                 }
             }
@@ -963,7 +982,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "OSRM response not successful: " + response.code());
-                    tts.speak(new String[]{"路線查詢失敗，改用直線距離", "Route failed, fallback to straight-line"});
+                    tts.speak(new String[] { "路線查詢失敗，改用直線距離", "Route failed, fallback to straight-line" });
                     fallbackDistance(currentLat, currentLng, stopLat, stopLng, "OSRM failed");
                     return;
                 }
@@ -977,15 +996,18 @@ for (int i = 0; i < busStopItems.size(); i++) {
                         double distanceKm = distance / 1000.0;
                         String zh = String.format("距離下一站約 %.1f 公里", distanceKm);
                         String en = String.format("About %.1f kilometers to next stop", distanceKm);
-                        String speakText = (voiceLanguage != null && (voiceLanguage.equalsIgnoreCase("zh") || voiceLanguage.startsWith("zh"))) ? zh : en;
-                        tts.speak(new String[]{speakText});
+                        String speakText = (voiceLanguage != null
+                                && (voiceLanguage.equalsIgnoreCase("zh") || voiceLanguage.startsWith("zh"))) ? zh : en;
+                        tts.speak(new String[] { speakText });
                         Toast.makeText(BusArrivalAlertPage.this, speakText, Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "[Distance] OSRM route distance: " + distanceKm + " km");
                     } else {
                         String zhNoRoute = "查無路線資料，改用直線距離";
                         String enNoRoute = "No route data, fallback to straight-line";
-                        String speakTextNoRoute = (voiceLanguage != null && (voiceLanguage.equalsIgnoreCase("zh") || voiceLanguage.startsWith("zh"))) ? zhNoRoute : enNoRoute;
-                        tts.speak(new String[]{speakTextNoRoute});
+                        String speakTextNoRoute = (voiceLanguage != null
+                                && (voiceLanguage.equalsIgnoreCase("zh") || voiceLanguage.startsWith("zh"))) ? zhNoRoute
+                                        : enNoRoute;
+                        tts.speak(new String[] { speakTextNoRoute });
                         Toast.makeText(BusArrivalAlertPage.this, speakTextNoRoute, Toast.LENGTH_SHORT).show();
                         fallbackDistance(currentLat, currentLng, stopLat, stopLng, "OSRM no data");
                     }
@@ -1002,25 +1024,28 @@ for (int i = 0; i < busStopItems.size(); i++) {
             // 1. 取得 routeNumber, bound, start_point_seq
             Cursor cursor = busDatabaseHelper.getLatestBusRoute();
             if (cursor == null || !cursor.moveToFirst()) {
-                tts.speak(new String[]{"查無路線或起點資料", "Route or start point not found"});
+                tts.speak(new String[] { "查無路線或起點資料", "Route or start point not found" });
                 Log.d(TAG, "[ArrivalTime] 缺少路線資料 (cursor null)");
                 return;
             }
             String routeNumber = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_ROUTE_NUMBER));
             String bound = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_BOUND));
-            String stopId = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_STOP_ID));
+            String stopId = cursor
+                    .getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_STOP_ID));
             String stopNameZh = busStopInfoHelper.getStopNameZh(stopId);
             String stopNameEn = busStopInfoHelper.getStopNameEn(stopId);
-            String routeSeqString = cursor.getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_SEQ));
+            String routeSeqString = cursor
+                    .getString(cursor.getColumnIndexOrThrow(BusDatabaseHelper.COLUMN_START_POINT_SEQ));
             final int routeSeq = parseRouteSeq(routeSeqString);
 
             // DEBUG: log 查詢參數
-            Log.d(TAG, "[ArrivalTime] params: routeNumber=" + routeNumber + ", stopId=" + stopId + ", bound=" + bound + ", routeSeq=" + routeSeq);
+            Log.d(TAG, "[ArrivalTime] params: routeNumber=" + routeNumber + ", stopId=" + stopId + ", bound=" + bound
+                    + ", routeSeq=" + routeSeq);
 
             cursor.close();
 
             if (routeNumber == null || bound == null || stopId == null) {
-                tts.speak(new String[]{"查無路線或起點資料", "Route or start point not found"});
+                tts.speak(new String[] { "查無路線或起點資料", "Route or start point not found" });
                 Log.d(TAG, "[ArrivalTime] 缺少 stopId/routeNumber/bound");
                 return;
             }
@@ -1037,15 +1062,16 @@ for (int i = 0; i < busStopItems.size(); i++) {
                 @Override
                 public void onFailure(okhttp3.Call call, IOException e) {
                     runOnUiThread(() -> {
-                        tts.speak(new String[]{"查詢失敗，請檢查網絡", "Failed to query ETA, please check network"});
+                        tts.speak(new String[] { "查詢失敗，請檢查網絡", "Failed to query ETA, please check network" });
                         Log.e(TAG, "[ArrivalTime] KMB ETA API error: " + e.getMessage());
                     });
                 }
+
                 @Override
                 public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                     if (!response.isSuccessful()) {
                         runOnUiThread(() -> {
-                            tts.speak(new String[]{"查詢失敗", "Failed to query ETA"});
+                            tts.speak(new String[] { "查詢失敗", "Failed to query ETA" });
                             Log.e(TAG, "[ArrivalTime] KMB ETA API response not successful");
                         });
                         return;
@@ -1057,7 +1083,7 @@ for (int i = 0; i < busStopItems.size(); i++) {
                         Log.d(TAG, "[ArrivalTime] KMB raw data: " + dataArray);
                         if (dataArray == null || dataArray.length() == 0) {
                             runOnUiThread(() -> {
-                                tts.speak(new String[]{"暫無到站資料", "No ETA data available"});
+                                tts.speak(new String[] { "暫無到站資料", "No ETA data available" });
                                 Log.d(TAG, "[ArrivalTime] No ETA data");
                             });
                             return;
@@ -1088,28 +1114,30 @@ for (int i = 0; i < busStopItems.size(); i++) {
                             if (matchedEta != null) {
                                 final String fallbackMsg = kmbBound.equals("I") ? "僅有去程班次" : "僅有回程班次";
                                 runOnUiThread(() -> {
-                                    tts.speak(new String[]{fallbackMsg, "Only opposite direction buses available"});
+                                    tts.speak(new String[] { fallbackMsg, "Only opposite direction buses available" });
                                 });
                             }
                         }
                         if (matchedEta == null) {
                             runOnUiThread(() -> {
-                                tts.speak(new String[]{"暫無到站資料", "No ETA data available"});
-                                Log.d(TAG, "[ArrivalTime] No matching ETA data (seq=" + routeSeq + ", dir=" + kmbBound + ")");
+                                tts.speak(new String[] { "暫無到站資料", "No ETA data available" });
+                                Log.d(TAG, "[ArrivalTime] No matching ETA data (seq=" + routeSeq + ", dir=" + kmbBound
+                                        + ")");
                             });
                             return;
                         }
                         String etaTime = matchedEta.optString("eta", "");
                         if (etaTime.isEmpty()) {
                             runOnUiThread(() -> {
-                                tts.speak(new String[]{"暫無到站資料", "No ETA data available"});
+                                tts.speak(new String[] { "暫無到站資料", "No ETA data available" });
                                 Log.d(TAG, "[ArrivalTime] ETA time empty");
                             });
                             return;
                         }
                         // 5. 播報第一筆 ETA（優化語句：XX分後到達/即將到達）
                         java.time.ZonedDateTime etaDateTime = java.time.ZonedDateTime.parse(etaTime);
-                        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Hong_Kong"));
+                        java.time.ZonedDateTime now = java.time.ZonedDateTime
+                                .now(java.time.ZoneId.of("Asia/Hong_Kong"));
                         long minutes = java.time.Duration.between(now, etaDateTime).toMinutes();
                         String zh, en;
                         if (minutes <= 1) {
@@ -1120,30 +1148,29 @@ for (int i = 0; i < busStopItems.size(); i++) {
                             en = String.format("%d min to %s", minutes, stopNameEn);
                         }
                         String speakText;
-                        if (voiceLanguage != null && (voiceLanguage.equalsIgnoreCase("zh") || voiceLanguage.startsWith("zh"))) {
+                        if (voiceLanguage != null
+                                && (voiceLanguage.equalsIgnoreCase("zh") || voiceLanguage.startsWith("zh"))) {
                             speakText = zh;
                         } else {
                             speakText = en;
                         }
                         runOnUiThread(() -> {
-                            tts.speak(new String[]{speakText});
+                            tts.speak(new String[] { speakText });
                             Toast.makeText(BusArrivalAlertPage.this, speakText, Toast.LENGTH_SHORT).show();
                         });
                         Log.d(TAG, "[ArrivalTime] ETA: " + etaTime);
                     } catch (Exception e) {
                         runOnUiThread(() -> {
-                            tts.speak(new String[]{"到站資料解析失敗", "Failed to parse ETA data"});
+                            tts.speak(new String[] { "到站資料解析失敗", "Failed to parse ETA data" });
                             Log.e(TAG, "[ArrivalTime] ETA parse error: " + e.getMessage());
                         });
                     }
                 }
             });
         } catch (Exception e) {
-            tts.speak(new String[]{"查詢到站時間時發生錯誤", "Error occurred while querying ETA"});
+            tts.speak(new String[] { "查詢到站時間時發生錯誤", "Error occurred while querying ETA" });
             Log.e(TAG, "[ArrivalTime] getBusArrivalTime error: " + e.getMessage());
         }
     }
 
-
-    }
-
+}

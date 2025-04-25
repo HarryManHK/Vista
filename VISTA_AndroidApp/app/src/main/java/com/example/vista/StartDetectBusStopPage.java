@@ -63,6 +63,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private PendingIntent nfcPendingIntent;
     private BusDatabaseHelper dbHelper;  
     private CustomTextToSpeech customTTS;
+    private boolean waitingForNfc = false; // 新增 flag 控制流程
 
     // BusStop內部類
     private static class BusStop {
@@ -318,6 +319,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         paint.setStrokeWidth(5);
         paint.setTextSize(40);
 
+        boolean detectedBisBusStop = false;
         for (Detection detection : detections) {
             canvas.drawRect(
                     (float) detection.xmin,
@@ -332,12 +334,27 @@ public class StartDetectBusStopPage extends AppCompatActivity {
             float yPos = (float) detection.ymin - 10;
             canvas.drawText(label, xPos, yPos, paint);
 
-            if (detection.name != null && detection.name.contains("CircleBusStopRoute")) {
-                camera = null;
+            if (detection.name != null && detection.name.equals("BigBusStop")) {
+                detectedBisBusStop = true;
             }
         }
         detectedImageView.setImageBitmap(bitmap);
         Log.d(TAG, "UI updated");
+
+        // 新增：偵測到 BisBusStop 後，停止相機，語音提示，進入等待 NFC 狀態
+        if (detectedBisBusStop && !waitingForNfc) {
+            stopCameraPreview();
+            waitingForNfc = true;
+            runOnUiThread(() -> {
+                Toast.makeText(this, "已檢測到巴士站，請前往拍 NFC 標籤", Toast.LENGTH_LONG).show();
+                if (customTTS != null) {
+                    customTTS.speak(new String[]{
+                        "Bus stop detected. Please scan the NFC tag.",
+                        "已檢測到巴士站，請前往拍 NFC 標籤"
+                    });
+                }
+            });
+        }
     }
 
     private void loadBusStopsFromJson() {
@@ -466,8 +483,7 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         }
     }
 
-
-
+    // 將 byte 陣列轉換為 16 進制字串
     private String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -479,6 +495,11 @@ public class StartDetectBusStopPage extends AppCompatActivity {
     private void checkNfcDataWithJson(String nfcData) {
         Log.d(TAG, "Checking NFC data: " + nfcData);
 
+        // 只有在等待 NFC 狀態下才處理
+        if (!waitingForNfc) {
+            Log.d(TAG, "Not waiting for NFC, ignore scan.");
+            return;
+        }
         // 獲取資料庫中的 start_point_stop_id
         String startPointStopId = dbHelper.getStartPointStopId();
 
@@ -487,13 +508,40 @@ public class StartDetectBusStopPage extends AppCompatActivity {
                 String message;
                 if (startPointStopId != null && startPointStopId.equals(nfcData)) {
                     message = "已到達起點站！\n站點: " + busStop.nameTc;
-                    // 如果需要，可以在這裡添加額外的起點到達邏輯
+                    // NFC 比對成功，語音提示並跳轉
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                        if (customTTS != null) {
+                            customTTS.speak(new String[]{
+                                "NFC verified. Entering bus detection page.",
+                                "NFC資料比對成功，進入巴士偵測頁"
+                            });
+                        }
+                        // 延遲 1.5 秒再跳轉，讓語音播完
+                        new android.os.Handler().postDelayed(() -> {
+                            Intent intent = new Intent(this, BusDetectionPage.class);
+                            startActivity(intent);
+                            finish();
+                        }, 1500);
+                    });
+                    waitingForNfc = false;
+                    Log.d(TAG, "NFC matched and jumping to BusDetectionPage");
+                    return;
                 } else {
                     message = "目前的車站不是起點站\n或是同一車站的不同等待位置\n" + busStop.nameTc;
                 }
 
                 String finalMessage = message;
-                runOnUiThread(() -> Toast.makeText(this, finalMessage, Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> {
+                    Toast.makeText(this, finalMessage, Toast.LENGTH_LONG).show();
+                    // 加入語音提示
+                    if (customTTS != null) {
+                        customTTS.speak(new String[]{
+                            "This is not the starting bus stop. Stop: " + busStop.nameEn,
+                            "目前的車站不是起點站，或是同一車站的不同等待位置。" + busStop.nameTc
+                        });
+                    }
+                });
                 Log.d(TAG, "NFC data matched: " + busStop.nameTc +
                         ", isStartPoint: " + (startPointStopId != null && startPointStopId.equals(nfcData)));
                 return;
@@ -501,7 +549,15 @@ public class StartDetectBusStopPage extends AppCompatActivity {
         }
 
         // 如果沒有匹配的站點
-        runOnUiThread(() -> Toast.makeText(this, "NFC數據不匹配", Toast.LENGTH_LONG).show());
+        runOnUiThread(() -> {
+            Toast.makeText(this, "NFC數據不匹配", Toast.LENGTH_LONG).show();
+            if (customTTS != null) {
+                customTTS.speak(new String[]{
+                    "NFC data does not match any bus stop.",
+                    "NFC數據不匹配任何巴士站。"
+                });
+            }
+        });
         Log.d(TAG, "No matching bus stop found for NFC data");
     }
 
