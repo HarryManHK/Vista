@@ -354,7 +354,7 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         // 頁面一開啟就自動啟動到站提醒
         reminderEnabled = true;
         reminderStopIndex = 1;
-        reminderHasSpoken = false;
+
         tts.speak(new String[] { "已啟動到站提醒", "Bus stop reminder activated" });
 
         showLoading(true);
@@ -463,57 +463,56 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                             case "巴士到站提醒":
                                 Log.d(TAG, "[NLP] case 啟動巴士到站提醒: before");
                                 reminderEnabled = true;
-                                reminderHasSpoken = false;
-                                Log.d(TAG, "[NLP] 啟動提醒 reminderEnabled=" + reminderEnabled + ", reminderHasSpoken="
-                                        + reminderHasSpoken);
+
+                                Log.d(TAG, "[NLP] 啟動提醒 reminderEnabled=" + reminderEnabled + ", lastSpokenStopIndex="
+                                        + lastSpokenStopIndex);
                                 tts.speak(new String[] { "已啟動到站提醒", "Bus stop reminder activated" });
                                 Log.d(TAG, "[NLP] case 啟動巴士到站提醒: after");
                                 break;
                             case "關閉巴士到站提醒":
                                 Log.d(TAG, "[NLP] case 關閉巴士到站提醒: before");
                                 reminderEnabled = false;
-                                Log.d(TAG, "[NLP] 關閉提醒 reminderEnabled=" + reminderEnabled);
                                 break;
                             case "下一站":
                             case "next stop":
                                 Log.d(TAG, "[NLP] case 下一站: before");
                                 int nextIndex = currentTargetStopIndex;
-                                // Log 現時目標站
                                 if (busStopItems != null && nextIndex < busStopItems.size()) {
                                     BusStopOverlayItem currentTarget = busStopItems.get(nextIndex);
-                                    Log.d(TAG, "[NLP] 現時目標站: index=" + nextIndex + ", stopId=" + currentTarget.stopId + ", title=" + currentTarget.title);
-                                    // 語音提示下一站（如為 destination 額外提示）
-                                    if (nextIndex < busStopItems.size()) {
+                                    String stopNameZh = currentTarget.title != null ? currentTarget.title : "";
+                                    String stopNameEn = busStopInfoHelper != null
+                                            ? busStopInfoHelper.getStopNameEn(currentTarget.stopId)
+                                            : "";
+                                    String zhArrived = "已到達" + stopNameZh;
+                                    String enArrived = "Arrived at " + stopNameEn;
+                                    boolean isFinalStop = (nextIndex == busStopItems.size() - 1);
+                                    String zhNext1, enNext1;
+                                    if (isFinalStop) {
+                                        zhNext1 = "下站是終站 " + stopNameZh;
+                                        enNext1 = "Next stop is the final stop " + stopNameEn;
+                                    } else {
                                         BusStopOverlayItem nextStop = busStopItems.get(nextIndex);
-                                        boolean isDestination = "destination".equalsIgnoreCase(nextStop.stopId) || (nextStop.title != null && nextStop.title.toLowerCase().contains("destination"));
-                                        String zhNext = isDestination ? "下一站是你的目的地" : "下一站" + nextStop.title;
-                                        String enNext = isDestination ? "Next stop is your destination" : "Next stop " + nextStop.title;
-                                        if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                            tts.speak(new String[] { zhNext });
+                                        String nextStopNameZh = nextStop.title != null ? nextStop.title : "";
+                                        String nextStopNameEn = busStopInfoHelper != null
+                                                ? busStopInfoHelper.getStopNameEn(nextStop.stopId)
+                                                : "";
+                                        boolean isDestination = "destination".equalsIgnoreCase(nextStop.stopId)
+                                                || (nextStop.title != null
+                                                        && nextStop.title.toLowerCase().contains("destination"));
+                                        if (isDestination) {
+                                            zhNext1 = "下站是" + nextStopNameZh + "，你的目的地";
+                                            enNext1 = "Next stop is " + nextStopNameEn + ", your destination.";
                                         } else {
-                                            tts.speak(new String[] { enNext });
+                                            zhNext1 = "下站是" + nextStopNameZh;
+                                            enNext1 = "Next stop is " + nextStopNameEn;
                                         }
                                     }
-                                }
-                                // Log busStopItems 全部列表
-                                if (busStopItems != null) {
-                                    for (int i = 0; i < busStopItems.size(); i++) {
-                                        BusStopOverlayItem item = busStopItems.get(i);
-                                        Log.d(TAG, String.format("busStopItems[%d]: stopId=%s, title=%s, lat=%.6f, lng=%.6f", i, item.stopId, item.title, item.point.getLatitude(), item.point.getLongitude()));
-                                    }
-                                }
-                                if (busStopItems != null && nextIndex < busStopItems.size()) {
-                                    String stopId = busStopItems.get(nextIndex).stopId;
-                                    String nextStopNameZh = busStopInfoHelper.getStopNameZh(stopId);
-                                    String nextStopNameEn = busStopInfoHelper.getStopNameEn(stopId);
-                                    String zh = "下一站" + (nextStopNameZh != null ? nextStopNameZh : "");
-                                    String en = "Next stop " + (nextStopNameEn != null ? nextStopNameEn : "");
                                     if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                        tts.speak(new String[] { zh });
-                                        Log.d(TAG, "[NLP] 下一站播報: " + zh);
+                                        tts.speak(new String[] {zhNext1 });
+                                        Log.d(TAG, "[NLP] 已到達與下一站播報: " + zhArrived + ", " + zhNext1);
                                     } else {
-                                        tts.speak(new String[] { en });
-                                        Log.d(TAG, "[NLP] 下一站播報: " + en);
+                                        tts.speak(new String[] {enNext1 });
+                                        Log.d(TAG, "[NLP] Arrived and next stop: " + enArrived + ", " + enNext1);
                                     }
                                 } else {
                                     String zh = "已到達終點";
@@ -550,7 +549,8 @@ public class BusArrivalAlertPage extends AppCompatActivity {
 
     // --- 全局提醒控制變數 ---
     private boolean reminderEnabled = false;
-    private boolean reminderHasSpoken = false;
+    // private boolean
+    private int lastSpokenStopIndex = -1; // 紀錄最後一次播報的站點索引
     private int reminderStopIndex = 1;
     // --- 自動到站追蹤 ---
     private int currentTargetStopIndex = 1; // 0=起點, 1=第一站
@@ -579,45 +579,37 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                         double stopLat = targetStop.point.getLatitude();
                         double stopLng = targetStop.point.getLongitude();
                         double dist = calculateDistance(latitude, longitude, stopLat, stopLng) * 1000; // m
-                        if (dist < 75 && !reminderHasSpoken) {
-                            // 到站語音（根據語音設定只播一種語言）
-                            String zh = "已到達" + targetStop.title;
-                            String en = "Arrived at " + targetStop.title;
+
+                        // 只要還沒對這一站播報過，且進入範圍，就播報
+                        if (dist < 75 && lastSpokenStopIndex != currentTargetStopIndex) {
+                            String zhArrived = "已到達" + targetStop.title;
+                            String enArrived = "Arrived at " + targetStop.title;
+                            boolean isFinalStop = (currentTargetStopIndex == busStopItems.size() - 1);
+                            String zhNext, enNext;
+                            if (!isFinalStop) {
+                                BusStopOverlayItem nextStop = busStopItems.get(currentTargetStopIndex + 1);
+                                boolean isDestination = "destination".equalsIgnoreCase(nextStop.stopId)
+                                        || (nextStop.title != null
+                                                && nextStop.title.toLowerCase().contains("destination"));
+                                zhNext = isDestination ? "下站是" + nextStop.title + "，你的目的地" : "下站是" + nextStop.title;
+                                enNext = isDestination ? "Next stop is " + nextStop.title + ", your destination." : "Next stop is " + nextStop.title;
+                            } else {
+                                zhNext = "下站是終站 " + targetStop.title;
+                                enNext = "Next stop is the final stop " + targetStop.title;
+                            }
+                            String zhAll = zhArrived + ", " + zhNext + ", " + zhNext;
+                            String enAll = enArrived + ", " + enNext + ", " + enNext;
                             if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                tts.speak(new String[] { zh });
+                                tts.speak(new String[] { zhAll });
                             } else {
-                                tts.speak(new String[] { en });
+                                tts.speak(new String[] { enAll });
                             }
-                            reminderHasSpoken = true;
-                            // 切換下一站
-                            if (currentTargetStopIndex < busStopItems.size() - 1) {
+                            lastSpokenStopIndex = currentTargetStopIndex;
+                            if (!isFinalStop) {
                                 currentTargetStopIndex++;
-                                reminderHasSpoken = false; // 準備下個站
-                                // 播報新目標站
-                                BusStopOverlayItem nextStop = busStopItems.get(currentTargetStopIndex);
-                                boolean isDestination = "destination".equalsIgnoreCase(nextStop.stopId) || (nextStop.title != null && nextStop.title.toLowerCase().contains("destination"));
-                                String zhNext = isDestination ? "下一站是你的目的地" : "下一站" + nextStop.title;
-                                String enNext = isDestination ? "Next stop is your destination" : "Next stop " + nextStop.title;
-                                if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                    tts.speak(new String[] { zhNext });
-                                } else {
-                                    tts.speak(new String[] { enNext });
-                                }
-                            } else {
-                                // 終點
-                                String zhEnd = "已到達終點 旅程完成";
-                                String enEnd = "Arrived at destination. Journey complete.";
-                                if ("zh".equalsIgnoreCase(voiceLanguage)) {
-                                    tts.speak(new String[] { zhEnd });
-                                } else {
-                                    tts.speak(new String[] { enEnd });
-                                }
                             }
-                        } else if (dist >= 100) {
-                            reminderHasSpoken = false; // 離開範圍可再次提醒
                         }
                     }
-
                     // 顯示定位資訊
                     double distanceToEnd = calculateDistance(latitude, longitude,
                             Double.parseDouble(DESTINATION_LAT != null ? DESTINATION_LAT : "0"),
@@ -712,23 +704,28 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         // tts.speak(new String[]{en, zh});
         // }
 
-
         // --- 全新邏輯：不抽起/插入任何虛擬點，保留官方順序 ---
         busStopItems.clear();
         waypoints.clear();
         try (Cursor cursor = busRouteRepo.getAllStopsForRoute(routeNumber, routeBound)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LAT));
-                    double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LONG));
-                    String stopNameEn = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME));
-                    String stopNameZh = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME_ZH));
-                    String stopId = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
+                    double lat = cursor
+                            .getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LAT));
+                    double lng = cursor
+                            .getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LONG));
+                    String stopNameEn = cursor
+                            .getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME));
+                    String stopNameZh = cursor
+                            .getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME_ZH));
+                    String stopId = cursor
+                            .getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_ID));
                     GeoPoint busStopPoint = new GeoPoint(lat, lng);
                     String title = stopNameEn + " (" + stopNameZh + ")";
                     busStopItems.add(new BusStopOverlayItem(stopId, busStopPoint, title, R.drawable.bus_stop));
                     waypoints.add(busStopPoint);
-                    Log.d(TAG, "Bus stop added at: stopId=" + stopId + ", title=" + title + ", lat=" + lat + ", lng=" + lng);
+                    Log.d(TAG, "Bus stop added at: stopId=" + stopId + ", title=" + title + ", lat=" + lat + ", lng="
+                            + lng);
                 } while (cursor.moveToNext());
             } else {
                 Log.w(TAG, "No bus stops found for route=" + routeNumber + ", bound=" + routeBound);
@@ -740,11 +737,12 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         // --- 只在 busStopItems 沒有 destination 時才額外加 ---
         if (DESTINATION_LAT != null && DESTINATION_LONG != null) {
             try {
-                GeoPoint destPoint = new GeoPoint(Double.parseDouble(DESTINATION_LAT), Double.parseDouble(DESTINATION_LONG));
+                GeoPoint destPoint = new GeoPoint(Double.parseDouble(DESTINATION_LAT),
+                        Double.parseDouble(DESTINATION_LONG));
                 boolean isDestSet = false;
                 for (BusStopOverlayItem item : busStopItems) {
                     if (Math.abs(item.point.getLatitude() - destPoint.getLatitude()) < 1e-6 &&
-                        Math.abs(item.point.getLongitude() - destPoint.getLongitude()) < 1e-6) {
+                            Math.abs(item.point.getLongitude() - destPoint.getLongitude()) < 1e-6) {
                         item.title = "Destination (" + item.title + ")";
                         item.drawableRes = R.drawable.end_point;
                         isDestSet = true;
@@ -752,7 +750,8 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                     }
                 }
                 if (!isDestSet) {
-                    busStopItems.add(new BusStopOverlayItem("destination", destPoint, "Destination", R.drawable.end_point));
+                    busStopItems
+                            .add(new BusStopOverlayItem("destination", destPoint, "Destination", R.drawable.end_point));
                 }
                 Log.d(TAG, "Destination point added at: lat=" + DESTINATION_LAT + ", lng=" + DESTINATION_LONG);
             } catch (Exception e) {
@@ -777,10 +776,14 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             String startTitle = "Start";
             try (Cursor cursor = busStopInfoHelper.getStopById(userStartStopId)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LAT));
-                    double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LONG));
-                    String stopNameEn = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME));
-                    String stopNameZh = cursor.getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME_ZH));
+                    double lat = cursor
+                            .getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LAT));
+                    double lng = cursor
+                            .getDouble(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_LONG));
+                    String stopNameEn = cursor
+                            .getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME));
+                    String stopNameZh = cursor
+                            .getString(cursor.getColumnIndexOrThrow(BusStopInfomationHelper.COLUMN_BUS_STOP_NAME_ZH));
                     startGeoPoint = new GeoPoint(lat, lng);
                     startTitle = "Start (" + stopNameEn + " (" + stopNameZh + ")" + ")";
                 }
@@ -789,7 +792,8 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             }
             if (startGeoPoint != null) {
                 busStopItems.add(0, new BusStopOverlayItem("start", startGeoPoint, startTitle, R.drawable.start_point));
-                Log.d(TAG, "Start point added at: stopId=start, title=" + startTitle + ", lat=" + startGeoPoint.getLatitude() + ", lng=" + startGeoPoint.getLongitude());
+                Log.d(TAG, "Start point added at: stopId=start, title=" + startTitle + ", lat="
+                        + startGeoPoint.getLatitude() + ", lng=" + startGeoPoint.getLongitude());
                 currentTargetStopIndex = 0;
             }
         } else {
@@ -803,7 +807,6 @@ public class BusArrivalAlertPage extends AppCompatActivity {
             }
         }
         Log.d(TAG, "[Init] Set currentTargetStopIndex=" + currentTargetStopIndex + " for stopId=" + userStartStopId);
-
 
         Log.d(TAG, "Waypoints size: " + waypoints.size());
         if (waypoints.size() >= 2) {
@@ -952,8 +955,9 @@ public class BusArrivalAlertPage extends AppCompatActivity {
         tts.speak(new String[] { zh, en });
         Toast.makeText(this, zh, Toast.LENGTH_SHORT).show();
         // 重置提醒狀態
-        if (reminderEnabled)
-            reminderHasSpoken = false;
+        if (reminderEnabled) {
+        }
+
     }
 
     // 查詢目前到下一站的距離，並語音播報
