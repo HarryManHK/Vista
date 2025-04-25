@@ -105,6 +105,7 @@ public class BusDetectionPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: BusDetectionPage started");
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_bus_detection_page);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -114,12 +115,17 @@ public class BusDetectionPage extends AppCompatActivity {
         });
 
         cameraSurfaceView = findViewById(R.id.cameraSurfaceView);
+        Log.d(TAG, "cameraSurfaceView initialized");
         detectedImageView = findViewById(R.id.detectedImageView);
+        Log.d(TAG, "detectedImageView initialized");
         tvCurrentStop = findViewById(R.id.tv_current_stop);
+        Log.d(TAG, "tvCurrentStop initialized");
         lvArrivalTimes = findViewById(R.id.lv_arrival_times);
+        Log.d(TAG, "lvArrivalTimes initialized");
         etaList = new ArrayList<>();
-        etaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, etaList);
+        etaAdapter = new ArrayAdapter<>(this, R.layout.list_item_white_text, etaList);
         lvArrivalTimes.setAdapter(etaAdapter);
+        Log.d(TAG, "etaAdapter set with etaList size: " + etaList.size());
         dbHelper = BusDatabaseHelper.getInstance(this);
         fetchRouteInfoFromDB();
         refreshRunnable = new Runnable() {
@@ -242,7 +248,7 @@ public class BusDetectionPage extends AppCompatActivity {
             String encoded = Base64.encodeToString(rotatedBaos.toByteArray(), Base64.DEFAULT);
             if (socket != null && socket.connected()) {
                 socket.emit("bus", encoded);
-                Log.d(TAG, "Image sent");
+                //Log.d(TAG, "Image sent");
             }
         } catch (Exception e) {
             Log.e(TAG, "Error sending image: " + e.getMessage(), e);
@@ -250,10 +256,12 @@ public class BusDetectionPage extends AppCompatActivity {
     }
 
     private void updateUIWithDetections() {
+        Log.d(TAG, "updateUIWithDetections called");
         if (previewWidth == 0 || previewHeight == 0) {
             Log.e(TAG, "Preview size not set");
             return;
         }
+        Log.d(TAG, "updateUIWithDetections: detections size = " + detections.size());
         Bitmap bmp = Bitmap.createBitmap(previewHeight, previewWidth, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
         Paint paint = new Paint();
@@ -262,6 +270,7 @@ public class BusDetectionPage extends AppCompatActivity {
         paint.setStrokeWidth(5);
         paint.setTextSize(40);
         for (Detection det : detections) {
+            Log.d(TAG, "updateUIWithDetections: Detection: " + det.toString());
             canvas.drawRect((float)det.xmin, (float)det.ymin, (float)det.xmax, (float)det.ymax, paint);
             String label = det.name + " " + String.format("%.2f", det.confidence);
             float textWidth = paint.measureText(label);
@@ -376,10 +385,15 @@ public class BusDetectionPage extends AppCompatActivity {
     }
 
     private void parseAndDisplayETA(String jsonString) {
+        Log.d(TAG, "parseAndDisplayETA called");
         try {
             JSONObject root = new JSONObject(jsonString);
             JSONArray dataArray = root.optJSONArray("data");
-            if (dataArray == null) return;
+            Log.d(TAG, "parseAndDisplayETA: dataArray = " + dataArray);
+            if (dataArray == null) {
+                Log.d(TAG, "parseAndDisplayETA: dataArray is null");
+                return;
+            }
             etaList.clear();
             int count = 0;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault());
@@ -401,10 +415,15 @@ public class BusDetectionPage extends AppCompatActivity {
                     }
                     String displayText = calculateTimeDifference(etaString);
                     etaList.add("ETA #" + item.optInt("eta_seq", -1) + ": " + displayText);
+                    Log.d(TAG, "parseAndDisplayETA: etaList add: ETA #" + item.optInt("eta_seq", -1) + ": " + displayText);
                     count++;  
                 }
             }
-            runOnUiThread(() -> etaAdapter.notifyDataSetChanged());
+            Log.d(TAG, "parseAndDisplayETA: etaList size after update = " + etaList.size());
+            runOnUiThread(() -> {
+                etaAdapter.notifyDataSetChanged();
+                Log.d(TAG, "parseAndDisplayETA: notifyDataSetChanged called, etaList size = " + etaList.size());
+            });
         } catch (Exception e) {
             Log.e(TAG, "parseAndDisplayETA error", e);
         }
