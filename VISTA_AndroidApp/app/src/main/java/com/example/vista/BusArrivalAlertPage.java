@@ -483,8 +483,8 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                                     BusStopOverlayItem currentTarget = busStopItems.get(nextIndex);
                                     Log.d(TAG, "[NLP] 現時目標站: index=" + nextIndex + ", stopId=" + currentTarget.stopId + ", title=" + currentTarget.title);
                                     // 語音提示下一站（如為 destination 額外提示）
-                                    if (nextIndex + 1 < busStopItems.size()) {
-                                        BusStopOverlayItem nextStop = busStopItems.get(nextIndex + 1);
+                                    if (nextIndex < busStopItems.size()) {
+                                        BusStopOverlayItem nextStop = busStopItems.get(nextIndex);
                                         boolean isDestination = "destination".equalsIgnoreCase(nextStop.stopId) || (nextStop.title != null && nextStop.title.toLowerCase().contains("destination"));
                                         String zhNext = isDestination ? "下一站是你的目的地" : "下一站" + nextStop.title;
                                         String enNext = isDestination ? "Next stop is your destination" : "Next stop " + nextStop.title;
@@ -579,7 +579,7 @@ public class BusArrivalAlertPage extends AppCompatActivity {
                         double stopLat = targetStop.point.getLatitude();
                         double stopLng = targetStop.point.getLongitude();
                         double dist = calculateDistance(latitude, longitude, stopLat, stopLng) * 1000; // m
-                        if (dist < 50 && !reminderHasSpoken) {
+                        if (dist < 75 && !reminderHasSpoken) {
                             // 到站語音（根據語音設定只播一種語言）
                             String zh = "已到達" + targetStop.title;
                             String en = "Arrived at " + targetStop.title;
