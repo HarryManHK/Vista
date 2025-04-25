@@ -35,62 +35,81 @@
         tools:targetApi="31">
         <activity
             android:name=".BusDetectionPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceControl.ByBus.VoiceControlEditStartPoint"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceControl.ByBus.VoiceControlEditEndPoint"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceControl.ByBus.VoiceControlEditDestination"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceControl.ByBus.VoiceControlBusRoute"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceControlPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ChatBot.ChatBotPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceSpeedSetting"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceGenderSetting"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceLanguageSetting"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VoiceSettingPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LanguageSettingPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SettingPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FindBusEditMenuFunction.EditOutboundDirectionActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FindBusEditMenuFunction.EditDestinationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FindBusEditMenuFunction.EditStartPointActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FindBusEditMenuFunction.EditRouteActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".BusArrivalAlertPage"
-            android:exported="false" /> <!-- NFC Activity -->
+            android:exported="false"
+            android:screenOrientation="portrait" /> <!-- NFC Activity -->
         <activity
             android:name=".StartDetectBusStopPage"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
@@ -111,16 +130,20 @@
         </activity>
         <activity
             android:name=".ShowArriveTimePage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FindBusEditMenuPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".FindBusStopMenuPage"
-            android:exported="false" /> <!-- MainMenuPage as the Launcher Activity -->
+            android:exported="false"
+            android:screenOrientation="portrait" /> <!-- MainMenuPage as the Launcher Activity -->
         <activity
             android:name=".MainMenuPage"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -129,13 +152,16 @@
         </activity> <!-- ImageToTextMenu without Intent Filter -->
         <activity
             android:name=".ImageToTextMenu"
-            android:exported="false" /> <!-- Other Activities -->
+            android:exported="false"
+            android:screenOrientation="portrait" /> <!-- Other Activities -->
         <activity
             android:name=".SelectImageDetectPage"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RealTimeDetectPage"
-            android:exported="false" /> <!-- FileProvider Configuration -->
+            android:exported="false"
+            android:screenOrientation="portrait" /> <!-- FileProvider Configuration -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
