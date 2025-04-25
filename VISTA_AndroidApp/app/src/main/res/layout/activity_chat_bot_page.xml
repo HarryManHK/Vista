@@ -27,7 +27,7 @@
             android:id="@+id/messageInput"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:hint="Type a message"
             android:background="@drawable/bg_user_bubble"
             android:padding="12dp"
@@ -42,6 +42,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
+
             android:backgroundTint="#fff"
             app:icon="@android:drawable/ic_btn_speak_now"
             app:iconTint="#2774AE"
@@ -52,14 +53,15 @@
             android:id="@+id/sendButton"
             android:layout_width="56dp"
             android:layout_height="48dp"
-            android:layout_marginStart="8dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginbott="8dp"
             android:backgroundTint="#2774AE"
             android:text="Send"
             android:textColor="#fff"
             app:cornerRadius="24dp"
             app:icon="@android:drawable/ic_menu_send"
-            app:iconTint="#fff"
-            app:iconGravity="textStart"/>
+            app:iconGravity="textStart"
+            app:iconTint="#fff" />
     </LinearLayout>
 
     <!-- 加載中的進度條 -->
