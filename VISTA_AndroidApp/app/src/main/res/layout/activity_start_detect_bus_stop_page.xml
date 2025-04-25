@@ -27,10 +27,18 @@
         android:id="@+id/btn_bus_detect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bus Detection"
+        android:text="@string/btn_bus_detect"
         app:layout_constraintTop_toBottomOf="@id/detectedImageView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:background="@drawable/btn_photo_gradient"
+        app:backgroundTint="@null"
+        app:backgroundTintMode="src_over"
+        app:cornerRadius="0dp"
+        app:strokeColor="@null"
+        app:strokeWidth="0dp"
         android:layout_marginTop="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
