@@ -36,6 +36,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import java.io.IOException;
 
+import com.example.vista.TextToSpeech.CustomTextToSpeech;
+
 public class SelectImageDetectPage extends AppCompatActivity {
 
     private static final String TAG = "SelectImageDetectPage_debug";
@@ -44,6 +46,7 @@ public class SelectImageDetectPage extends AppCompatActivity {
     TextView txtResult;
 
     private OkHttpClient httpClient;
+    CustomTextToSpeech customTextToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,9 @@ public class SelectImageDetectPage extends AppCompatActivity {
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
                 .build();
+
+        // Initialize CustomTextToSpeech
+        customTextToSpeech = new CustomTextToSpeech(this);
 
         // Get image URI from Intent
         Intent intent = getIntent();
@@ -179,6 +185,10 @@ public class SelectImageDetectPage extends AppCompatActivity {
                             // Update the TextView with the result
                             runOnUiThread(() -> {
                                 txtResult.setText(content);
+                                // Speak the content using CustomTextToSpeech
+                                if (customTextToSpeech != null) {
+                                    customTextToSpeech.speak(new String[]{content});
+                                }
                             });
                         } else {
                             Log.e(TAG, "postImageToServer: 'message' object is null");
