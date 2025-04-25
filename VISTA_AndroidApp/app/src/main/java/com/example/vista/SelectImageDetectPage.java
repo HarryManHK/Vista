@@ -130,7 +130,7 @@ public class SelectImageDetectPage extends AppCompatActivity {
                         RequestBody.create(imageBytes, MediaType.parse("image/jpeg")))
                 .build();
 
-        String url = "https://d.harryman.cc/api/image2text"; // Update with your server URL
+        String url = "https://img2txt.harryman.cc/api/image2text"; // Update with your server URL
         Log.d(TAG, "postImageToServer: POST to " + url);
 
         Request request = new Request.Builder()
