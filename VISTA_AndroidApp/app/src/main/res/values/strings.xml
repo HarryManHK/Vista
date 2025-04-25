@@ -57,6 +57,7 @@
     <string name="selectImageDetectPage_result">Result:</string>
     <string name="FindBusStopMenuPage_BusRouteInfo">Route:42A\nTo:Jordan (West Kowloon Station)\nStart Point: xxx\nDestination: xxx</string>
     <string name="setting">setting</string>
+    <string name="btn_bus_detect">Bus Detection</string>
 
 
 </resources>
