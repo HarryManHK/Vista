@@ -55,4 +55,6 @@
     <string name="selectImageDetectPage_result">結果：</string>
     <string name="FindBusStopMenuPage_BusRouteInfo">路線:42A\n前往:佐敦(西九龍站)\n起點: xxx站\n終點:xxx站</string>
     <string name="setting">設定</string>
+    <string name="btn_Comm">語音指令</string>
+    <string name="btn_Openreminder">開啟/關閉 \n到站提示</string>
 </resources>

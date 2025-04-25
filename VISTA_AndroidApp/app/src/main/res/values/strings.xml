@@ -3,7 +3,9 @@
     <string name="EditDestinationActivity_SelectDestinationBusStop">Select Destination Bus Stop</string>
 
     <string name="btn_Confirm">Confirm</string>
+    <string name="btn_Comm">Voice to Command</string>
     <string name="btn_next">Next</string>
+    <string name="btn_Openreminder">Open/Close \nReminder</string>
 
     <string name="MainMenuPageActivity_title">Main Menu</string>
     <string name="MainMenuPageActivity_ImageToText">Image To Text</string>
