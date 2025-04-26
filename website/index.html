@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vista APK Download</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .carousel-item img {
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">Vista</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="https://github.com/HarryManHK/Vista" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="bg-light py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="display-4">Vista Android App</h1>
+          <p class="lead">Enhance accessibility with voice control, chatbot assistance, and real-time bus detection.</p>
+          <a href="apk/vista.apk" class="btn btn-primary btn-lg" download>Download APK</a>
+        </div>
+        <div class="col-md-6 text-center">
+          <img src="images/vista_logo.png" alt="App Screenshot" class="img-fluid rounded shadow">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features Section -->
+  <section class="py-5">
+    <div class="container text-center">
+      <h2>Features</h2>
+      <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Voice Control</h5>
+              <p class="card-text">Navigate the app hands-free with intuitive voice commands.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Chatbot Assistance</h5>
+              <p class="card-text">Get instant help and support through an AI-powered chatbot.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Bus Detection</h5>
+              <p class="card-text">Detect nearby bus stops and get real-time updates.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots Carousel -->
+  <section class="py-5 bg-secondary text-white">
+    <div class="container">
+      <h2 class="text-center">Screenshots</h2>
+      <div id="screenshotCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <!-- Carousel items will be generated dynamically -->
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#screenshotCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#screenshotCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const totalImages = 19;
+      const carouselInner = document.querySelector('#screenshotCarousel .carousel-inner');
+      for (let i = 1; i <= totalImages; i++) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'carousel-item' + (i === 1 ? ' active' : '');
+        const img = document.createElement('img');
+        img.src = `images/screen${i}.jpeg`;
+        img.className = 'd-block w-100';
+        img.alt = `Screenshot ${i}`;
+        itemDiv.appendChild(img);
+        carouselInner.appendChild(itemDiv);
+      }
+    });
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-4">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2025 Vista. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
