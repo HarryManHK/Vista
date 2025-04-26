@@ -102,13 +102,13 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const totalImages = 19;
+      const totalImages = 17;
       const carouselInner = document.querySelector('#screenshotCarousel .carousel-inner');
       for (let i = 1; i <= totalImages; i++) {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'carousel-item' + (i === 1 ? ' active' : '');
         const img = document.createElement('img');
-        img.src = `images/screen${i}.jpeg`;
+        img.src = `images/screen${i}.png`;
         img.className = 'd-block w-100';
         img.alt = `Screenshot ${i}`;
         itemDiv.appendChild(img);
