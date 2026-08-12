@@ -1,0 +1,11 @@
+# Repository-local Codex skills
+/.agents/
+
+# OS metadata
+.DS_Store
+
+# Website dependencies and build output
+/website/node_modules/
+/website/dist/
+
+node_modules/
