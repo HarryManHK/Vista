@@ -1,4 +1,5 @@
 import vistaLogo from './assets/images/vista_logo.png'
+import Contributor from './components/Contributor'
 import FeatureShowcase from './components/FeatureShowcase'
 import ScreenshotCarousel from './components/ScreenshotCarousel'
 
@@ -195,6 +196,8 @@ function App() {
           images={busDetectionScreenshots}
           imagePosition="right"
         />
+
+        <Contributor />
       </main>
 
       <footer className="bg-vista-navy px-6 py-6 text-center text-sm text-slate-300">
