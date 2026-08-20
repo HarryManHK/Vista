@@ -3,9 +3,27 @@
 
 # OS metadata
 .DS_Store
+Thumbs.db
 
 # Website dependencies and build output
 /website/node_modules/
 /website/dist/
+/website/coverage/
+
+# Website local environment files
+/website/.env
+/website/.env.local
+/website/.env.*.local
+
+# Cloudflare/Wrangler local state and secrets
+/website/.wrangler/
+/website/.dev.vars
+/website/.dev.vars.*
+
+# Website package-manager logs
+/website/*.log
+/website/npm-debug.log*
+/website/yarn-debug.log*
+/website/pnpm-debug.log*
 
 node_modules/

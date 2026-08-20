@@ -8,12 +8,12 @@ describe('Contributor', () => {
   it('falls back to the matching GitHub avatar when an icon fails', () => {
     render(<Contributor />)
 
-    const avatar = screen.getByAltText('contributor1 GitHub avatar')
+    const avatar = screen.getByAltText('HarryManHK GitHub avatar')
     avatar.setAttribute('src', '/assets/missing-profile.png')
     fireEvent.error(avatar)
 
     expect(avatar.getAttribute('src')).toBe(
-      'https://github.com/contributor1.png?size=200',
+      'https://github.com/HarryManHK.png?size=200',
     )
   })
 })
