@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vista-blue: #2563eb;
+  --color-vista-navy: #111827;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #111827;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.carousel-item img {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+}
+
+.feature-card,
+.feature-card:hover,
+.feature-card:focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+.feature-card h3 {
+  color: #020617;
+}
+
+.contributor-card,
+.contributor-card:hover,
+.contributor-card:focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+.reveal {
+  opacity: 0;
+  transition:
+    opacity 1500ms ease,
+    transform 1500ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-left {
+  transform: translateX(-6rem);
+}
+
+.reveal-right {
+  transform: translateX(6rem);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal,
+  .reveal-left,
+  .reveal-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
